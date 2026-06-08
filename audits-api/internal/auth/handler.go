@@ -20,6 +20,7 @@ func NewHandler(svc *Service) *Handler {
 func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/auth/register", h.Register)
 	r.Post("/api/auth/login", h.Login)
+	r.Get("/api/users", h.ListUsers)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -49,6 +50,25 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	writeJSON(w, http.StatusCreated, resp)
+}
+
+func (h *Handler) ListUsers(w http.ResponseWriter, r *http.Request) {
+	rows, err := h.svc.Pool().Query(r.Context(), "SELECT id, name, surname, sap_no, work_tel, email FROM users ORDER BY name")
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to list users")
+		return
+	}
+	defer rows.Close()
+	var users []UserDTO
+	for rows.Next() {
+		var u UserDTO
+		if err := rows.Scan(&u.ID, &u.Name, &u.Surname, &u.SapNo, &u.WorkTel, &u.Email); err != nil {
+			writeError(w, http.StatusInternalServerError, "scan error")
+			return
+		}
+		users = append(users, u)
+	}
+	writeJSON(w, http.StatusOK, users)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
