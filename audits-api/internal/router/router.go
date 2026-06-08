@@ -36,7 +36,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	protected.Use(apimw.AuthMiddleware(cfg.JWTSecret))
 
 	// Users
-	protected.Get("/api/users", authH.ListUsers)
+	authH.RegisterProtectedRoutes(protected)
 
 	// Businesses
 	bizRepo := business.NewRepository(pool)

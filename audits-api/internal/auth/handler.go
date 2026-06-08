@@ -20,6 +20,9 @@ func NewHandler(svc *Service) *Handler {
 func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/auth/register", h.Register)
 	r.Post("/api/auth/login", h.Login)
+}
+
+func (h *Handler) RegisterProtectedRoutes(r chi.Router) {
 	r.Get("/api/users", h.ListUsers)
 }
 
