@@ -1,13 +1,20 @@
 package auth
 
 import (
-	"context"
-	"errors"
-	"strings"
+    "context"
+    "errors"
+    "strings"
 
-	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgxpool"
-	"golang.org/x/crypto/bcrypt"
+    "github.com/google/uuid"
+    "github.com/jackc/pgx/v5"
+    "github.com/jackc/pgx/v5/pgconn"
+    "github.com/jackc/pgx/v5/pgxpool"
+    "golang.org/x/crypto/bcrypt"
+)
+
+var (
+    ErrDuplicate         = errors.New("duplicate")
+    ErrInvalidCredentials = errors.New("invalid credentials")
 )
 
 type RegisterRequest struct {
@@ -60,12 +67,13 @@ func (s *Service) Register(ctx context.Context, req RegisterRequest) (*AuthRespo
          RETURNING id, name, surname, sap_no, work_tel, email`,
 		req.Name, req.Surname, req.SapNo, req.WorkTel, strings.ToLower(req.Email), string(hash),
 	).Scan(&user.ID, &user.Name, &user.Surname, &user.SapNo, &user.WorkTel, &user.Email)
-	if err != nil {
-		if strings.Contains(err.Error(), "unique") {
-			return nil, errors.New("email or SAP number already exists")
-		}
-		return nil, err
-	}
+    if err != nil {
+        var pgErr *pgconn.PgError
+        if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+            return nil, ErrDuplicate
+        }
+        return nil, err
+    }
 
 	token, err := GenerateToken(user.ID, user.Email, user.Name, s.jwtSecret)
 	if err != nil {
@@ -83,13 +91,16 @@ func (s *Service) Login(ctx context.Context, req LoginRequest) (*AuthResponse, e
 		`SELECT id, name, surname, sap_no, work_tel, email, password_hash FROM users WHERE email = $1`,
 		strings.ToLower(req.Email),
 	).Scan(&id, &name, &surname, &sapNo, &workTel, &email, &hash)
-	if err != nil {
-		return nil, errors.New("invalid email or password")
-	}
+    if err != nil {
+        if errors.Is(err, pgx.ErrNoRows) {
+            return nil, ErrInvalidCredentials
+        }
+        return nil, err
+    }
 
-	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password)); err != nil {
-		return nil, errors.New("invalid email or password")
-	}
+    if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(req.Password)); err != nil {
+        return nil, ErrInvalidCredentials
+    }
 
 	token, err := GenerateToken(id, email, name, s.jwtSecret)
 	if err != nil {
