@@ -39,7 +39,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 border-2 border-[#f5a623] rounded-sm flex items-center justify-center">
               <span className="text-[#f5a623] text-xs font-bold">N</span>
             </div>
-            <span className="text-sm font-light tracking-[0.2em] uppercase text-white/60">NCR System</span>
+            <span className="text-sm font-light tracking-[0.2em] uppercase text-white/60">AuditFlow</span>
           </div>
           <nav className="flex gap-4">
             <Link href="/login" className="text-sm text-white/70 hover:text-white transition px-4 py-2">Sign In</Link>
@@ -54,7 +54,7 @@ export default function LandingPage() {
               {/* Left: text */}
               <div className="space-y-6">
                 <div className="inline-block border border-[#f5a623]/30 px-3 py-1 text-xs tracking-[0.15em] uppercase text-[#f5a623] font-medium animate-fade-in">
-                  Transnet Freight Rail
+                  Audit &amp; Compliance
                 </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] tracking-tight">
                   <span className="text-white">Non-Conformance</span>
@@ -104,7 +104,7 @@ export default function LandingPage() {
         {/* Bottom bar */}
         <footer className="px-8 py-4 border-t border-white/5">
           <div className="max-w-6xl mx-auto flex justify-between items-center text-xs text-white/20">
-            <span>&copy; 2026 Transnet NCR System</span>
+            <span>&copy; 2026 AuditFlow</span>
             <div className="flex gap-6">
               <span className="tracking-[0.1em] uppercase">Version 1.0</span>
             </div>
