@@ -2,39 +2,31 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
-import { Business, Finding } from '@/types';
+import { Business, Finding, User } from '@/types';
 
 interface FindingFormProps {
   auditId: string;
   initial?: Partial<Finding>;
   onSave: (data: Record<string, unknown>) => Promise<void>;
+  onCancel?: () => void;
   loading?: boolean;
+  user?: User | null;
+  saved?: boolean;
+  renderAfterActions?: React.ReactNode;
 }
 
 const PRIORITIES = ['Major', 'Minor', 'Area of Concern', 'Observation'] as const;
-const AUDIT_TYPES = ['Environment', 'Health', 'Railway Safety', 'Customer Complaint', 'Fire', 'Maritime', 'Vendor', 'System NCR', 'HAZMAT', 'Quality', 'Audit'] as const;
+const ORIGINS = ['Legal', 'System (Non-conformance)', 'Other Non-compliance'] as const;
+const TYPES = ['Environment', 'Health', 'Railway Safety', 'Customer Complaint', 'Fire', 'Maritime', 'Vendor', 'System', 'HAZMAT', 'Quality', 'Audit', 'Other (Specify)'] as const;
 
-function initForm(initial?: Partial<Finding>) {
+function initForm(initial?: Partial<Finding>, user?: User | null) {
   return {
-    ncr_ref: initial?.ncr_ref || '',
     date_raised: initial?.date_raised || new Date().toISOString().split('T')[0],
-    raised_by_name: initial?.raised_by_name || '',
-    raised_by_sap_no: initial?.raised_by_sap_no || '',
-    contact_details: initial?.contact_details || '',
-    origin_legal: initial?.origin_legal || false,
-    origin_system: initial?.origin_system || false,
-    origin_other: initial?.origin_other || false,
-    type_env: initial?.type_env || false,
-    type_health: initial?.type_health || false,
-    type_railway_safety: initial?.type_railway_safety || false,
-    type_customer_complaint: initial?.type_customer_complaint || false,
-    type_fire: initial?.type_fire || false,
-    type_maritime: initial?.type_maritime || false,
-    type_vendor: initial?.type_vendor || false,
-    type_system_ncr: initial?.type_system_ncr || false,
-    type_hazmat: initial?.type_hazmat || false,
-    type_quality: initial?.type_quality || false,
-    type_audit: initial?.type_audit || false,
+    raised_by_name: initial?.raised_by_name || (user ? `${user.name} ${user.surname}` : ''),
+    raised_by_sap_no: initial?.raised_by_sap_no || user?.sap_no || '',
+    contact_details: initial?.contact_details || user?.work_tel || '',
+    origin_ncr: initial?.origin_ncr || '',
+    type_ncr: initial?.type_ncr || '',
     item_no: initial?.item_no || '',
     serial_batch_no: initial?.serial_batch_no || '',
     customer_name: initial?.customer_name || '',
@@ -42,11 +34,7 @@ function initForm(initial?: Partial<Finding>) {
     vendor_no: initial?.vendor_no || '',
     contravened_clause: initial?.contravened_clause || '',
     priority: initial?.priority || 'Observation',
-    area_of_concern: initial?.area_of_concern || '',
-    resp_person_int_name: initial?.resp_person_int_name || '',
-    resp_person_int_sap: initial?.resp_person_int_sap || '',
-    resp_person_ext_name: initial?.resp_person_ext_name || '',
-    raised_by_business_id: initial?.raised_by_business_id || '',
+    raised_by_business_id: '',
     raised_against_business_id: initial?.raised_against_business_id || '',
     description: initial?.description || '',
     work_type_process: initial?.work_type_process || '',
@@ -58,12 +46,53 @@ function initForm(initial?: Partial<Finding>) {
 
 type FormState = ReturnType<typeof initForm>;
 
-export default function FindingForm({ auditId, initial, onSave, loading }: FindingFormProps) {
-  const [businesses, setBusinesses] = useState<Business[]>([]);
-  const [form, setForm] = useState<FormState>(initForm(initial));
+function Input({ label, value, onChange, type, placeholder }: {
+  label: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string; placeholder?: string;
+}) {
+  return (
+    <div>
+      <label className="block text-sm mb-1 dark:text-gray-400">{label}</label>
+      <input type={type || 'text'} value={value} onChange={onChange} placeholder={placeholder}
+        className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white" />
+    </div>
+  );
+}
+
+function Select({ label, value, onChange, children }: {
+  label: string; value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label className="block text-sm font-medium mb-1 dark:text-gray-300">{label}</label>
+      <select value={value} onChange={onChange} className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white">
+        {children}
+      </select>
+    </div>
+  );
+}
+
+function Fieldset({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="border dark:border-gray-600 rounded p-4">
+      <legend className="text-sm font-semibold px-2 dark:text-gray-300">{label}</legend>
+      {children}
+    </fieldset>
+  );
+}
+
+export default function FindingForm({ auditId, initial, onSave, onCancel, loading, user, saved, renderAfterActions }: FindingFormProps) {
+  const [form, setForm] = useState<FormState>(initForm(initial, user));
 
   useEffect(() => {
-    api.get('/api/businesses').then((res) => setBusinesses(res.data));
+    api.get('/api/businesses').then((res) => {
+      const biz = res.data;
+      const facInfra = biz.find((b: Business) => b.name === 'Facilities and Infrastructure');
+      if (facInfra) {
+        setForm((prev) => ({ ...prev, raised_by_business_id: facInfra.id }));
+      }
+    });
   }, []);
 
   const update = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -74,167 +103,61 @@ export default function FindingForm({ auditId, initial, onSave, loading }: Findi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({ ...form, audit_id: auditId });
+    const data = { ...form, audit_id: auditId } as Record<string, unknown>;
+    if (!data.raised_by_business_id) data.raised_by_business_id = null;
+    if (!data.raised_against_business_id) data.raised_against_business_id = null;
+    onSave(data);
   };
+
+  const showCustomerFields = form.type_ncr === 'Customer Complaint';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">NCR Ref No</label>
-          <input value={form.ncr_ref} onChange={update('ncr_ref')} className="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Date Raised</label>
-          <input type="date" value={form.date_raised} onChange={update('date_raised')} className="w-full border rounded px-3 py-2" />
-        </div>
-      </div>
+      <Input label="Date Raised" type="date" value={form.date_raised} onChange={update('date_raised')} />
 
-      <fieldset className="border rounded p-4">
-        <legend className="text-sm font-semibold px-2">Raised By</legend>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Full Name & Surname</label>
-            <input value={form.raised_by_name} onChange={update('raised_by_name')} className="w-full border rounded px-3 py-2" />
+      <Select label="Origin of NCR" value={form.origin_ncr} onChange={update('origin_ncr')}>
+        <option value="">Select origin...</option>
+        {ORIGINS.map((o) => <option key={o} value={o}>{o}</option>)}
+      </Select>
+
+      <Select label="Type of NCR" value={form.type_ncr} onChange={update('type_ncr')}>
+        <option value="">Select type...</option>
+        {TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+      </Select>
+
+      {showCustomerFields && (
+        <Fieldset label="Customer Complaint Details">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <Input label="Item No" value={form.item_no} onChange={update('item_no')} />
+            <Input label="Serial / Batch No" value={form.serial_batch_no} onChange={update('serial_batch_no')} />
+            <Input label="Customer Name" value={form.customer_name} onChange={update('customer_name')} />
+            <Input label="Vendor Name" value={form.vendor_name} onChange={update('vendor_name')} />
+            <Input label="Vendor No" value={form.vendor_no} onChange={update('vendor_no')} />
           </div>
-          <div>
-            <label className="block text-sm mb-1">SAP No</label>
-            <input value={form.raised_by_sap_no} onChange={update('raised_by_sap_no')} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm mb-1">Contact Details</label>
-            <input value={form.contact_details} onChange={update('contact_details')} className="w-full border rounded px-3 py-2" />
-          </div>
-        </div>
-      </fieldset>
+        </Fieldset>
+      )}
 
-      <fieldset className="border rounded p-4">
-        <legend className="text-sm font-semibold px-2">Origin of NCR</legend>
-        <div className="flex gap-6">
-          {(['origin_legal', 'origin_system', 'origin_other'] as const).map((f) => (
-            <label key={f} className="flex items-center gap-2">
-              <input type="checkbox" checked={form[f]} onChange={toggle(f)} />
-              <span className="text-sm">
-                {f === 'origin_legal' ? 'Legal (Non-compliance)' : f === 'origin_system' ? 'System (Non-conformance)' : 'Other Non-compliance'}
-              </span>
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <Select label="Priority" value={form.priority} onChange={update('priority')}>
+        {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
+      </Select>
 
-      <fieldset className="border rounded p-4">
-        <legend className="text-sm font-semibold px-2">Type of NCR</legend>
-        <div className="grid grid-cols-3 gap-3">
-          {AUDIT_TYPES.map((t) => {
-            const fieldKey = `type_${t.toLowerCase().replace(/ /g, '_')}` as keyof FormState;
-            return (
-              <label key={t} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={!!form[fieldKey]} onChange={toggle(fieldKey)} />
-                {t}
-              </label>
-            );
-          })}
-        </div>
-      </fieldset>
+      <Input label="Contravened Standard Clause" value={form.contravened_clause} onChange={update('contravened_clause')} />
 
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Priority</label>
-          <select value={form.priority} onChange={update('priority')} className="w-full border rounded px-3 py-2">
-            {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
-          </select>
-        </div>
-        <div className="col-span-2">
-          <label className="block text-sm font-medium mb-1">Area of Concern</label>
-          <input value={form.area_of_concern} onChange={update('area_of_concern')} className="w-full border rounded px-3 py-2" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Contravened Standard Clause</label>
-          <input value={form.contravened_clause} onChange={update('contravened_clause')} className="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Item No</label>
-          <input value={form.item_no} onChange={update('item_no')} className="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Serial / Batch No</label>
-          <input value={form.serial_batch_no} onChange={update('serial_batch_no')} className="w-full border rounded px-3 py-2" />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Customer Name</label>
-          <input value={form.customer_name} onChange={update('customer_name')} className="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Vendor Name</label>
-          <input value={form.vendor_name} onChange={update('vendor_name')} className="w-full border rounded px-3 py-2" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Vendor No</label>
-          <input value={form.vendor_no} onChange={update('vendor_no')} className="w-full border rounded px-3 py-2" />
-        </div>
-      </div>
-
-      <fieldset className="border rounded p-4">
-        <legend className="text-sm font-semibold px-2">Responsible Person</legend>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Internal - Name</label>
-            <input value={form.resp_person_int_name} onChange={update('resp_person_int_name')} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div>
-            <label className="block text-sm mb-1">Internal - SAP No</label>
-            <input value={form.resp_person_int_sap} onChange={update('resp_person_int_sap')} className="w-full border rounded px-3 py-2" />
-          </div>
-          <div className="col-span-2">
-            <label className="block text-sm mb-1">External - Name</label>
-            <input value={form.resp_person_ext_name} onChange={update('resp_person_ext_name')} className="w-full border rounded px-3 py-2" />
-          </div>
-        </div>
-      </fieldset>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium mb-1">Raised By Business</label>
-          <select value={form.raised_by_business_id} onChange={update('raised_by_business_id')} className="w-full border rounded px-3 py-2">
-            <option value="">Select...</option>
-            {businesses.map((b) => (
-              <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium mb-1">Raised Against Business</label>
-          <select value={form.raised_against_business_id} onChange={update('raised_against_business_id')} className="w-full border rounded px-3 py-2">
-            <option value="">Select...</option>
-            {businesses.map((b) => (
-              <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label className="block text-sm font-medium mb-1 dark:text-gray-300">NCR Description</label>
+        <textarea value={form.description} onChange={update('description')} className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white" rows={4} />
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-1">NCR Description</label>
-        <textarea value={form.description} onChange={update('description')} className="w-full border rounded px-3 py-2" rows={4} />
+        <label className="block text-sm font-medium mb-1 dark:text-gray-300">Type of work, processes or equipment involved</label>
+        <input value={form.work_type_process} onChange={update('work_type_process')} className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white" />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium mb-1">Type of work, processes or equipment involved</label>
-        <input value={form.work_type_process} onChange={update('work_type_process')} className="w-full border rounded px-3 py-2" />
-      </div>
-
-      <fieldset className="border rounded p-4">
-        <legend className="text-sm font-semibold px-2">Actions</legend>
-        <div className="flex gap-6">
+      <Fieldset label="Actions">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-6">
           {(['immediate_action_taken', 'action_agreed_approved', 'stop_certificate_issued'] as const).map((f) => (
-            <label key={f} className="flex items-center gap-2">
-              <input type="checkbox" checked={form[f]} onChange={toggle(f)} />
+            <label key={f} className="flex items-center gap-2 dark:text-gray-300 cursor-pointer">
+              <input type="checkbox" checked={form[f]} onChange={toggle(f)} className="w-4 h-4" />
               <span className="text-sm">
                 {f === 'immediate_action_taken' ? 'Immediate action taken' :
                  f === 'action_agreed_approved' ? 'Action agreed / approved' :
@@ -243,12 +166,24 @@ export default function FindingForm({ auditId, initial, onSave, loading }: Findi
             </label>
           ))}
         </div>
-      </fieldset>
+      </Fieldset>
 
-      <button type="submit" disabled={loading}
-        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50">
-        {loading ? 'Saving...' : 'Save Finding'}
-      </button>
+      {renderAfterActions}
+
+      {!saved && (
+        <div className="flex gap-3">
+          <button type="submit" disabled={loading}
+            className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:opacity-50 font-medium text-base">
+            {loading ? 'Saving...' : 'Save'}
+          </button>
+          {onCancel && (
+            <button type="button" onClick={onCancel}
+              className="flex-1 bg-gray-200 dark:bg-gray-700 dark:text-gray-200 px-4 py-2.5 rounded hover:bg-gray-300 dark:hover:bg-gray-600 font-medium text-base">
+              Cancel
+            </button>
+          )}
+        </div>
+      )}
     </form>
   );
 }

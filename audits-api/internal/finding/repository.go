@@ -14,24 +14,12 @@ type Finding struct {
 	AuditID               uuid.UUID  `json:"audit_id"`
 	AuditorID             uuid.UUID  `json:"auditor_id"`
 	NcrRef                string     `json:"ncr_ref"`
-	DateRaised            time.Time  `json:"date_raised"`
+	DateRaised            string     `json:"date_raised"`
 	RaisedByName          string     `json:"raised_by_name"`
 	RaisedBySapNo         string     `json:"raised_by_sap_no"`
 	ContactDetails        string     `json:"contact_details"`
-	OriginLegal           bool       `json:"origin_legal"`
-	OriginSystem          bool       `json:"origin_system"`
-	OriginOther           bool       `json:"origin_other"`
-	TypeEnv               bool       `json:"type_env"`
-	TypeHealth            bool       `json:"type_health"`
-	TypeRailwaySafety     bool       `json:"type_railway_safety"`
-	TypeCustomerComplaint bool       `json:"type_customer_complaint"`
-	TypeFire              bool       `json:"type_fire"`
-	TypeMaritime          bool       `json:"type_maritime"`
-	TypeVendor            bool       `json:"type_vendor"`
-	TypeSystemNcr         bool       `json:"type_system_ncr"`
-	TypeHazmat            bool       `json:"type_hazmat"`
-	TypeQuality           bool       `json:"type_quality"`
-	TypeAudit             bool       `json:"type_audit"`
+	OriginNcr             string     `json:"origin_ncr"`
+	TypeNcr               string     `json:"type_ncr"`
 	ItemNo                string     `json:"item_no"`
 	SerialBatchNo         string     `json:"serial_batch_no"`
 	CustomerName          string     `json:"customer_name"`
@@ -39,12 +27,16 @@ type Finding struct {
 	VendorNo              string     `json:"vendor_no"`
 	ContravenedClause     string     `json:"contravened_clause"`
 	Priority              string     `json:"priority"`
-	AreaOfConcern         string     `json:"area_of_concern"`
+
 	RespPersonIntName     string     `json:"resp_person_int_name"`
 	RespPersonIntSap      string     `json:"resp_person_int_sap"`
 	RespPersonExtName     string     `json:"resp_person_ext_name"`
 	RaisedByBusinessID    *uuid.UUID `json:"raised_by_business_id"`
 	RaisedAgainstBusinessID *uuid.UUID `json:"raised_against_business_id"`
+	RaisedByBusinessName    *string  `json:"raised_by_business_name,omitempty"`
+	RaisedAgainstBusinessName *string `json:"raised_against_business_name,omitempty"`
+	RaisedByBusinessPlant   *string  `json:"raised_by_business_plant,omitempty"`
+	RaisedAgainstBusinessPlant *string `json:"raised_against_business_plant,omitempty"`
 	Description           string     `json:"description"`
 	WorkTypeProcess       string     `json:"work_type_process"`
 	ImmediateActionTaken  bool       `json:"immediate_action_taken"`
@@ -53,7 +45,7 @@ type Finding struct {
 	Status                string     `json:"status"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
-	Photos                []Photo    `json:"photos,omitempty"`
+	Photos                []Photo    `json:"photos"`
 }
 
 type Photo struct {
@@ -72,11 +64,9 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 }
 
 const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
-    contact_details, origin_legal, origin_system, origin_other,
-    type_env, type_health, type_railway_safety, type_customer_complaint, type_fire,
-    type_maritime, type_vendor, type_system_ncr, type_hazmat, type_quality, type_audit,
+    contact_details, origin_ncr, type_ncr,
     item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
-    priority, area_of_concern, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
+    priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
     raised_by_business_id, raised_against_business_id, description, work_type_process,
     immediate_action_taken, action_agreed_approved, stop_certificate_issued, status,
     created_at, updated_at`
@@ -84,17 +74,21 @@ const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_n
 func scanFinding(scanner interface {
 	Scan(dest ...any) error
 }, f *Finding) error {
-	return scanner.Scan(
-		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &f.DateRaised, &f.RaisedByName, &f.RaisedBySapNo,
-		&f.ContactDetails, &f.OriginLegal, &f.OriginSystem, &f.OriginOther,
-		&f.TypeEnv, &f.TypeHealth, &f.TypeRailwaySafety, &f.TypeCustomerComplaint, &f.TypeFire,
-		&f.TypeMaritime, &f.TypeVendor, &f.TypeSystemNcr, &f.TypeHazmat, &f.TypeQuality, &f.TypeAudit,
+	var dateRaised time.Time
+	err := scanner.Scan(
+		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
+		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
-		&f.Priority, &f.AreaOfConcern, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
+		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
 		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status,
 		&f.CreatedAt, &f.UpdatedAt,
 	)
+	if err != nil {
+		return err
+	}
+	f.DateRaised = dateRaised.Format("2006-01-02")
+	return nil
 }
 
 func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding, error) {
@@ -116,18 +110,7 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Find
 
 func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error) {
 	var f Finding
-	err := r.pool.QueryRow(ctx, `SELECT `+findingCols+` FROM findings WHERE id = $1`, id).Scan(
-		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &f.DateRaised, &f.RaisedByName, &f.RaisedBySapNo,
-		&f.ContactDetails, &f.OriginLegal, &f.OriginSystem, &f.OriginOther,
-		&f.TypeEnv, &f.TypeHealth, &f.TypeRailwaySafety, &f.TypeCustomerComplaint, &f.TypeFire,
-		&f.TypeMaritime, &f.TypeVendor, &f.TypeSystemNcr, &f.TypeHazmat, &f.TypeQuality, &f.TypeAudit,
-		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
-		&f.Priority, &f.AreaOfConcern, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
-		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
-		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status,
-		&f.CreatedAt, &f.UpdatedAt,
-	)
-	if err != nil {
+	if err := scanFinding(r.pool.QueryRow(ctx, `SELECT `+findingCols+` FROM findings WHERE id = $1`, id), &f); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil
 		}
@@ -137,53 +120,45 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error
 }
 
 func (r *Repository) Create(ctx context.Context, f *Finding) error {
+	dateRaised, _ := time.Parse("2006-01-02", f.DateRaised)
 	return r.pool.QueryRow(ctx, `
 		INSERT INTO findings (audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
-			contact_details, origin_legal, origin_system, origin_other,
-			type_env, type_health, type_railway_safety, type_customer_complaint, type_fire,
-			type_maritime, type_vendor, type_system_ncr, type_hazmat, type_quality, type_audit,
+			contact_details, origin_ncr, type_ncr,
 			item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
-			priority, area_of_concern, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
+			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
 			raised_by_business_id, raised_against_business_id, description, work_type_process,
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37,$38,$39)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
 		RETURNING id, created_at, updated_at
 	`,
-		f.AuditID, f.AuditorID, f.NcrRef, f.DateRaised, f.RaisedByName, f.RaisedBySapNo,
-		f.ContactDetails, f.OriginLegal, f.OriginSystem, f.OriginOther,
-		f.TypeEnv, f.TypeHealth, f.TypeRailwaySafety, f.TypeCustomerComplaint, f.TypeFire,
-		f.TypeMaritime, f.TypeVendor, f.TypeSystemNcr, f.TypeHazmat, f.TypeQuality, f.TypeAudit,
+		f.AuditID, f.AuditorID, f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
+		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo, f.ContravenedClause,
-		f.Priority, f.AreaOfConcern, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
+		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID, f.Description, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
 	).Scan(&f.ID, &f.CreatedAt, &f.UpdatedAt)
 }
 
 func (r *Repository) Update(ctx context.Context, f *Finding) error {
+	dateRaised, _ := time.Parse("2006-01-02", f.DateRaised)
 	_, err := r.pool.Exec(ctx, `
 		UPDATE findings SET
 			ncr_ref=$1, date_raised=$2, raised_by_name=$3, raised_by_sap_no=$4,
-			contact_details=$5, origin_legal=$6, origin_system=$7, origin_other=$8,
-			type_env=$9, type_health=$10, type_railway_safety=$11, type_customer_complaint=$12,
-			type_fire=$13, type_maritime=$14, type_vendor=$15, type_system_ncr=$16,
-			type_hazmat=$17, type_quality=$18, type_audit=$19,
-			item_no=$20, serial_batch_no=$21, customer_name=$22, vendor_name=$23, vendor_no=$24,
-			contravened_clause=$25, priority=$26, area_of_concern=$27,
-			resp_person_int_name=$28, resp_person_int_sap=$29, resp_person_ext_name=$30,
-			raised_by_business_id=$31, raised_against_business_id=$32,
-			description=$33, work_type_process=$34,
-			immediate_action_taken=$35, action_agreed_approved=$36, stop_certificate_issued=$37,
-			status=$38, updated_at=NOW()
-		WHERE id=$39
+			contact_details=$5, origin_ncr=$6, type_ncr=$7,
+			item_no=$8, serial_batch_no=$9, customer_name=$10, vendor_name=$11, vendor_no=$12,
+			contravened_clause=$13, priority=$14,
+			resp_person_int_name=$15, resp_person_int_sap=$16, resp_person_ext_name=$17,
+			raised_by_business_id=$18, raised_against_business_id=$19,
+			description=$20, work_type_process=$21,
+			immediate_action_taken=$22, action_agreed_approved=$23, stop_certificate_issued=$24,
+			status=$25, updated_at=NOW()
+		WHERE id=$26
 	`,
-		f.NcrRef, f.DateRaised, f.RaisedByName, f.RaisedBySapNo,
-		f.ContactDetails, f.OriginLegal, f.OriginSystem, f.OriginOther,
-		f.TypeEnv, f.TypeHealth, f.TypeRailwaySafety, f.TypeCustomerComplaint,
-		f.TypeFire, f.TypeMaritime, f.TypeVendor, f.TypeSystemNcr,
-		f.TypeHazmat, f.TypeQuality, f.TypeAudit,
+		f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
+		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo,
-		f.ContravenedClause, f.Priority, f.AreaOfConcern,
+		f.ContravenedClause, f.Priority,
 		f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID,
 		f.Description, f.WorkTypeProcess,

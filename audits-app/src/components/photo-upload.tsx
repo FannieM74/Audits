@@ -29,21 +29,35 @@ export default function PhotoUpload({ findingId, photos, onUpdate }: PhotoUpload
     }
   };
 
+  const handleDelete = async (photoId: string) => {
+    if (!confirm('Delete this photo?')) return;
+    try {
+      await api.delete(`/api/findings/${findingId}/photos/${photoId}`);
+      onUpdate();
+    } catch {
+      alert('Failed to delete photo');
+    }
+  };
+
   return (
     <div className="space-y-2">
       <div className="flex gap-2 flex-wrap">
         {photos.map((p) => (
-          <div key={p.id} className="relative">
-            <img src={p.url} alt="Finding photo" className="w-24 h-24 object-cover rounded border" />
+          <div key={p.id} className="relative group">
+            <img src={p.url} alt="Finding photo" className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded border dark:border-gray-600" />
+            <button type="button" onClick={() => handleDelete(p.id)}
+              className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 text-white text-xs rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              &times;
+            </button>
           </div>
         ))}
+        {photos.length < 3 && (
+          <label className="cursor-pointer inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 border-2 border-dashed dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500">
+            <span className="text-2xl font-light">{uploading ? '...' : '+'}</span>
+            <input type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
+          </label>
+        )}
       </div>
-      {photos.length < 3 && (
-        <label className="cursor-pointer inline-block bg-gray-100 border rounded px-3 py-1 text-sm hover:bg-gray-200">
-          {uploading ? 'Uploading...' : `Add Photo (${photos.length}/3)`}
-          <input type="file" accept="image/*" capture="environment" onChange={handleUpload} className="hidden" />
-        </label>
-      )}
     </div>
   );
 }

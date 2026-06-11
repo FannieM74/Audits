@@ -1,9 +1,12 @@
 package finding
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -11,11 +14,13 @@ import (
 )
 
 type Handler struct {
-	svc *Service
+	svc           *Service
+	templatePath  string
+	docxGenScript string
 }
 
-func NewHandler(svc *Service) *Handler {
-	return &Handler{svc: svc}
+func NewHandler(svc *Service, templatePath string, docxGenScript string) *Handler {
+	return &Handler{svc: svc, templatePath: templatePath, docxGenScript: docxGenScript}
 }
 
 func (h *Handler) RegisterRoutes(r chi.Router) {
@@ -26,7 +31,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Delete("/api/findings/{id}", h.Delete)
 	r.Post("/api/findings/{id}/photos", h.UploadPhoto)
 	r.Delete("/api/findings/{id}/photos/{photoId}", h.DeletePhoto)
-	r.Get("/api/findings/{id}/pdf", h.DownloadPDF)
+	r.Get("/api/findings/{id}/docx", h.DownloadWord)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -70,6 +75,11 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	f.AuditID = auditID
 	f.AuditorID = claims.UserID
+	if f.RaisedAgainstBusinessID == nil {
+		var businessID *uuid.UUID
+		h.svc.pool.QueryRow(r.Context(), "SELECT business_id FROM audits WHERE id=$1", auditID).Scan(&businessID)
+		f.RaisedAgainstBusinessID = businessID
+	}
 	if err := h.svc.Create(r.Context(), &f); err != nil {
 		log.Printf("create finding error: %v", err)
 		writeError(w, http.StatusBadRequest, err.Error())
@@ -125,6 +135,9 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	f.ID = id
 	f.AuditID = existing.AuditID
 	f.AuditorID = existing.AuditorID
+	if f.Status == "" {
+		f.Status = existing.Status
+	}
 	if err := h.svc.Update(r.Context(), &f); err != nil {
 		log.Printf("update finding error: %v", err)
 		writeError(w, http.StatusInternalServerError, "update failed")
@@ -206,7 +219,7 @@ func (h *Handler) DeletePhoto(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *Handler) DownloadPDF(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DownloadWord(w http.ResponseWriter, r *http.Request) {
 	id, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid id")
@@ -218,14 +231,54 @@ func (h *Handler) DownloadPDF(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pdfBytes, err := GeneratePDF(f)
+	if f.RaisedByBusinessID != nil {
+		var name, site string
+		h.svc.pool.QueryRow(r.Context(), "SELECT name, site FROM businesses WHERE id=$1", f.RaisedByBusinessID).Scan(&name, &site)
+		f.RaisedByBusinessName = &name
+		f.RaisedByBusinessPlant = &site
+	}
+	if f.RaisedAgainstBusinessID != nil {
+		var name, site string
+		h.svc.pool.QueryRow(r.Context(), "SELECT name, site FROM businesses WHERE id=$1", f.RaisedAgainstBusinessID).Scan(&name, &site)
+		f.RaisedAgainstBusinessName = &name
+		f.RaisedAgainstBusinessPlant = &site
+	}
+
+	docxBytes, err := h.generateDocxPython(f)
 	if err != nil {
-		log.Printf("pdf generation error: %v", err)
-		writeError(w, http.StatusInternalServerError, "pdf generation failed")
+		log.Printf("docx generation error: %v", err)
+		writeError(w, http.StatusInternalServerError, "docx generation failed")
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/pdf")
-	w.Header().Set("Content-Disposition", "attachment; filename="+f.NcrRef+".pdf")
-	w.Write(pdfBytes)
+	ncrRef := f.NcrRef
+	if ncrRef == "" {
+		ncrRef = "ncr-" + f.ID.String()
+	}
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+	w.Header().Set("Content-Disposition", "attachment; filename="+ncrRef+".docx")
+	w.Write(docxBytes)
+}
+
+func (h *Handler) generateDocxPython(f *Finding) ([]byte, error) {
+	input := map[string]any{
+		"template_path": h.templatePath,
+		"finding":       f,
+	}
+	inputJSON, err := json.Marshal(input)
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := exec.Command("python3", h.docxGenScript)
+	cmd.Stdin = bytes.NewReader(inputJSON)
+	output, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			return nil, fmt.Errorf("python exited with %d: %s", ee.ExitCode(), string(ee.Stderr))
+		}
+		return nil, fmt.Errorf("exec python: %w", err)
+	}
+	return output, nil
 }

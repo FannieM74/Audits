@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { Audit, Finding } from '@/types';
@@ -10,6 +10,7 @@ import Link from 'next/link';
 export default function AuditDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
+  const router = useRouter();
   const [audit, setAudit] = useState<Audit | null>(null);
   const [findings, setFindings] = useState<Finding[]>([]);
 
@@ -20,68 +21,102 @@ export default function AuditDetailPage() {
     api.get(`/api/audits/${id}/findings`).then((res) => setFindings(res.data));
   }, [id]);
 
-  if (!audit) return <div className="p-6">Loading...</div>;
+  if (!audit) return (
+    <div className="min-h-dvh flex items-center justify-center dark:text-white">
+      <div className="animate-pulse">Loading...</div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow p-4 flex justify-between items-center">
-        <div>
-          <h1 className="text-xl font-bold">{audit.title}</h1>
-          <p className="text-sm text-gray-500">{audit.audit_type} &mdash; {audit.audit_date} ({audit.audit_days} day(s))</p>
-        </div>
-        <div className="flex gap-2">
-          {isLead && (
-            <Link href={`/audits/${id}/edit`} className="bg-gray-200 px-3 py-1 rounded text-sm hover:bg-gray-300">Edit</Link>
-          )}
-          <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-            + New Finding
-          </Link>
+    <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 flex flex-col">
+      <header className="bg-white dark:bg-gray-800 shadow-sm p-3 sm:p-4">
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          <button onClick={() => router.push('/dashboard')} className="text-xs text-blue-600 dark:text-blue-400 shrink-0">&larr; Back</button>
+          <div className="flex gap-2 shrink-0">
+            {isLead && (
+              <Link href={`/audits/${id}/edit`} className="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded text-xs sm:text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">Edit</Link>
+            )}
+            <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs sm:text-sm font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
+              + Finding
+            </Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto p-6">
-        <p className="text-gray-600 mb-4">{audit.description}</p>
+      <main className="flex-1 p-3 sm:p-6">
+        <div className="max-w-5xl mx-auto space-y-4 sm:space-y-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
+            <h1 className="text-lg sm:text-2xl font-bold dark:text-white mb-2">{audit.title}</h1>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+              <div>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Type</span>
+                <p className="font-medium dark:text-gray-200">{audit.audit_type}</p>
+              </div>
+              <div>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Date</span>
+                <p className="font-medium dark:text-gray-200">{new Date(audit.audit_date).toLocaleDateString()}</p>
+              </div>
+              <div>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Duration</span>
+                <p className="font-medium dark:text-gray-200">{audit.audit_days} day(s)</p>
+              </div>
+              <div>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Status</span>
+                <span className={`inline-block mt-0.5 text-xs px-2 py-0.5 rounded font-medium ${
+                  audit.status === 'open'
+                    ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                }`}>{audit.status}</span>
+              </div>
+              <div className="col-span-2">
+                <span className="text-gray-500 dark:text-gray-400 text-xs">Lead Auditor</span>
+                <p className="font-medium dark:text-gray-200">{audit.lead_auditor_name}</p>
+              </div>
+            </div>
+            {audit.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 pt-3 border-t dark:border-gray-700">{audit.description}</p>
+            )}
+          </div>
 
-        <h2 className="text-lg font-semibold mb-4">Findings ({findings.length})</h2>
+          <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>
 
-        {findings.length === 0 ? (
-          <p className="text-gray-500">No findings yet.</p>
-        ) : (
-          <div className="space-y-3">
-            {findings.map((f) => (
-              <div key={f.id} className="bg-white rounded-lg shadow p-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{f.ncr_ref}</span>
-                      <span className={`text-xs px-2 py-0.5 rounded ${
-                        f.priority === 'Major' ? 'bg-red-100 text-red-700' :
-                        f.priority === 'Minor' ? 'bg-yellow-100 text-yellow-700' :
-                        f.priority === 'Area of Concern' ? 'bg-orange-100 text-orange-700' :
-                        'bg-blue-100 text-blue-700'
-                      }`}>{f.priority}</span>
+          {findings.length === 0 ? (
+            <div className="text-center py-12 sm:py-16">
+              <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-4">No findings yet.</p>
+              <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium inline-block">
+                + Create First Finding
+              </Link>
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {findings.map((f) => (
+                <div key={f.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-semibold text-sm sm:text-base dark:text-white">{f.ncr_ref || 'NCR'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                          f.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
+                          f.priority === 'Minor' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                          f.priority === 'Area of Concern' ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300' :
+                          'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+                        }`}>{f.priority}</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{f.description}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">By: {f.raised_by_name} | {f.date_raised}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{f.description}</p>
-                    <p className="text-xs text-gray-400 mt-1">By: {f.raised_by_name} | {f.date_raised}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Link href={`/findings/${f.id}`} className="text-blue-600 text-sm hover:underline">View</Link>
-                    {(f.auditor_id === user?.id || isLead) && (
-                      <Link href={`/findings/${f.id}/edit`} className="text-gray-600 text-sm hover:underline">Edit</Link>
-                    )}
+                    <div className="flex gap-2 shrink-0">
+                      <Link href={`/findings/${f.id}`} className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium">View</Link>
+                      {(f.auditor_id === user?.id || isLead) && (
+                        <Link href={`/findings/${f.id}/edit`} className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">Edit</Link>
+                      )}
+                    </div>
                   </div>
                 </div>
-                {f.photos && f.photos.length > 0 && (
-                  <div className="flex gap-1 mt-2">
-                    {f.photos.map((p) => (
-                      <img key={p.id} src={p.url} alt="Finding photo" className="w-12 h-12 object-cover rounded" />
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );

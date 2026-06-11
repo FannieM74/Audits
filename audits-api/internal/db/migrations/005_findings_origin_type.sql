@@ -1,0 +1,16 @@
+ALTER TABLE findings ADD COLUMN origin_ncr TEXT NOT NULL DEFAULT '';
+ALTER TABLE findings ADD COLUMN type_ncr TEXT NOT NULL DEFAULT '';
+ALTER TABLE findings DROP COLUMN origin_legal;
+ALTER TABLE findings DROP COLUMN origin_system;
+ALTER TABLE findings DROP COLUMN origin_other;
+ALTER TABLE findings DROP COLUMN type_env;
+ALTER TABLE findings DROP COLUMN type_health;
+ALTER TABLE findings DROP COLUMN type_railway_safety;
+ALTER TABLE findings DROP COLUMN type_customer_complaint;
+ALTER TABLE findings DROP COLUMN type_fire;
+ALTER TABLE findings DROP COLUMN type_maritime;
+ALTER TABLE findings DROP COLUMN type_vendor;
+ALTER TABLE findings DROP COLUMN type_system_ncr;
+ALTER TABLE findings DROP COLUMN type_hazmat;
+ALTER TABLE findings DROP COLUMN type_quality;
+ALTER TABLE findings DROP COLUMN type_audit;

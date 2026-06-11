@@ -3,11 +3,9 @@ package finding
 import (
 	"context"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -27,6 +25,9 @@ func (s *Service) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding
 	findings, err := s.repo.ListByAudit(ctx, auditID)
 	if err != nil {
 		return nil, err
+	}
+	if findings == nil {
+		findings = []Finding{}
 	}
 	for i := range findings {
 		photos, _ := s.repo.GetPhotos(ctx, findings[i].ID)
@@ -52,9 +53,6 @@ func (s *Service) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error) {
 }
 
 func (s *Service) Create(ctx context.Context, f *Finding) error {
-	if f.NcrRef == "" {
-		f.NcrRef = fmt.Sprintf("NCR-%s-%d", time.Now().Format("20060102"), time.Now().UnixMilli()%10000)
-	}
 	if f.Priority == "" {
 		f.Priority = "Observation"
 	}

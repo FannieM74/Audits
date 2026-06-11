@@ -7,6 +7,11 @@ export interface User {
   email: string;
 }
 
+export interface AuditorInfo {
+  id: string;
+  name: string;
+}
+
 export interface Audit {
   id: string;
   lead_auditor_id: string;
@@ -15,9 +20,12 @@ export interface Audit {
   audit_type: string;
   audit_days: number;
   audit_date: string;
+  business_id?: string | null;
   status: string;
   created_at: string;
   lead_auditor_name?: string;
+  business_name?: string | null;
+  auditors?: AuditorInfo[];
 }
 
 export interface Finding {
@@ -29,20 +37,8 @@ export interface Finding {
   raised_by_name: string;
   raised_by_sap_no: string;
   contact_details: string;
-  origin_legal: boolean;
-  origin_system: boolean;
-  origin_other: boolean;
-  type_env: boolean;
-  type_health: boolean;
-  type_railway_safety: boolean;
-  type_customer_complaint: boolean;
-  type_fire: boolean;
-  type_maritime: boolean;
-  type_vendor: boolean;
-  type_system_ncr: boolean;
-  type_hazmat: boolean;
-  type_quality: boolean;
-  type_audit: boolean;
+  origin_ncr: string;
+  type_ncr: string;
   item_no: string;
   serial_batch_no: string;
   customer_name: string;
@@ -50,7 +46,6 @@ export interface Finding {
   vendor_no: string;
   contravened_clause: string;
   priority: string;
-  area_of_concern: string;
   resp_person_int_name: string;
   resp_person_int_sap: string;
   resp_person_ext_name: string;

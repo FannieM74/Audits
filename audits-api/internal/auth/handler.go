@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -23,7 +24,31 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 }
 
 func (h *Handler) RegisterProtectedRoutes(r chi.Router) {
+	r.Get("/api/auth/me", h.Me)
 	r.Get("/api/users", h.ListUsers)
+}
+
+func (h *Handler) Me(w http.ResponseWriter, r *http.Request) {
+	tokenStr, _ := strings.CutPrefix(r.Header.Get("Authorization"), "Bearer ")
+	if tokenStr == "" {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	claims, err := ValidateToken(tokenStr, h.svc.Secret())
+	if err != nil {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	var u UserDTO
+	err = h.svc.Pool().QueryRow(r.Context(),
+		`SELECT id, name, surname, sap_no, work_tel, email FROM users WHERE id = $1`,
+		claims.UserID,
+	).Scan(&u.ID, &u.Name, &u.Surname, &u.SapNo, &u.WorkTel, &u.Email)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "user not found")
+		return
+	}
+	writeJSON(w, http.StatusOK, u)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

@@ -1,0 +1,12 @@
+audits-api/audits-api
+audits-api/uploads/
+*.exe
+*.test
+*.out
+.playwright-mcp/
+Findings 2024*
+login-page
+.env
+.env.local
+.next/
+node_modules/

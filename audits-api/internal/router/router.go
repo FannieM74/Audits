@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/fanniem74/audits-api/internal/auth"
@@ -19,6 +20,13 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
+	r.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001", "http://192.168.0.218:3001", "http://192.168.0.218:8080"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
 	// Health check
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +61,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	// Findings
 	findingRepo := finding.NewRepository(pool)
 	findingSvc := finding.NewService(findingRepo, pool, cfg.UploadDir)
-	findingH := finding.NewHandler(findingSvc)
+	findingH := finding.NewHandler(findingSvc, cfg.TemplatePath, cfg.DocxGenScript)
 	findingH.RegisterRoutes(protected)
 
 	return r

@@ -113,3 +113,4 @@ func (s *Service) Login(ctx context.Context, req LoginRequest) (*AuthResponse, e
 }
 
 func (s *Service) Pool() *pgxpool.Pool { return s.pool }
+func (s *Service) Secret() string { return s.jwtSecret }
