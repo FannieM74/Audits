@@ -6,8 +6,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o server ./cmd/server
 
 FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y python3 python3-pip ca-certificates \
-  && pip3 install python-docx --break-system-packages \
+RUN apt-get update && apt-get install -y python3 python3-docx python3-lxml ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/server /app/server
 COPY --from=builder /app/template.docx /app/template.docx
