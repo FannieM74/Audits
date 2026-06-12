@@ -29,6 +29,7 @@ export default function DashboardPage() {
       <header className="bg-white dark:bg-gray-800 shadow-sm p-3 sm:p-4 flex items-center justify-between sticky top-0 z-10">
         <h1 className="text-base sm:text-xl font-bold dark:text-white truncate">Audits</h1>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          <Link href="/businesses" className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium">Businesses</Link>
           <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate max-w-[120px] sm:max-w-none">{user?.name} {user?.surname}</span>
           <button onClick={logout} className="text-xs sm:text-sm text-red-600 dark:text-red-400 font-medium px-2 py-1">Logout</button>
         </div>

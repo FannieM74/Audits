@@ -50,3 +50,20 @@ func (r *Repository) Create(ctx context.Context, name, plantNo, site string) (*B
 	}
 	return &b, nil
 }
+
+func (r *Repository) Update(ctx context.Context, id uuid.UUID, name, plantNo, site string) (*Business, error) {
+	var b Business
+	err := r.pool.QueryRow(ctx,
+		"UPDATE businesses SET name=$1, plant_no=$2, site=$3 WHERE id=$4 RETURNING id, name, plant_no, site",
+		name, plantNo, site, id,
+	).Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site)
+	if err != nil {
+		return nil, err
+	}
+	return &b, nil
+}
+
+func (r *Repository) Delete(ctx context.Context, id uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, "DELETE FROM businesses WHERE id=$1", id)
+	return err
+}
