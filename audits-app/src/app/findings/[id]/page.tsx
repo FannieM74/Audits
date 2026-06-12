@@ -42,12 +42,19 @@ export default function FindingDetailPage() {
           <div className="flex items-center justify-between gap-2 mb-4">
             <div>
               <h1 className="text-lg sm:text-xl font-bold dark:text-white">{finding.ncr_ref || 'Finding'}</h1>
-              <span className={`inline-block text-xs px-2 py-0.5 rounded font-medium mt-1 ${
-                finding.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
-                finding.priority === 'Minor' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
-                finding.priority === 'Area of Concern' ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300' :
-                'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-              }`}>{finding.priority}</span>
+              <div className="flex gap-2 mt-1">
+                <span className={`inline-block text-xs px-2 py-0.5 rounded font-medium ${
+                  finding.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
+                  finding.priority === 'Minor' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                  finding.priority === 'Area of Concern' ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300' :
+                  'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+                }`}>{finding.priority}</span>
+                <span className={`inline-block text-xs px-2 py-0.5 rounded font-medium ${
+                  finding.status === 'closed'
+                    ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
+                }`}>{finding.status}</span>
+              </div>
             </div>
           </div>
 
@@ -107,6 +114,19 @@ export default function FindingDetailPage() {
           <div className="mt-6 flex gap-3">
             {canEdit && (
               <Link href={`/findings/${id}/edit`} className="flex-1 text-center bg-blue-600 text-white px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium">Edit Finding</Link>
+            )}
+            {canEdit && (
+              <button onClick={async () => {
+                const newStatus = finding.status === 'closed' ? 'open' : 'closed';
+                try {
+                  await api.put(`/api/findings/${id}`, { status: newStatus });
+                  await load();
+                } catch { alert('Failed to update status'); }
+              }} className={`flex-1 text-center px-4 py-2.5 rounded text-sm font-medium ${
+                finding.status === 'closed'
+                  ? 'bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  : 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
+              }`}>{finding.status === 'closed' ? 'Reopen' : 'Close Finding'}</button>
             )}
             <button onClick={async () => {
               try {
