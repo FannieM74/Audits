@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { Business } from '@/types';
 import Link from 'next/link';
 
-export default function BusinessesPage() {
+export default function SettingsPage() {
   const { user, logout } = useAuth();
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -65,7 +65,7 @@ export default function BusinessesPage() {
   return (
     <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 flex flex-col">
       <header className="bg-white dark:bg-gray-800 shadow-sm p-3 sm:p-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 className="text-base sm:text-xl font-bold dark:text-white">Businesses</h1>
+        <h1 className="text-base sm:text-xl font-bold dark:text-white">Settings</h1>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
           <Link href="/dashboard" className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium">Dashboard</Link>
           <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate max-w-[120px] sm:max-w-none">{user?.name} {user?.surname}</span>
@@ -76,7 +76,7 @@ export default function BusinessesPage() {
       <main className="flex-1 p-3 sm:p-6">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-base sm:text-lg font-semibold dark:text-white">All Businesses</h2>
+            <h2 className="text-base sm:text-lg font-semibold dark:text-white">Businesses</h2>
             <button onClick={openCreate} className="bg-blue-600 text-white text-sm sm:text-base px-3 sm:px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium">+ Add Business</button>
           </div>
 
