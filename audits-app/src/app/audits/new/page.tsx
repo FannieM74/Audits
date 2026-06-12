@@ -28,7 +28,7 @@ export default function NewAuditPage() {
     e.preventDefault();
     setError('');
     try {
-      const res = await api.post('/api/audits', form);
+      const res = await api.post('/api/audits', { ...form, audit_days: Number(form.audit_days) });
       for (const userId of form.auditor_ids) {
         await api.post(`/api/audits/${res.data.id}/auditors`, { user_id: userId });
       }

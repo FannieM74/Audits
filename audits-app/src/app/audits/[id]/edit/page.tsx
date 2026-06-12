@@ -39,7 +39,7 @@ export default function EditAuditPage() {
     e.preventDefault();
     setError('');
     try {
-      await api.put(`/api/audits/${id}`, form);
+      await api.put(`/api/audits/${id}`, { ...form, audit_days: Number(form.audit_days) });
       router.push(`/audits/${id}`);
     } catch (err: unknown) {
       const msg = err instanceof AxiosError ? err.response?.data?.error : 'Update failed';
