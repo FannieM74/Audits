@@ -15,7 +15,7 @@ type Config struct {
 func Load() *Config {
 	return &Config{
 		Port:           getEnv("PORT", "8080"),
-		DBURL:          getEnv("DB_URL", "postgres://postgres:postgres@localhost:5432/audits?sslmode=disable"),
+	DBURL:           getEnv("DATABASE_URL", getEnv("DB_URL", "postgres://postgres:postgres@localhost:5432/audits?sslmode=disable")),
 		JWTSecret:      getEnv("JWT_SECRET", "dev-secret-change-in-production"),
 		UploadDir:      getEnv("UPLOAD_DIR", "./uploads"),
 		TemplatePath:   getEnv("TEMPLATE_PATH", "./template.docx"),
