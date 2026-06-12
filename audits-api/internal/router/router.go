@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
@@ -21,7 +22,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000", "http://localhost:3001", "http://192.168.0.218:3001", "http://192.168.0.218:8080"},
+		AllowedOrigins:   parseOrigins(cfg.CORSOrigins),
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
@@ -65,4 +66,15 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	findingH.RegisterRoutes(protected)
 
 	return r
+}
+
+func parseOrigins(s string) []string {
+	var origins []string
+	for _, o := range strings.Split(s, ",") {
+		o = strings.TrimSpace(o)
+		if o != "" {
+			origins = append(origins, o)
+		}
+	}
+	return origins
 }
