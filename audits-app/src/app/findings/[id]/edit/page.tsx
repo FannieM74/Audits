@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { Finding, Photo } from '@/types';
 import FindingForm from '@/components/finding-form';
 import PhotoUpload from '@/components/photo-upload';
@@ -10,9 +11,11 @@ import PhotoUpload from '@/components/photo-upload';
 export default function EditFindingPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [finding, setFinding] = useState<Finding | null>(null);
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loading, setLoading] = useState(false);
+  const [unauthorized, setUnauthorized] = useState(false);
 
   const loadPhotos = useCallback(async () => {
     try {
@@ -24,11 +27,19 @@ export default function EditFindingPage() {
   }, [id]);
 
   useEffect(() => {
-    api.get(`/api/findings/${id}`).then((res) => {
-      setFinding(res.data);
-      setPhotos(res.data.photos || []);
-    });
-  }, [id]);
+    (async () => {
+      const res = await api.get(`/api/findings/${id}`);
+      const f: Finding = res.data;
+      setFinding(f);
+      setPhotos(f.photos || []);
+      if (user) {
+        const auditRes = await api.get(`/api/audits/${f.audit_id}`);
+        const isAuditor = f.auditor_id === user.id;
+        const isLead = auditRes.data.lead_auditor_id === user.id;
+        if (!isAuditor && !isLead) setUnauthorized(true);
+      }
+    })();
+  }, [id, user]);
 
   const handleSave = async (data: Record<string, unknown>) => {
     setLoading(true);
@@ -41,6 +52,11 @@ export default function EditFindingPage() {
       setLoading(false);
     }
   };
+
+  if (unauthorized) {
+    router.replace('/dashboard');
+    return null;
+  }
 
   if (!finding) return (
     <div className="min-h-dvh flex items-center justify-center dark:text-white">

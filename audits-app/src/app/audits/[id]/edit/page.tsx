@@ -10,7 +10,7 @@ export default function EditAuditPage() {
   const { id } = useParams();
   const router = useRouter();
   const [form, setForm] = useState({
-    title: '', description: '', audit_type: 'Second Party', audit_days: 3,
+    description: '', audit_type: 'Second Party', audit_days: 3,
     audit_date: '', status: 'open', business_id: '',
   });
   const [auditors, setAuditors] = useState<{ id: string; name: string }[]>([]);
@@ -26,7 +26,7 @@ export default function EditAuditPage() {
     api.get('/api/auth/me').then((res: { data: User }) => setCurrentUser(res.data));
     api.get(`/api/audits/${id}`).then((res: { data: Audit }) => {
       setForm({
-        title: res.data.title, description: res.data.description || '',
+        description: res.data.description || '',
         audit_type: res.data.audit_type, audit_days: res.data.audit_days,
         audit_date: res.data.audit_date, status: res.data.status,
         business_id: res.data.business_id || '',
@@ -83,10 +83,6 @@ export default function EditAuditPage() {
         <h1 className="text-lg sm:text-2xl font-bold mb-5 sm:mb-6 dark:text-white">Edit Audit</h1>
         {error && <div className="bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 p-3 rounded mb-4 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Title</label>
-            <input value={form.title} onChange={update('title')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base" required />
-          </div>
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Description</label>
             <textarea value={form.description} onChange={update('description')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base" rows={3} />

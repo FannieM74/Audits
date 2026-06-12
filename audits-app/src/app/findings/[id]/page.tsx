@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import { Finding } from '@/types';
 import PhotoUpload from '@/components/photo-upload';
 import Link from 'next/link';
@@ -10,12 +11,20 @@ import Link from 'next/link';
 export default function FindingDetailPage() {
   const { id } = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [finding, setFinding] = useState<Finding | null>(null);
+  const [canEdit, setCanEdit] = useState(false);
 
   const load = useCallback(async () => {
     const res = await api.get(`/api/findings/${id}`);
-    setFinding(res.data);
-  }, [id]);
+    const f: Finding = res.data;
+    setFinding(f);
+    if (user) {
+      const auditRes = await api.get(`/api/audits/${f.audit_id}`);
+      const leadId = auditRes.data.lead_auditor_id;
+      setCanEdit(f.auditor_id === user.id || leadId === user.id);
+    }
+  }, [id, user]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -96,7 +105,9 @@ export default function FindingDetailPage() {
           </div>
 
           <div className="mt-6 flex gap-3">
-            <Link href={`/findings/${id}/edit`} className="flex-1 text-center bg-blue-600 text-white px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium">Edit Finding</Link>
+            {canEdit && (
+              <Link href={`/findings/${id}/edit`} className="flex-1 text-center bg-blue-600 text-white px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium">Edit Finding</Link>
+            )}
             <button onClick={async () => {
               try {
                 const res = await api.get(`/api/findings/${id}/docx`, { responseType: 'blob' });

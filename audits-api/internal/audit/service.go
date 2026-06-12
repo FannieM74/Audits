@@ -2,7 +2,6 @@ package audit
 
 import (
 	"context"
-	"errors"
 
 	"github.com/google/uuid"
 )
@@ -41,12 +40,19 @@ func (s *Service) GetByID(ctx context.Context, id uuid.UUID) (*Audit, error) {
 
 func (s *Service) Create(ctx context.Context, a *Audit) error {
 	if a.Title == "" {
-		return errors.New("title is required")
+		a.Title = a.AuditType + " Audit"
 	}
 	return s.repo.Create(ctx, a)
 }
 
 func (s *Service) Update(ctx context.Context, a *Audit) error {
+	existing, err := s.repo.GetByID(ctx, a.ID)
+	if err != nil {
+		return err
+	}
+	if a.Title == "" {
+		a.Title = existing.Title
+	}
 	return s.repo.Update(ctx, a)
 }
 
