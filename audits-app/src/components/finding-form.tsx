@@ -41,6 +41,7 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
     immediate_action_taken: initial?.immediate_action_taken || false,
     action_agreed_approved: initial?.action_agreed_approved || false,
     stop_certificate_issued: initial?.stop_certificate_issued || false,
+    completion: initial?.completion ?? 0,
   };
 }
 
@@ -167,6 +168,13 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
           ))}
         </div>
       </Fieldset>
+
+      <div>
+        <label className="block text-sm font-medium mb-1 dark:text-gray-300">Completion %</label>
+        <input type="number" min={0} max={100} value={form.completion}
+          onChange={(e) => setForm({ ...form, completion: Math.min(100, Math.max(0, Number(e.target.value) || 0)) })}
+          className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white" />
+      </div>
 
       {renderAfterActions}
 

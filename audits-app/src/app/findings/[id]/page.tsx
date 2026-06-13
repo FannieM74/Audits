@@ -7,7 +7,6 @@ import { useAuth } from '@/lib/auth';
 import { Finding } from '@/types';
 import PhotoUpload from '@/components/photo-upload';
 import Link from 'next/link';
-import { AxiosError } from 'axios';
 
 export default function FindingDetailPage() {
   const { id } = useParams();
@@ -55,27 +54,13 @@ export default function FindingDetailPage() {
                     ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
                 }`}>{finding.status}</span>
+                <span className={`inline-block text-xs px-1.5 py-0.5 rounded font-medium ${
+                  finding.completion >= 100 ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                  finding.completion >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                  'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
+                }`}>{finding.completion}%</span>
               </div>
             </div>
-            {canEdit && (
-              <div className="flex items-center gap-2 shrink-0">
-                <span className="text-xs text-gray-500 dark:text-gray-400">%</span>
-                <input type="number" min={0} max={100} value={finding.completion}
-                  onChange={async (e) => {
-                    const val = Math.min(100, Math.max(0, Number(e.target.value) || 0));
-                    const prevVal = finding.completion;
-                    setFinding(p => p ? { ...p, completion: val } : null);
-                    try {
-                      await api.put(`/api/findings/${id}`, { completion: val });
-                      await load();
-                    } catch {
-                      setFinding(p => p ? { ...p, completion: prevVal } : null);
-                      alert('Failed to update');
-                    }
-                  }}
-                  className="w-16 text-center border dark:border-gray-600 rounded px-2 py-1 dark:bg-gray-700 dark:text-white text-sm" />
-              </div>
-            )}
           </div>
 
           <dl className="space-y-3 text-sm">

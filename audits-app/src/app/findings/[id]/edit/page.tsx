@@ -68,7 +68,7 @@ export default function EditFindingPage() {
     <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 p-3 sm:p-6">
       <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
         <h1 className="text-lg sm:text-2xl font-bold mb-5 sm:mb-6 dark:text-white">Edit Finding</h1>
-        <FindingForm auditId={finding.audit_id} initial={finding} onSave={handleSave} onCancel={() => router.push('/findings/' + id)} loading={loading} />
+        <FindingForm auditId={finding.audit_id} initial={finding} onSave={handleSave} onCancel={() => router.push('/audits/' + finding.audit_id)} loading={loading} />
         <div className="mt-8 pt-6 border-t dark:border-gray-700">
           <p className="text-sm font-medium mb-2 dark:text-gray-300">Photos ({photos.length}/3)</p>
           <PhotoUpload findingId={id as string} photos={photos} onUpdate={loadPhotos} />
