@@ -18,7 +18,11 @@ export default function AuditDetailPage() {
 
   useEffect(() => {
     api.get(`/api/audits/${id}`).then((res) => setAudit(res.data));
-    api.get(`/api/audits/${id}/findings`).then((res) => setFindings(res.data));
+    api.get(`/api/audits/${id}/findings`).then((res) => {
+      setFindings(res.data);
+    }).catch((err) => {
+      console.error('failed to load findings', err);
+    });
   }, [id]);
 
   if (!audit) return (
@@ -79,6 +83,9 @@ export default function AuditDetailPage() {
                 </div>
               )}
             </div>
+            {audit.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 pt-3 border-t dark:border-gray-700">{audit.description}</p>
+            )}
             {audit.finding_count > 0 && (
               <div className="mt-3 pt-3 border-t dark:border-gray-700 flex items-center gap-3 text-sm">
                 <span className="text-gray-500 dark:text-gray-400">{audit.finding_count} finding{audit.finding_count !== 1 ? 's' : ''} ({audit.closed_count} closed)</span>
@@ -87,9 +94,6 @@ export default function AuditDetailPage() {
                 </div>
                 <span className={`font-medium ${audit.completion >= 100 ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>{audit.completion}%</span>
               </div>
-            )}
-            {audit.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 pt-3 border-t dark:border-gray-700">{audit.description}</p>
             )}
           </div>
 
