@@ -156,7 +156,7 @@ export default function ProcedureSectionPage() {
               const hasNo = evs.some(e => e.response === 'no');
               const nonCompliantLabels = evs
                 .filter(e => e.response === 'no')
-                .map(e => e.procedure_evidence_item.sub_label || e.procedure_evidence_item.evidence_text)
+                .map(e => e.sub_label || e.evidence_text)
                 .filter(Boolean);
               const isExpanded = expandedControl === control.id;
 
@@ -189,20 +189,19 @@ export default function ProcedureSectionPage() {
                       ) : (
                         <div className="space-y-1.5 pt-3">
                           {evs.map((ev) => {
-                            const item = ev.procedure_evidence_item;
-                            const label = item.sub_label ? `${item.sub_label}. ` : '';
+                            const label = ev.sub_label ? `${ev.sub_label}. ` : '';
                             return (
-                              <div key={item.id} className="flex items-start gap-3 py-1.5">
+                              <div key={ev.id} className="flex items-start gap-3 py-1.5">
                                 <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono w-6 shrink-0 pt-1">
-                                  {item.sub_label || `${ci + 1}.${item.sort_order + 1}`}
+                                  {ev.sub_label || `${ci + 1}.${ev.sort_order + 1}`}
                                 </span>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-xs sm:text-sm dark:text-gray-200">{label}{item.evidence_text}</p>
+                                  <p className="text-xs sm:text-sm dark:text-gray-200">{label}{ev.evidence_text}</p>
                                 </div>
                                 <div className="shrink-0">
                                   <select
                                     value={ev.response || ''}
-                                    onChange={(e) => handleResponse(item.id, e.target.value)}
+                                    onChange={(e) => handleResponse(ev.id, e.target.value)}
                                     className={`text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white ${
                                       ev.response === 'no' ? 'border-red-400 dark:border-red-500' :
                                       ev.response === 'yes' ? 'border-green-400 dark:border-green-500' : ''

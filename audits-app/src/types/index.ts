@@ -90,16 +90,12 @@ export interface ProcedureItem {
   sort_order: number;
 }
 
-export interface ProcedureEvidenceItem {
+export interface EvidenceWithResponse {
   id: string;
   procedure_item_id: string;
   evidence_text: string;
   sub_label: string | null;
   sort_order: number;
-}
-
-export interface EvidenceWithResponse {
-  procedure_evidence_item: ProcedureEvidenceItem;
   response: string | null;
   finding_id: string | null;
 }
