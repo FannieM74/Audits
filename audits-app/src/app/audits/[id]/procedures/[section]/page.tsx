@@ -154,7 +154,7 @@ export default function ProcedureSectionPage() {
         {desc && desc.description && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
             <h1 className="text-lg sm:text-xl font-bold dark:text-white mb-3">Section {section}: {data?.section_name}</h1>
-            <div className="space-y-2 text-xs sm:text-sm dark:text-gray-200">
+            <div className="space-y-2 text-sm dark:text-gray-200">
               {parseDesc(desc.description).map((seg, i) => (
                 <div key={i} className="flex gap-2">
                   <span className="shrink-0 pt-0.5">{seg.icon}</span>
@@ -198,7 +198,7 @@ export default function ProcedureSectionPage() {
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
                       {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
-                      <span className="text-xs sm:text-sm font-medium dark:text-white line-clamp-2">{control.control_question}</span>
+                      <span className="text-xs sm:text-sm font-medium dark:text-white">{control.control_question}</span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-2">
                       <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">{answeredCount}/{evs.length}</span>
@@ -284,7 +284,7 @@ export default function ProcedureSectionPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs mb-1 dark:text-gray-400">Procedure</label>
-                <input value={`${section}`} disabled
+                <input value={`${section} - ${data?.section_name || ''}`} disabled
                   className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-70" />
               </div>
               <div>
