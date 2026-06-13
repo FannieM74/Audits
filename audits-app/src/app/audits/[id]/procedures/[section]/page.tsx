@@ -62,6 +62,7 @@ export default function ProcedureSectionPage() {
         ...findingForm,
         audit_id: id,
         date_raised: new Date().toISOString().split('T')[0],
+        procedure: section,
       };
       await api.post(`/api/audits/${id}/controls/${findingModal.controlId}/finding`, body);
       setFindingModal(null);
