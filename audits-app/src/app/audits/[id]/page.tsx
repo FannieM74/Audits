@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { Audit, Finding } from '@/types';
 import Link from 'next/link';
+
+const PROCEDURES = Array.from({ length: 18 }, (_, i) => `Procedure ${i + 1}`);
 
 export default function AuditDetailPage() {
   const { id } = useParams();
@@ -13,17 +15,27 @@ export default function AuditDetailPage() {
   const router = useRouter();
   const [audit, setAudit] = useState<Audit | null>(null);
   const [findings, setFindings] = useState<Finding[]>([]);
+  const [filterAuditor, setFilterAuditor] = useState('');
+  const [filterProcedure, setFilterProcedure] = useState('');
 
   const isLead = audit?.lead_auditor_id === user?.id;
 
-  useEffect(() => {
-    api.get(`/api/audits/${id}`).then((res) => setAudit(res.data));
-    api.get(`/api/audits/${id}/findings`).then((res) => {
+  const loadFindings = useCallback(() => {
+    const params = new URLSearchParams();
+    if (filterAuditor) params.set('auditor_id', filterAuditor);
+    if (filterProcedure) params.set('procedure', filterProcedure);
+    const qs = params.toString();
+    api.get(`/api/audits/${id}/findings${qs ? '?' + qs : ''}`).then((res) => {
       setFindings(res.data);
     }).catch((err) => {
       console.error('failed to load findings', err);
     });
-  }, [id]);
+  }, [id, filterAuditor, filterProcedure]);
+
+  useEffect(() => {
+    api.get(`/api/audits/${id}`).then((res) => setAudit(res.data));
+    loadFindings();
+  }, [id, loadFindings]);
 
   if (!audit) return (
     <div className="min-h-dvh flex items-center justify-center dark:text-white">
@@ -100,15 +112,36 @@ export default function AuditDetailPage() {
             </div>
           </div>
 
-          <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>
+            <div className="flex gap-2">
+              <select value={filterAuditor} onChange={(e) => setFilterAuditor(e.target.value)}
+                className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">
+                <option value="">All Users</option>
+                {audit && [
+                  ...(audit.lead_auditor_id ? [{ id: audit.lead_auditor_id, name: audit.lead_auditor_name || 'Lead' }] : []),
+                  ...(audit.auditors || []),
+                ].filter((u, i, arr) => arr.findIndex((x) => x.id === u.id) === i).map((u) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+              <select value={filterProcedure} onChange={(e) => setFilterProcedure(e.target.value)}
+                className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">
+                <option value="">All Procedures</option>
+                {PROCEDURES.map((p) => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
+          </div>
 
-          {findings.length === 0 ? (
+          {findings.length === 0 && !filterAuditor && !filterProcedure ? (
             <div className="text-center py-12 sm:py-16">
               <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-4">No findings yet.</p>
               <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium inline-block">
                 + Create First Finding
               </Link>
             </div>
+          ) : findings.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">No findings match the selected filters.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {findings.map((f) => (
@@ -128,6 +161,7 @@ export default function AuditDetailPage() {
                           f.completion >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
                           'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
                         }`}>{f.completion}%</span>
+                        {f.procedure && <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">{f.procedure}</span>}
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{f.description}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">

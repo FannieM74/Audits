@@ -2,6 +2,7 @@ package finding
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -31,6 +32,7 @@ type Finding struct {
 	RespPersonIntName     string     `json:"resp_person_int_name"`
 	RespPersonIntSap      string     `json:"resp_person_int_sap"`
 	RespPersonExtName     string     `json:"resp_person_ext_name"`
+	Procedure             string     `json:"procedure"`
 	RaisedByBusinessID    *uuid.UUID `json:"raised_by_business_id"`
 	RaisedAgainstBusinessID *uuid.UUID `json:"raised_against_business_id"`
 	RaisedByBusinessName    *string  `json:"raised_by_business_name,omitempty"`
@@ -68,7 +70,7 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
     contact_details, origin_ncr, type_ncr,
     item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
-    priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
+    priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
     raised_by_business_id, raised_against_business_id, description, work_type_process,
     immediate_action_taken, action_agreed_approved, stop_certificate_issued, status, completion,
     created_at, updated_at`
@@ -81,7 +83,7 @@ func scanFinding(scanner interface {
 		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
-		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
+		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
 		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
@@ -96,17 +98,31 @@ func scanFinding(scanner interface {
 const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.ncr_ref, f.date_raised,
     f.raised_by_name, f.raised_by_sap_no, f.contact_details, f.origin_ncr, f.type_ncr,
     f.item_no, f.serial_batch_no, f.customer_name, f.vendor_name, f.vendor_no, f.contravened_clause,
-    f.priority, f.resp_person_int_name, f.resp_person_int_sap, f.resp_person_ext_name,
+    f.priority, f.resp_person_int_name, f.resp_person_int_sap, f.resp_person_ext_name, f.procedure,
     f.raised_by_business_id, f.raised_against_business_id, f.description, f.work_type_process,
     f.immediate_action_taken, f.action_agreed_approved, f.stop_certificate_issued, f.status, f.completion,
     f.created_at, f.updated_at`
 
-func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding, error) {
-	rows, err := r.pool.Query(ctx, `SELECT `+findingColsPrefixed+`,
+func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditorID *uuid.UUID, procedure string) ([]Finding, error) {
+	query := `SELECT ` + findingColsPrefixed + `,
 		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name
 		FROM findings f
 		LEFT JOIN users u ON u.id = f.auditor_id
-		WHERE f.audit_id = $1 ORDER BY f.created_at DESC`, auditID)
+		WHERE f.audit_id = $1`
+	args := []any{auditID}
+	argIdx := 2
+	if auditorID != nil {
+		query += fmt.Sprintf(" AND f.auditor_id = $%d", argIdx)
+		args = append(args, *auditorID)
+		argIdx++
+	}
+	if procedure != "" {
+		query += fmt.Sprintf(" AND f.procedure = $%d", argIdx)
+		args = append(args, procedure)
+		argIdx++
+	}
+	query += " ORDER BY f.created_at DESC"
+	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +146,7 @@ func scanFindingWithAuditor(scanner interface {
 		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
-		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
+		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
 		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
@@ -160,17 +176,17 @@ func (r *Repository) Create(ctx context.Context, f *Finding) error {
 		INSERT INTO findings (audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
 			contact_details, origin_ncr, type_ncr,
 			item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
-			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
+			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
 			raised_by_business_id, raised_against_business_id, description, work_type_process,
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
 			completion)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28)
 		RETURNING id, created_at, updated_at
 	`,
 		f.AuditID, f.AuditorID, f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo, f.ContravenedClause,
-		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
+		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName, f.Procedure,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID, f.Description, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
 		f.Completion,
@@ -185,18 +201,18 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 			contact_details=$5, origin_ncr=$6, type_ncr=$7,
 			item_no=$8, serial_batch_no=$9, customer_name=$10, vendor_name=$11, vendor_no=$12,
 			contravened_clause=$13, priority=$14,
-			resp_person_int_name=$15, resp_person_int_sap=$16, resp_person_ext_name=$17,
-			raised_by_business_id=$18, raised_against_business_id=$19,
-			description=$20, work_type_process=$21,
-			immediate_action_taken=$22, action_agreed_approved=$23, stop_certificate_issued=$24,
-			status=$25, completion=$26, updated_at=NOW()
-		WHERE id=$27
+			resp_person_int_name=$15, resp_person_int_sap=$16, resp_person_ext_name=$17, procedure=$18,
+			raised_by_business_id=$19, raised_against_business_id=$20,
+			description=$21, work_type_process=$22,
+			immediate_action_taken=$23, action_agreed_approved=$24, stop_certificate_issued=$25,
+			status=$26, completion=$27, updated_at=NOW()
+		WHERE id=$28
 	`,
 		f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo,
 		f.ContravenedClause, f.Priority,
-		f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
+		f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName, f.Procedure,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID,
 		f.Description, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,

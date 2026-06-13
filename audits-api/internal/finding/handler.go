@@ -52,7 +52,16 @@ func (h *Handler) ListByAudit(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid audit id")
 		return
 	}
-	findings, err := h.svc.ListByAudit(r.Context(), auditID)
+
+	var auditorID *uuid.UUID
+	if a := r.URL.Query().Get("auditor_id"); a != "" {
+		if parsed, err := uuid.Parse(a); err == nil {
+			auditorID = &parsed
+		}
+	}
+	procedure := r.URL.Query().Get("procedure")
+
+	findings, err := h.svc.ListByAudit(r.Context(), auditID, auditorID, procedure)
 	if err != nil {
 		log.Printf("list findings error: %v", err)
 		writeError(w, http.StatusInternalServerError, "failed to list findings")

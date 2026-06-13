@@ -57,6 +57,7 @@ export interface Finding {
   raised_against_business_id: string | null;
   description: string;
   work_type_process: string;
+  procedure?: string;
   immediate_action_taken: boolean;
   action_agreed_approved: boolean;
   stop_certificate_issued: boolean;

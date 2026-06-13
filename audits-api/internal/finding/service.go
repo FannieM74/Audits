@@ -21,8 +21,8 @@ func NewService(repo *Repository, pool *pgxpool.Pool, uploadDir string) *Service
 	return &Service{repo: repo, pool: pool, uploadDir: uploadDir}
 }
 
-func (s *Service) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding, error) {
-	findings, err := s.repo.ListByAudit(ctx, auditID)
+func (s *Service) ListByAudit(ctx context.Context, auditID uuid.UUID, auditorID *uuid.UUID, procedure string) ([]Finding, error) {
+	findings, err := s.repo.ListByAudit(ctx, auditID, auditorID, procedure)
 	if err != nil {
 		return nil, err
 	}

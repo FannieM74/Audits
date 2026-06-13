@@ -1,0 +1,1 @@
+ALTER TABLE findings ADD COLUMN procedure TEXT NOT NULL DEFAULT '';

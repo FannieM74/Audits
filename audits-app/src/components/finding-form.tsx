@@ -18,6 +18,7 @@ interface FindingFormProps {
 const PRIORITIES = ['Major', 'Minor', 'Area of Concern', 'Observation'] as const;
 const ORIGINS = ['Legal', 'System (Non-conformance)', 'Other Non-compliance'] as const;
 const TYPES = ['Environment', 'Health', 'Railway Safety', 'Customer Complaint', 'Fire', 'Maritime', 'Vendor', 'System', 'HAZMAT', 'Quality', 'Audit', 'Other (Specify)'] as const;
+const PROCEDURES = Array.from({ length: 18 }, (_, i) => `Procedure ${i + 1}`);
 
 function initForm(initial?: Partial<Finding>, user?: User | null) {
   return {
@@ -42,6 +43,7 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
     action_agreed_approved: initial?.action_agreed_approved || false,
     stop_certificate_issued: initial?.stop_certificate_issued || false,
     completion: initial?.completion ?? 0,
+    procedure: initial?.procedure || '',
   };
 }
 
@@ -140,6 +142,11 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
 
       <Select label="Priority" value={form.priority} onChange={update('priority')}>
         {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
+      </Select>
+
+      <Select label="Procedure" value={form.procedure} onChange={update('procedure')}>
+        <option value="">Select procedure...</option>
+        {PROCEDURES.map((p) => <option key={p} value={p}>{p}</option>)}
       </Select>
 
       <Input label="Contravened Standard Clause" value={form.contravened_clause} onChange={update('contravened_clause')} />
