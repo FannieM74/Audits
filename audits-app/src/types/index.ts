@@ -29,6 +29,7 @@ export interface Audit {
   finding_count: number;
   closed_count: number;
   completion: number;
+  auditor_names?: string;
 }
 
 export interface Finding {

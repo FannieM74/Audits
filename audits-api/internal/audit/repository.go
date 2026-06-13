@@ -31,6 +31,7 @@ type Audit struct {
 	FindingCount  int           `json:"finding_count"`
 	ClosedCount   int           `json:"closed_count"`
 	Completion    int           `json:"completion"`
+	AuditorNames  string        `json:"auditor_names"`
 }
 
 type Repository struct {
@@ -49,7 +50,11 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 			   b.name AS business_name,
 			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id), 0) AS finding_count,
 			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id AND status = 'closed'), 0) AS closed_count,
-			   COALESCE((SELECT ROUND(AVG(completion)) FROM findings WHERE audit_id = a.id), 0) AS completion
+			   COALESCE((SELECT ROUND(AVG(completion)) FROM findings WHERE audit_id = a.id), 0) AS completion,
+			   COALESCE((SELECT STRING_AGG(u2.name || ' ' || u2.surname, ', ')
+				   FROM audit_auditors aa
+				   JOIN users u2 ON u2.id = aa.user_id
+				   WHERE aa.audit_id = a.id), '') AS auditor_names
 		FROM audits a
 		JOIN users u ON u.id = a.lead_auditor_id
 		LEFT JOIN audit_auditors aa ON aa.audit_id = a.id
@@ -68,7 +73,7 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 		var auditDate time.Time
 		if err := rows.Scan(&a.ID, &a.LeadAuditorID, &a.Title, &a.Description, &a.AuditType,
 			&a.AuditDays, &auditDate, &a.BusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName,
-			&a.FindingCount, &a.ClosedCount, &a.Completion); err != nil {
+			&a.FindingCount, &a.ClosedCount, &a.Completion, &a.AuditorNames); err != nil {
 			return nil, err
 		}
 		a.AuditDate = auditDate.Format("2006-01-02")

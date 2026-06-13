@@ -61,7 +61,10 @@ export default function DashboardPage() {
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-sm sm:text-base dark:text-white truncate">{a.title}</h3>
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{a.audit_type} &mdash; {new Date(a.audit_date).toLocaleDateString()}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500">Lead: {a.lead_auditor_name}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500">
+                        Lead: {a.lead_auditor_name}
+                        {a.auditor_names ? <> | Auditors: {a.auditor_names}</> : ''}
+                      </p>
                       <div className="flex items-center gap-2 mt-2 text-xs">
                         <span className="text-gray-500 dark:text-gray-400">{a.finding_count} finding{a.finding_count !== 1 ? 's' : ''} ({a.closed_count} closed)</span>
                         <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full max-w-[100px]">
