@@ -55,7 +55,9 @@ export interface Finding {
   resp_person_ext_name: string;
   raised_by_business_id: string | null;
   raised_against_business_id: string | null;
+  short_description: string;
   description: string;
+  procedure_item_id?: string | null;
   work_type_process: string;
   procedure?: string;
   immediate_action_taken: boolean;
@@ -76,6 +78,30 @@ export interface Photo {
   finding_id: string;
   url: string;
   created_at: string;
+}
+
+export interface ProcedureItem {
+  id: string;
+  section_number: number;
+  section_name: string;
+  control_question: string;
+  evidence_required: string;
+  tims_ref: string;
+  sort_order: number;
+}
+
+export interface ItemWithResponse extends ProcedureItem {
+  response: string | null;
+  finding_id: string | null;
+  notes: string;
+}
+
+export interface SectionSummary {
+  section_number: number;
+  section_name: string;
+  total_items: number;
+  answered: number;
+  findings: number;
 }
 
 export interface Business {

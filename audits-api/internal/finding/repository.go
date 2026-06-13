@@ -39,7 +39,9 @@ type Finding struct {
 	RaisedAgainstBusinessName *string `json:"raised_against_business_name,omitempty"`
 	RaisedByBusinessPlant   *string  `json:"raised_by_business_plant,omitempty"`
 	RaisedAgainstBusinessPlant *string `json:"raised_against_business_plant,omitempty"`
+	ShortDescription      string     `json:"short_description"`
 	Description           string     `json:"description"`
+	ProcedureItemID       *uuid.UUID `json:"procedure_item_id,omitempty"`
 	WorkTypeProcess       string     `json:"work_type_process"`
 	ImmediateActionTaken  bool       `json:"immediate_action_taken"`
 	ActionAgreedApproved  bool       `json:"action_agreed_approved"`
@@ -71,7 +73,8 @@ const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_n
     contact_details, origin_ncr, type_ncr,
     item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
     priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
-    raised_by_business_id, raised_against_business_id, description, work_type_process,
+    raised_by_business_id, raised_against_business_id, short_description, description,
+    procedure_item_id, work_type_process,
     immediate_action_taken, action_agreed_approved, stop_certificate_issued, status, completion,
     created_at, updated_at`
 
@@ -84,7 +87,8 @@ func scanFinding(scanner interface {
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
 		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
-		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
+		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.ShortDescription, &f.Description,
+		&f.ProcedureItemID, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
 	)
@@ -99,7 +103,8 @@ const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.ncr_ref, f.date_r
     f.raised_by_name, f.raised_by_sap_no, f.contact_details, f.origin_ncr, f.type_ncr,
     f.item_no, f.serial_batch_no, f.customer_name, f.vendor_name, f.vendor_no, f.contravened_clause,
     f.priority, f.resp_person_int_name, f.resp_person_int_sap, f.resp_person_ext_name, f.procedure,
-    f.raised_by_business_id, f.raised_against_business_id, f.description, f.work_type_process,
+    f.raised_by_business_id, f.raised_against_business_id, f.short_description, f.description,
+    f.procedure_item_id, f.work_type_process,
     f.immediate_action_taken, f.action_agreed_approved, f.stop_certificate_issued, f.status, f.completion,
     f.created_at, f.updated_at`
 
@@ -147,7 +152,8 @@ func scanFindingWithAuditor(scanner interface {
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
 		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
-		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
+		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.ShortDescription, &f.Description,
+		&f.ProcedureItemID, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
 		&f.AuditorName,
@@ -177,17 +183,17 @@ func (r *Repository) Create(ctx context.Context, f *Finding) error {
 			contact_details, origin_ncr, type_ncr,
 			item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
 			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
-			raised_by_business_id, raised_against_business_id, description, work_type_process,
+			raised_by_business_id, raised_against_business_id, short_description, description, procedure_item_id, work_type_process,
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
 			completion)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
 		RETURNING id, created_at, updated_at
 	`,
 		f.AuditID, f.AuditorID, f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo, f.ContravenedClause,
 		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName, f.Procedure,
-		f.RaisedByBusinessID, f.RaisedAgainstBusinessID, f.Description, f.WorkTypeProcess,
+		f.RaisedByBusinessID, f.RaisedAgainstBusinessID, f.ShortDescription, f.Description, f.ProcedureItemID, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
 		f.Completion,
 	).Scan(&f.ID, &f.CreatedAt, &f.UpdatedAt)
@@ -203,10 +209,10 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 			contravened_clause=$13, priority=$14,
 			resp_person_int_name=$15, resp_person_int_sap=$16, resp_person_ext_name=$17, procedure=$18,
 			raised_by_business_id=$19, raised_against_business_id=$20,
-			description=$21, work_type_process=$22,
-			immediate_action_taken=$23, action_agreed_approved=$24, stop_certificate_issued=$25,
-			status=$26, completion=$27, updated_at=NOW()
-		WHERE id=$28
+			short_description=$21, description=$22, procedure_item_id=$23, work_type_process=$24,
+			immediate_action_taken=$25, action_agreed_approved=$26, stop_certificate_issued=$27,
+			status=$28, completion=$29, updated_at=NOW()
+		WHERE id=$30
 	`,
 		f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
@@ -214,7 +220,7 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 		f.ContravenedClause, f.Priority,
 		f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName, f.Procedure,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID,
-		f.Description, f.WorkTypeProcess,
+		f.ShortDescription, f.Description, f.ProcedureItemID, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
 		f.Status, f.Completion, f.ID,
 	)

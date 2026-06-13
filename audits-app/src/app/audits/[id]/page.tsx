@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { Audit, Finding } from '@/types';
+import { Audit, Finding, SectionSummary } from '@/types';
 import Link from 'next/link';
 
 const PROCEDURES = Array.from({ length: 18 }, (_, i) => `Procedure ${i + 1}`);
@@ -15,6 +15,7 @@ export default function AuditDetailPage() {
   const router = useRouter();
   const [audit, setAudit] = useState<Audit | null>(null);
   const [findings, setFindings] = useState<Finding[]>([]);
+  const [sections, setSections] = useState<SectionSummary[]>([]);
   const [filterAuditor, setFilterAuditor] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('');
 
@@ -35,6 +36,7 @@ export default function AuditDetailPage() {
   useEffect(() => {
     api.get(`/api/audits/${id}`).then((res) => setAudit(res.data));
     loadFindings();
+    api.get(`/api/audits/${id}/procedure-sections`).then((res) => setSections(res.data)).catch(() => {});
   }, [id, loadFindings]);
 
   if (!audit) return (
@@ -111,6 +113,28 @@ export default function AuditDetailPage() {
               </div>
             </div>
           </div>
+
+          {sections.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+              {sections.map((s) => {
+                const pct = s.total_items ? Math.round((s.answered / s.total_items) * 100) : 0;
+                return (
+                  <Link key={s.section_number} href={`/audits/${id}/procedures/${s.section_number}`}
+                    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.98]">
+                    <div className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium mb-1">Section {s.section_number}</div>
+                    <div className="text-xs font-medium dark:text-white leading-tight mb-2 line-clamp-2">{s.section_name}</div>
+                    <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                      <span>{s.answered}/{s.total_items}</span>
+                      <span className={s.findings > 0 ? 'text-red-500 font-medium' : ''}>{s.findings} finding{s.findings !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: pct >= 100 ? '#22c55e' : pct > 0 ? '#3b82f6' : '#d1d5db' }} />
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
 
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>

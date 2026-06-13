@@ -37,6 +37,7 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
     priority: initial?.priority || 'Observation',
     raised_by_business_id: '',
     raised_against_business_id: initial?.raised_against_business_id || '',
+    short_description: initial?.short_description || '',
     description: initial?.description || '',
     work_type_process: initial?.work_type_process || '',
     immediate_action_taken: initial?.immediate_action_taken || false,
@@ -150,6 +151,11 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
       </Select>
 
       <Input label="Contravened Standard Clause" value={form.contravened_clause} onChange={update('contravened_clause')} />
+
+      <div>
+        <label className="block text-sm font-medium mb-1 dark:text-gray-300">Short Description (for report)</label>
+        <textarea value={form.short_description} onChange={update('short_description')} className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white" rows={2} />
+      </div>
 
       <div>
         <label className="block text-sm font-medium mb-1 dark:text-gray-300">NCR Description</label>

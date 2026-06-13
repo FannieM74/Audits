@@ -13,6 +13,7 @@ import (
 	"github.com/fanniem74/audits-api/internal/audit"
 	"github.com/fanniem74/audits-api/internal/business"
 	"github.com/fanniem74/audits-api/internal/finding"
+	"github.com/fanniem74/audits-api/internal/procedure"
 	"github.com/fanniem74/audits-api/internal/config"
 	apimw "github.com/fanniem74/audits-api/internal/middleware"
 )
@@ -70,6 +71,12 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	findingSvc := finding.NewService(findingRepo, pool, cfg.UploadDir)
 	findingH := finding.NewHandler(findingSvc, cfg.TemplatePath, cfg.DocxGenScript)
 	findingH.RegisterRoutes(protected)
+
+	// Procedures
+	procRepo := procedure.NewRepository(pool)
+	procSvc := procedure.NewService(procRepo, pool)
+	procH := procedure.NewHandler(procSvc, pool)
+	procH.RegisterRoutes(protected)
 
 	return r
 }
