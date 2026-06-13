@@ -97,7 +97,7 @@ export default function ProcedureSectionPage() {
     let remaining = text;
     remaining = remaining.replace(/^\d+\.\s+[^\n]*\n?/, '').trim();
 
-    const blocks = remaining.split(/\n(?=(?:People|Control|Safety|Process|Market|Operational|Contract|Security))/i);
+    const blocks = remaining.split(/\n(?=(?:People|Control|Safety|Process|Market|Contract|Security)\b)/i);
     for (const block of blocks) {
       const lines = block.trim().split('\n');
       const firstLine = lines[0]?.trim() || '';
