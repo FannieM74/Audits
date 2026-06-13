@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -90,7 +91,13 @@ func (r *Repository) GetSectionDescription(ctx context.Context, sectionNumber in
 }
 
 func (r *Repository) ListControlsBySection(ctx context.Context, sectionNumber int) ([]ProcedureItem, error) {
-	rows, err := r.pool.Query(ctx, "SELECT id, section_number, section_name, control_question, evidence_required, tims_ref, sort_order FROM procedure_items WHERE section_number=$1 ORDER BY sort_order", sectionNumber)
+	var rows pgx.Rows
+	var err error
+	if sectionNumber <= 0 {
+		rows, err = r.pool.Query(ctx, "SELECT id, section_number, section_name, control_question, evidence_required, tims_ref, sort_order FROM procedure_items ORDER BY sort_order")
+	} else {
+		rows, err = r.pool.Query(ctx, "SELECT id, section_number, section_name, control_question, evidence_required, tims_ref, sort_order FROM procedure_items WHERE section_number=$1 ORDER BY sort_order", sectionNumber)
+	}
 	if err != nil {
 		return nil, err
 	}
