@@ -93,8 +93,16 @@ func scanFinding(scanner interface {
 	return nil
 }
 
+const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.ncr_ref, f.date_raised,
+    f.raised_by_name, f.raised_by_sap_no, f.contact_details, f.origin_ncr, f.type_ncr,
+    f.item_no, f.serial_batch_no, f.customer_name, f.vendor_name, f.vendor_no, f.contravened_clause,
+    f.priority, f.resp_person_int_name, f.resp_person_int_sap, f.resp_person_ext_name,
+    f.raised_by_business_id, f.raised_against_business_id, f.description, f.work_type_process,
+    f.immediate_action_taken, f.action_agreed_approved, f.stop_certificate_issued, f.status, f.completion,
+    f.created_at, f.updated_at`
+
 func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding, error) {
-	rows, err := r.pool.Query(ctx, `SELECT f.`+findingCols+`,
+	rows, err := r.pool.Query(ctx, `SELECT `+findingColsPrefixed+`,
 		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name
 		FROM findings f
 		LEFT JOIN users u ON u.id = f.auditor_id
@@ -113,9 +121,6 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Find
 	}
 	return findings, nil
 }
-
-const findingAuditorCols = findingCols + `,
-	COALESCE(u.name || ' ' || u.surname, '') AS auditor_name`
 
 func scanFindingWithAuditor(scanner interface {
 	Scan(dest ...any) error

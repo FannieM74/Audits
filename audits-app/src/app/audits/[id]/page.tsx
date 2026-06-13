@@ -72,6 +72,12 @@ export default function AuditDetailPage() {
                 <span className="text-gray-500 dark:text-gray-400 text-xs">Lead Auditor</span>
                 <p className="font-medium dark:text-gray-200">{audit.lead_auditor_name}</p>
               </div>
+              {audit.auditors && audit.auditors.length > 0 && (
+                <div className="col-span-2 sm:col-span-4">
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Auditors</span>
+                  <p className="font-medium dark:text-gray-200">{audit.auditors.map(a => a.name).join(', ')}</p>
+                </div>
+              )}
             </div>
             {audit.finding_count > 0 && (
               <div className="mt-3 pt-3 border-t dark:border-gray-700 flex items-center gap-3 text-sm">
