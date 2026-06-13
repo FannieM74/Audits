@@ -239,6 +239,17 @@ func (r *Repository) AddPhoto(ctx context.Context, findingID uuid.UUID, url stri
 	return &p, nil
 }
 
+func (r *Repository) GetPhoto(ctx context.Context, photoID uuid.UUID) (*Photo, error) {
+	var p Photo
+	err := r.pool.QueryRow(ctx,
+		"SELECT id, finding_id, url, created_at FROM finding_photos WHERE id=$1", photoID,
+	).Scan(&p.ID, &p.FindingID, &p.URL, &p.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &p, nil
+}
+
 func (r *Repository) DeletePhoto(ctx context.Context, photoID uuid.UUID) error {
 	_, err := r.pool.Exec(ctx, "DELETE FROM finding_photos WHERE id=$1", photoID)
 	return err

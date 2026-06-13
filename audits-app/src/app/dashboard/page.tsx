@@ -69,6 +69,8 @@ export default function DashboardPage() {
                         <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full max-w-[100px]">
                           <div className="h-full rounded-full transition-all" style={{ width: `${a.completion}%`, backgroundColor: a.completion >= 100 ? '#22c55e' : a.completion >= 50 ? '#eab308' : '#ef4444' }} />
                         </div>
+                        <span className="text-gray-500 dark:text-gray-400">{a.completion}%</span>
+                        <span className="text-gray-400 dark:text-gray-500">|</span>
                         <span className="text-gray-500 dark:text-gray-400">{a.finding_count} finding{a.finding_count !== 1 ? 's' : ''} ({a.closed_count} closed)</span>
                       </div>
                     </div>

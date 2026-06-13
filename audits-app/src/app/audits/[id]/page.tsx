@@ -86,15 +86,18 @@ export default function AuditDetailPage() {
             {audit.description && (
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 pt-3 border-t dark:border-gray-700">{audit.description}</p>
             )}
-            {audit.finding_count > 0 && (
-              <div className="mt-3 pt-3 border-t dark:border-gray-700 flex items-center gap-3 text-sm">
-                <span className="text-gray-500 dark:text-gray-400">{audit.finding_count} finding{audit.finding_count !== 1 ? 's' : ''} ({audit.closed_count} closed)</span>
-                <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full max-w-[200px]">
-                  <div className="h-full rounded-full transition-all" style={{ width: `${audit.completion}%`, backgroundColor: audit.completion >= 100 ? '#22c55e' : audit.completion >= 50 ? '#eab308' : '#ef4444' }} />
-                </div>
-                <span className={`font-medium ${audit.completion >= 100 ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>{audit.completion}%</span>
+            <div className="mt-3 pt-3 border-t dark:border-gray-700 space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">
+                  {audit.finding_count} finding{audit.finding_count !== 1 ? 's' : ''}
+                  {audit.finding_count > 0 && <span> ({audit.closed_count} closed)</span>}
+                </span>
+                <span className={`font-semibold ${audit.completion >= 100 ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>{audit.completion}% complete</span>
               </div>
-            )}
+              <div className="h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                <div className="h-full rounded-full transition-all" style={{ width: `${audit.completion}%`, backgroundColor: audit.completion >= 100 ? '#22c55e' : audit.completion >= 50 ? '#eab308' : '#ef4444' }} />
+              </div>
+            </div>
           </div>
 
           <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>

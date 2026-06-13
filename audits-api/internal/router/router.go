@@ -35,6 +35,12 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 		w.Write([]byte(`{"status":"ok"}`))
 	})
 
+	// Serve uploaded photos
+	fileServer := http.StripPrefix("/uploads/", http.FileServer(http.Dir(cfg.UploadDir)))
+	r.Get("/uploads/*", func(w http.ResponseWriter, r *http.Request) {
+		fileServer.ServeHTTP(w, r)
+	})
+
 	// Auth routes (public)
 	authSvc := auth.NewService(pool, cfg.JWTSecret)
 	authH := auth.NewHandler(authSvc)

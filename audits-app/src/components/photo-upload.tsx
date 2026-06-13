@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import api from '@/lib/api';
+import api, { photoUrl } from '@/lib/api';
 import { Photo } from '@/types';
 
 interface PhotoUploadProps {
@@ -45,8 +45,8 @@ export default function PhotoUpload({ findingId, photos, onUpdate }: PhotoUpload
       <div className="flex gap-2 flex-wrap">
         {photos.map((p) => (
           <div key={p.id} className="relative">
-            <button type="button" onClick={() => setPreviewUrl(p.url)} className="p-0 border-0">
-              <img src={p.url} alt="Finding photo" className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded border dark:border-gray-600 cursor-pointer hover:opacity-90" />
+            <button type="button" onClick={() => setPreviewUrl(photoUrl(p.url))} className="p-0 border-0">
+              <img src={photoUrl(p.url)} alt="Finding photo" className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded border dark:border-gray-600 cursor-pointer hover:opacity-90" />
             </button>
             <button type="button" onClick={() => handleDelete(p.id)}
               className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-red-600 text-white text-sm rounded-full flex items-center justify-center shadow-md">

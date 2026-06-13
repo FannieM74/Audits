@@ -116,9 +116,12 @@ export default function FindingDetailPage() {
             <PhotoUpload findingId={id as string} photos={finding.photos} onUpdate={load} />
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex gap-2 sm:gap-3">
             {canEdit && (
-              <Link href={`/findings/${id}/edit`} className="flex-1 text-center bg-blue-600 text-white px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium">Edit Finding</Link>
+              <Link href={`/findings/${id}/edit`} className="flex-1 flex items-center justify-center gap-1.5 bg-blue-600 text-white px-2 sm:px-4 py-2.5 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-xs sm:text-sm font-medium">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                <span className="hidden sm:inline">Edit</span>
+              </Link>
             )}
             {canEdit && (
               <button onClick={async () => {
@@ -133,11 +136,18 @@ export default function FindingDetailPage() {
                     await load();
                   } catch { alert('Failed to close'); }
                 }
-              }} className={`flex-1 text-center px-4 py-2.5 rounded text-sm font-medium ${
+              }} className={`flex-1 flex items-center justify-center gap-1.5 px-2 sm:px-4 py-2.5 rounded text-xs sm:text-sm font-medium ${
                 finding.status === 'closed'
                   ? 'bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
                   : 'bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600'
-              }`}>{finding.status === 'closed' ? 'Reopen' : 'Close Finding'}</button>
+              }`}>
+                {finding.status === 'closed' ? (
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                ) : (
+                  <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7"/></svg>
+                )}
+                <span className="hidden sm:inline">{finding.status === 'closed' ? 'Reopen' : 'Close'}</span>
+              </button>
             )}
             <button onClick={async () => {
               try {
@@ -151,8 +161,14 @@ export default function FindingDetailPage() {
                 a.remove();
                 window.URL.revokeObjectURL(url);
               } catch { alert('Failed to download document'); }
-            }} className="flex-1 text-center bg-green-600 text-white px-4 py-2.5 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-sm font-medium">Download Word</button>
-            <Link href={`/audits/${finding.audit_id}`} className="flex-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-200 px-4 py-2.5 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm font-medium">Back to Audit</Link>
+            }} className="flex-1 flex items-center justify-center gap-1.5 bg-green-600 text-white px-2 sm:px-4 py-2.5 rounded hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-xs sm:text-sm font-medium">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span className="hidden sm:inline">Download</span>
+            </button>
+            <Link href={`/audits/${finding.audit_id}`} className="flex-1 flex items-center justify-center gap-1.5 bg-gray-200 dark:bg-gray-700 dark:text-gray-200 px-2 sm:px-4 py-2.5 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-xs sm:text-sm font-medium">
+              <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              <span className="hidden sm:inline">Back</span>
+            </Link>
           </div>
         </div>
       </div>

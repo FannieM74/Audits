@@ -95,9 +95,14 @@ func (s *Service) AddPhoto(ctx context.Context, findingID uuid.UUID, filename st
 		return nil, err
 	}
 
-	return s.repo.AddPhoto(ctx, findingID, savePath)
+	return s.repo.AddPhoto(ctx, findingID, "/uploads/"+savedName)
 }
 
 func (s *Service) DeletePhoto(ctx context.Context, photoID uuid.UUID) error {
+	photo, err := s.repo.GetPhoto(ctx, photoID)
+	if err == nil && photo != nil {
+		filePath := filepath.Join(s.uploadDir, filepath.Base(photo.URL))
+		os.Remove(filePath)
+	}
 	return s.repo.DeletePhoto(ctx, photoID)
 }
