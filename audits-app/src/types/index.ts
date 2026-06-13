@@ -90,10 +90,44 @@ export interface ProcedureItem {
   sort_order: number;
 }
 
-export interface ItemWithResponse extends ProcedureItem {
+export interface ProcedureEvidenceItem {
+  id: string;
+  procedure_item_id: string;
+  evidence_text: string;
+  sub_label: string | null;
+  sort_order: number;
+}
+
+export interface EvidenceWithResponse {
+  procedure_evidence_item: ProcedureEvidenceItem;
   response: string | null;
   finding_id: string | null;
-  notes: string;
+}
+
+export interface ControlWithEvidence {
+  id: string;
+  section_number: number;
+  section_name: string;
+  control_question: string;
+  evidence_required: string;
+  tims_ref: string;
+  sort_order: number;
+  evidences: EvidenceWithResponse[];
+  has_finding: boolean;
+  finding_id?: string | null;
+}
+
+export interface SectionDescription {
+  id: string;
+  section_number: number;
+  description: string;
+}
+
+export interface SectionDetailResponse {
+  section_description: SectionDescription | null;
+  section_number: number;
+  section_name: string;
+  controls: ControlWithEvidence[];
 }
 
 export interface SectionSummary {

@@ -1,0 +1,521 @@
+-- Seed section descriptions (18 rows)
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('c2901433-cb39-5efb-9aff-cef8d62984f9', 1, '1. Leadership
+People:  
+Inability to Mobilise and Engage Employees to achieve Transnet Strategy.
+Control :
+Management of organizational Structure
+
+Safety, Health, Environment, Quality Risks: 
+Inability to provide and to sustain a safe operational working environment for TE employees. Environmental aspects that may negatively impact the operational environment. Is the environment conducive for producing a quality product?
+Control : 
+Implemented Integrated Management System
+
+Process: 
+Leadership procedure 001
+Deligation of authority fremework, Acting Policy/ Procedure');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('c01c6c00-f254-50ec-8fc3-a1ca07bec637', 2, '2. Policy');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('0229dee9-1bf5-5452-bef8-b9d1ab5c7252', 3, '3. General Requirements
+
+Safety Risk: 
+
+Process: 
+General Requirements procedure 003 (Boundaries and business activities)');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('fd092abc-488a-5a14-9869-fed3775b1c9f', 4, '4. Operational  Risk Management
+Safety Risk: 
+- Inability to provide and to sustain a safe operational working environment for TE employees
+ 
+Control : Implemented Integrated Management System
+
+Process: 
+Operational Risk Management Management of Change');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('86b29f3b-6ba1-593a-9b25-3363f2c39641', 5, '5. Compliance Obligations
+Control : 
+Compliance monitoring audits
+Environmental Legal / Effluent Plants
+Hydrocarbon pollution and asbestos control
+Applicable legislations, by-laws, agreements, etc.
+ 
+Process: 
+Compliance obligation procedure
+Management of permits and licences
+Management of compliance exposures');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('9ef43990-b493-5fa8-9d76-c8eef7bc2c19', 6, '6. Objectives, Targets and Programmes
+
+Control : 
+Implemented Integrated Management System
+
+Process: 
+Operational Risk Management 
+Management of Change 
+Quality improvement plans (link with Operational Planning Control)');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('a11e289a-ec5d-5c5a-8824-44dbdb10b71c', 7, '7. Stakeholder Management
+Operational Efficiency and Productivity: 
+1. Poor quality of products and services rendered to internal (Other TE businesess and TFR) and external stakeholders (external and international clients).
+2. Lack of involvement of employees in the development and implementations of TIMS programs
+
+Market Growth:
+Inability to sustain and attract clients resulting in low order book
+
+Process: 
+Stakeholder Management procedure');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('c2a76b94-0baf-54ac-8f76-ab2922ecf25a', 8, '8. Competencies, Awareness & Training
+People:
+Inability to Mobilise and Engage Employees to achieve Transnet Strategic Objectives.
+
+Control: 
+Learning and development Interventions
+
+Process: 
+Competencies, Awareness & Training (ILPs)
+Planned Task Observations scheduling and implementation');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('bbf00e89-0eec-56f9-8aff-9d85490712d8', 9, '9. Operational Planning and Control
+
+Operational Efficiency and Productivity: 
+Inability to adhere to specification, SOP''s and operating manuals resulting in incidents and defects on the products
+
+Safety Risk: 
+Inability to provide and to sustain a safe and healthy operational working environment for TE employees
+Environmental pollution and degradation due lack of adherence to SOPs or aspects identification
+Poor standard of products produced for internal and external clients
+Contractor management processes
+Control : 
+Policies, Standards, Guidelines,
+Procedures, Processes, Train Working Rules,
+Implemented Integrated Management System
+
+Process: 
+Standard Operating Procedure');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('29cf1249-17cf-5f4e-9886-2001a20cd6c8', 10, '10. Document, Data and Records Management
+Process 
+Document, Data and Records Management');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('80b73234-84fe-5a2d-a654-b7a58d04558b', 11, '11. Product Lifecycle Management
+
+Control :
+-Deployment Plan
+Process 
+-Product Life Cycle');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('7d4d3f41-9263-56e5-a3a4-48c72a97e87b', 12, '12. Interface Management
+Market Growth:
+Interface management
+
+Control :
+Interfacement management agreements
+
+Process:
+Interface Management');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('5035b720-943e-50f2-8bea-a294503c46c9', 13, '13.  Occurrence & Non-Conformity Management 
+
+Safety Risk: 
+Inability to provide and to sustain a safe, healthy working environment for TE employees, prevention of pollution and prevention of defective products. 
+
+Control:
+Occurrence management procedures
+Environmental Incidents resulting with significant spillages
+
+Process :
+Occurrence Management');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('3d2c8965-7c3b-53f7-bdf0-079436794edd', 14, '14. Contractor Management
+Contract Management: Ineffective Contract Management in TE
+
+Control :
+- Contracts (SLA & Penalties)
+
+Process : 
+- Contractor Management Procedures');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('696c7e2d-99ee-5529-86a0-2af6652b7928', 15, '15. Integrated Assurance: 
+
+Safety Risk: 
+Inability to provide and to sustain a safe, healthy working environment for TE employees, prevention of pollution and prevention of defective products, compliance to applicable statutory regulations (hygiene surveys)
+
+
+Control:
+Implemented Integrated Management System
+Conduct audits to monitor compliance to regulatory requirements
+Issue based inspections protocols (Fire equipment, First Aid, Waste, etc)
+
+Process: 
+Integrated Assurance (audits, inspections, surveys, reviews, monitoring)');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('53283cce-7e43-557a-bdf4-45e241b0876c', 16, '16. Business Continuity Management: 
+
+Security:  
+Impact of security related incidents on TE');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('a8a2d845-64e6-523a-9eeb-f8ebfbd3a577', 17, '17. Human Factors Management: 
+Safety Risk: 
+Inability to provide and to sustain a safe operational working environment for TE employees.');
+INSERT INTO section_descriptions (id, section_number, description) VALUES ('76562ad1-6f05-58f7-ba0f-3e886aa6b3a8', 18, '18. Continual improvement: 
+Operational Efficiency and Productivity : Inability to achieve annual planned quantities and bugets');
+
+-- Procedure Items (control questions) ON CONFLICT (section_number) DO NOTHING;
+
+-- Seed evidence items (262 items)
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('c9c60a30-9f67-5b81-9d4d-f0e1418a36a0', '9b513697-5e68-5506-a364-7824e65761bc', 'Organisational Structures Maintained  and Approved', '1.1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6d701053-213c-5896-93b8-298b9bcad5e9', '9b513697-5e68-5506-a364-7824e65761bc', 'Vacancy plan developed, implemented, monitored and maintained.', '1.2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('46f1706f-31c2-52f5-97c2-4a4259a70a04', '69087f87-eebd-5d8f-8615-465c5f178841', '2. Job description include TIMS requirements', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('c6308f1a-a020-5760-90ac-888dd97d4865', '30308f3a-19ad-5fe1-88b8-77b8af816c7e', '3. Statutory and other Operational Appointments  letters in place and maintained according to the relevant requirements.                                                -IMS Administrator;
+-IMS Coordinator;
+-SHE Committee Co-opted Member                                                             - First Aider                                                                 -SHE REP: Section 17 of the OHSA (Act 85 of 1993) by the IMS Coordinator                                                           -General Machinery Regulation 2 (7)                                                             -etc', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('bc3e7dfa-2d2b-5506-bc12-9cf28ecb5273', '5b5918ce-c3c6-5e79-9cb3-0e6930c989af', '4. Approved current Delegation of Authority and Matrix for all the cost center owners.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('da5d66c6-63ab-573b-852c-ea48bffe3338', '588e43c5-ae20-5b34-a7a2-d394f3d007d8', 'Deployment plan based on risk / hot spots', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a5e9f9a7-0271-5526-94e3-3afe3bd66a44', '2905ce59-f1c4-5f4d-ba1d-c5fd464800a9', 'SHEQ Meeting minutes, adherence to agenda and attendance registers (Schedules and adherance)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0ef1a651-1444-5664-8f88-66c6239d04d1', 'bfcbe68e-e465-5147-ae29-8ab43d87325b', 'SHEQ Meeting minutes and attendance registers', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a7e9b93d-8f58-5912-bab9-6d7d1e735188', '4a2a54cd-028d-5aa4-8a0a-708bb2e40362', 'Meeting Schedule available on TIMS Sharepoint Workspace', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b3afcc12-8d2b-5056-b9ac-1e788274876d', '2007f5f9-b1ef-5172-92f8-540b46c1410a', 'Communication Memo available on TIMS Sharepoint Workspace', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e44d731d-7830-547b-9f50-7df83de3cb92', '9af04cd2-33d7-559e-bf6a-33164903ee25', 'Attendance Registers, Minutes and Management Review Meetings Pack/Report available on Sharepoint', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('16717e8b-e74f-5384-81b3-10b6393cc13e', '5112e7af-966a-5d71-902c-599bd6847394', 'Attendance Registers, Minutes and Management Review Meetings Pack/Report available on Sharepoint', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a78e99e6-c11f-5305-813a-63067a49d78f', '32d25e4c-f3e7-54db-99eb-0b0d82c4ca84', 'Available and displayed Policy', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b1966a9a-2f43-5c7f-8c1a-5cd0d7adb976', 'b4fc5502-722f-5bd4-a670-4e38c7bdbd66', 'Minutes of Meeting and Attendance Registers', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a0ba5738-dd99-5cdf-ae4b-e82266eaf258', 'b2afa712-a390-586f-8e81-23edf70c391b', 'Check notice boards and common areas
+Assess the level of unuderstanding of the policy?', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9cef6b71-a20d-5182-a3d2-a57f434a6e3d', '04d2d0c8-e201-5f44-9837-6f094cfd5a66', 'Updated Stakeholder TIMS Policy Commitment Statement Request Register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ef613b6b-8843-52cb-b6e0-efad7c6bff64', '24212d3d-a90f-5100-ab83-883380dfb24a', '1. Business unit scope documented', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('46b2b9dd-fd61-5f13-9363-a4569ecffcf0', '89e9187a-b948-5ba5-8c25-96df692f55ae', 'Business unit scope documented stating product and services covered.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a6c73a70-4974-53d9-b989-56b21e7eba1f', '89e9187a-b948-5ba5-8c25-96df692f55ae', 'Justification evidence where standard requirements is not applicable to the scope.', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5621d351-2ace-51d6-8f5b-8312bb164f29', '3a964bd5-9df4-5463-824d-9221e9a4359f', 'Mandate, context of organisation, physical boundaries  (area, depot, business unit, specialist unit or departmental, business activities, exclusion etc)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ba852c4d-4ffd-5d00-96ab-830bb94d41b1', 'c6f55b2d-157c-57a1-a5a4-1a9b9c96c142', '1. Final Operational Risk Assessment register for the year under review in the latest Risk Assessment Register Format.
+Compliance to the process and quality of the input.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8718148b-b411-5dc3-b47e-e995775fb41b', '7eca793a-e616-5d55-b5e6-49444aa581b1', '1. Documented work areas verification', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('32a68b70-b0dd-5cea-a5aa-5acf14e8ee44', 'ea4540b2-9227-5c27-ac1e-923232b58790', 'Updated risk register, attendance register as proof of involvement of relevant stakeholders', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5458b9d2-dd15-5ddd-ade6-61bf2bea3f08', 'ea4540b2-9227-5c27-ac1e-923232b58790', 'Control Assessments through inspection reports, PJOs, etc.', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('676e143d-6d47-5c08-879c-2b833ec0f77f', 'ea4540b2-9227-5c27-ac1e-923232b58790', 'All risk register fields completed', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b56ea9a6-6b44-5154-8d04-10dae23bc0a1', '3e0e5ff7-b019-5ae6-a90e-b443579785e6', '3. Documented management plans for the identified top 10 significant risks including evidence of implementation.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1d8d76c2-d3fa-519c-b6b2-7a83fe6edb03', 'a0beabdc-e742-57e9-ad2c-73e3ef351d1c', '1. Any record of changes within the review period. Adherence to the Management of Change Procedure. Issue based Risk Register for the change. (These are at local level, where applicable)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6d4609fc-7dd7-56aa-8878-89cfee07192a', 'c7e67dfd-bf63-5ebd-92df-12998996ba4a', '1. Any record of new equipment, technology within the review period. Issue based Risk Register for the introduced equipment of technology.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8c660fbb-2a1d-5841-843e-8dd02ef12155', 'f55bfb4e-c44a-51b0-b377-88e44de1adde', '1. Amendment made after an occurrences and records of that amendment.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2bb60a1e-967f-5879-b6e0-243b1bbdac0a', '1a3ac90c-956b-50e1-af27-d648b40fa913', '4. Attendance register with signatures or e-mails', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9cd1dc5d-468f-5934-9d33-fb9da96e218d', '808aa0ac-9c01-5e13-b4be-9808b508b076', 'Attendance register with multi-disciplinary team', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0a859a6b-974e-5def-bd3c-5cd7dfbe468c', '808aa0ac-9c01-5e13-b4be-9808b508b076', 'Risk Register with various catergories per applicable risk', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('90b5af44-95ef-53d3-b897-ff2feef354cd', '239189e4-a736-5beb-8255-680613dbb6c4', 'Work areas or main processes and activities/services process flow', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('637b3519-7b01-5142-b6e9-9907353b21c8', '239189e4-a736-5beb-8255-680613dbb6c4', 'Risk Register linked to the process flow', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('50d65cca-6b6e-590b-8fad-8506f1b68811', '8865da36-d758-5856-a45e-3defbc8271fd', '1. Opportunities Register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2ef60e72-5b92-5615-90ea-0bc50e525503', '777226ca-732a-5ba6-b0c3-eac8c12a4f7f', '1. Operational risk assessment review schedule    2. Attendance register of multi-disciplinary team', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e7edf77b-d638-571f-b4b3-1d12202b56a1', '331904b9-a77c-51f1-a743-8fe69b331d8d', '1. Records of at least 3 years', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f35008d1-7590-5e86-ac78-47975c5a47f4', '111c6fee-3ace-59d5-bc5c-0cf124481143', '1. Applicable national and international regulatory requirements
+2.Applicable by laws
+3. Applicable Codes and Standards 
+4. Transnet codes, processes, systems, activities, people, products and services', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ae057ddb-561b-5d7c-9327-929e8c85e3fc', '83c2f86f-cfd1-5d77-a065-64b4590ca6fa', 'Compliance Obligation universe
+Compliance register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3083abb5-75eb-57e8-97af-a1636982875c', '761b972a-f6e6-56b4-a708-5370fbaadcec', 'Licence and permit register
+ (e.g. Environmental permits, Compliance to conditions of permits, COP 29 certificates and licences, Railway operations permits, Gas Store, Flammable store, Affluent Plant, Spray Booth, etc.)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d55a1a97-ef08-590b-bf04-9362d4751ec7', 'ce10d07e-41d6-543d-a1d1-f6a25c5e97e8', 'Action plans', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('fb2bda90-85df-5711-831d-43057625974b', 'a0eb5a1a-d8f2-546e-919f-431b0e8764fc', 'Compliance exposure report', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('bb267145-4c60-56f9-9f0e-fcdbe3fe01a7', 'a0eb5a1a-d8f2-546e-919f-431b0e8764fc', 'Implementations of actions and assess effectiveness (improvement directives, contraventions and prohibitions)', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3b32d1e4-d88d-5ea6-9879-fa503ccc1c93', 'a0eb5a1a-d8f2-546e-919f-431b0e8764fc', 'Reporting of Compliance exposure report to the governance committees', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('61088086-90da-504d-9676-09b89e529219', 'eecab157-6d8b-54ce-a5ce-aabc1d84d501', 'Register / email / Governance forum minutes
+Implementations of action plan', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('7f9c899d-2f82-5abf-96ed-cfc8a65d3123', '8a49f49c-4c99-5152-b481-9ffe90b7acbb', '1. Objectives and Targets developed in relation with the significant/very high SHEQ risks or opportunities derived from;
+Overall business strategy and context;
+Stakeholders (customers, employees, etc.) requirements and expectations;
+Compliance obligation (legislation, standards, etc.)
+ TIMS Operational Risk assessments;
+ Past performance against established Key Performance Indicators;
+ Occurrences, noncompliance, directives from authorities;
+ Outcomes of internal and external audits;
+ Resources capacity (technology, finance, human capital, etc.) and etc.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2c1a8438-6499-5041-956d-399e7372e71a', 'fe317003-d7de-5918-81dd-6b4b09a8f9bb', 'Management Plans (e.g SIP, Environmental programme, operational plans) 
+Meeting minutes and attendance register
+Status report (e.g Performance Report)
+Three yearly review cycle and annual progress review', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('42c6300b-a99a-537a-a2ab-952854b8a459', 'd8e21213-61cb-5a9c-a76e-187a74251e95', 'SMART Objectives and Targets,   - , allocated sufficient resources, and delegated to responsible persons.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('041c55ec-4405-578a-ad04-f6dfbe3c56db', '7d93f831-ee5d-5e0a-9448-d79d1ba8061f', '4. Management Plan reports', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('08554422-9d42-5f6b-976b-be4d629317da', '91690014-e27d-526a-b107-5e9e88be1157', '1. Internal Communication: newsletters, notice board, emails, meetings,  ‘Toolbox talks’, digital signboard, social media, Teleconference, Suggestion box, Intercom system, Events, Reports, Phone Calls, Internal Magazine and Management Review Meetings
+External Communication:  Media Relations, Reports of incidents to Authorities, Designated appointed personnel', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9eda70e9-f24b-528d-b9de-2dc192b9d84c', '0adcb104-cd02-5d37-8a01-e3300bcc2020', 'Stakeholders with influence/impact on the organisation', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1342f6e6-d24a-5bf1-b7d0-8d243572d05a', '0adcb104-cd02-5d37-8a01-e3300bcc2020', 'Stakeholders importance to the organisation', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4e20d9f1-ab62-52a7-b3d3-3b9a50c830ea', '49252ca5-a4f2-59e5-a1b7-82019afb761c', 'Completed Ranking Matrix', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('62a29815-ed26-59b0-9553-ecb4bf871716', '3b52e85d-f66d-51d1-be0e-6291dbe9d8d7', 'Stakeholder Engagement Plan', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('49e28e22-a281-5bfc-ac41-3ebb4dc13527', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Review and assessment of information received from stakeholders pertaining to real and perceived impacts on our business.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ec7ba159-4b96-5ece-b22c-ca46b1a30537', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Materiality determined for issues', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5e249392-756d-5921-adcf-8bc89a990030', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Rating of the issues are rated ( scale of 1-10, 1 being low and 10 being high).', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8e9e1839-f4c6-54f6-b8ff-d0734fe251d0', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Grouping of the issues into 4 levels of materiality', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5669381f-2363-59ec-b200-5a46f1a7d768', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Proactive identification of potential impacts to business as part of stakeholder analysis, and identify feasible solutions to reduce impacts as far as practicable.', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('43f32d49-3be8-5576-acdb-fbf69ee2c9ee', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Identification and evaluation of potential issues with stakeholders', '6', 5);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('7008071d-fdb0-5009-8cf6-68e8d184444c', 'dfa207c0-5bf0-54a7-9b89-22cdbf06bd38', 'Escalation of the relationships that pose a high risk to Top Management and reporting of this risks to the relevant governance committee', '7', 6);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1ba10999-402f-5107-8f19-c1b45e364f37', '8949a336-1a3e-526f-bb99-96f24b9c2dc9', 'Appointed Stakeholder Relationship Officer', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0f9d500d-f263-539c-a9af-fc157cd6349e', '9b9ae4a6-31ab-5e34-a6f9-313f8fdf2bbf', 'Report shall include, but not limited to:
+· List of stakeholders for the reporting cycle;
+· Method and frequency of engagements for the reporting cycle;
+· Objectives of the engagements;
+· Issues raised, responses to those issues as well as actions taken;
+· Potential impacts to business and
+· Areas of improvement;', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d94623da-2650-5393-ba5a-731732da00a2', '41b7f038-ec2d-5108-a3fd-89fecac1aec0', 'Completed Stakeholder Improvement plans', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e31a28bb-d8c2-528f-92a6-3a3e187f1c9a', '70bd7419-3769-5757-abad-d361ef322e9c', '1. Define Strategy defined as follows:
+- Define the objectives of the consultation and participation
+- Stakeholder mapping
+- Selection of the most appropriate methods and tools for consultation and participation
+- Define the timing and duration of consultation and participation
+2. Run a Consultation and Participation Process:
+- Select the Consultation and Participation Medium and Space 
+– Announcement/ Communication of consultation and participation 
+– Undertake the consultation and participation process
+- Acknowledge receipt of contributions received
+3. Analyse Results:
+- Analyse the responses
+- Reporting on the results and providing feedback 
+– Evaluation of consultation and participation exercise', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b47f4c27-3162-5fcb-b801-05f749f4ed97', '891841b3-de5f-5293-961c-a416f7bfa628', 'Log a Case', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ab81d5a8-faee-5f65-bc86-c1bb3d134183', '891841b3-de5f-5293-961c-a416f7bfa628', 'Assign a Case', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6f04233d-36e5-53d7-912e-bf13b4c2e1ca', '891841b3-de5f-5293-961c-a416f7bfa628', 'Investigate/Compile a Case', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4a5efada-8c05-5937-923f-428a6379b748', '891841b3-de5f-5293-961c-a416f7bfa628', 'Finalise a Case', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('736334fd-2ae5-5f0b-83c4-09aded59b088', '891841b3-de5f-5293-961c-a416f7bfa628', 'Report on Community Grievance Outcomes', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d3554a7b-d7eb-5b6c-8a72-1ea7eb8c8e67', '891841b3-de5f-5293-961c-a416f7bfa628', 'Submit for Integrated Reporting', '6', 5);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5386ee43-d3ea-5adb-9574-109dab69efe0', '58a8640d-56a8-5730-aeb6-6ba71d8a2796', 'Completed skills matrix
+Training plan 
+Status report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3231ea36-5654-50db-8353-458f7de861ca', 'f135c76e-8994-58a9-b292-8704c19f71ea', 'OBML Matrix and schedule', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3919f707-6800-55e3-9417-275d7a8975c0', 'f135c76e-8994-58a9-b292-8704c19f71ea', 'Update the Candidate’s Profile (theoretical assessment, practical assessment, and comprehensive assessments)', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('134a5c68-9ca8-5f20-939b-88632e090796', 'f135c76e-8994-58a9-b292-8704c19f71ea', 'Status report of the OBML assessment', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6135db7f-1381-5d27-84ca-3f16ca141991', 'f135c76e-8994-58a9-b292-8704c19f71ea', 'Completed Assessment Effectiveness Evaluation', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d54aa456-731d-524d-874a-150b2ff2411f', '8c1201dc-3890-5438-b004-eea3139bd43d', 'Task Observation schedule', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('adfb78d5-75b8-560c-bba1-53829d6f4395', '8c1201dc-3890-5438-b004-eea3139bd43d', 'Status update of the task observation plan', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('65f209a8-86dc-52dc-b74b-f5bfbe829987', '8c1201dc-3890-5438-b004-eea3139bd43d', 'Management of actions identified', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6366e8d1-94f7-520e-8d26-4a34e829a8d0', '65895383-319a-5efb-bab8-d0698941398c', 'Overtime report
+Resoultion of the deviations', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('cbcca52e-245f-5a2a-ae9a-b89c84952343', 'cabbee74-6044-5b0f-8b58-2df3d34b10e6', 'Employee Balanced Scorecard
+(BSC) and Individual Development Plan (IDP).
+BSC’s and 
+IDP’s maintained on SAP.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1e175fc2-33dc-540d-932a-9513ca6be189', '64258598-20a0-5f2f-bd00-a15bb68474cd', 'Training and awareness plans, and attendance registers. 
+Posters and flyers', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ef1d7df2-e8c6-5ec6-8d87-8e456fa8bb05', '6118d65d-fedf-539d-a3a9-3837ec27c9e4', 'Applicable Training / Attendance  registers', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('359e5e09-0e94-5152-bf73-d020043f7c7a', '5e9d9276-87a8-5cba-8232-4b5aa28dfabd', 'Job descriptions', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('64ec421a-2c32-56e1-9d2b-cc655cd8bf2e', 'e86a7769-2948-5efd-aa98-79c73be57fa0', 'Business Process Register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9093f74b-85d7-5530-b717-9af622583827', '4c074974-1805-5674-955b-d7b75b0dd3e6', 'Change Register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9a05a3e1-9696-53d2-b178-1588b59cf61d', '7a4bfaac-3f26-5350-a27a-a2f92bc2c695', 'Communication of the plans', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f2a81a9c-83cf-5ba0-bade-ef9a469a3147', '7a4bfaac-3f26-5350-a27a-a2f92bc2c695', 'Monitoring of the plans', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('07b65cbf-b623-5a06-9455-16ddad7a59b2', '7a4bfaac-3f26-5350-a27a-a2f92bc2c695', 'Addressing the gaps where plan was not met', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('296c9c3b-ce02-50e8-9133-fb81bdc4d55d', '584fbdfc-627f-5ea9-aefd-22a6ceaa715e', 'Schedule', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9ee66bb2-128b-560f-ac92-645f805a8fee', '584fbdfc-627f-5ea9-aefd-22a6ceaa715e', 'Status report', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8409d97d-8c0a-57a4-9f2b-6a4b4e0c405e', '584fbdfc-627f-5ea9-aefd-22a6ceaa715e', 'Action plans', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b20a435d-45be-5502-99dc-845f32d8e688', '5924bcab-69a5-5780-a30a-41c7c3c702ce', 'Loading profiles', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('63429f53-581b-55ae-af3c-a84cc65da584', '5924bcab-69a5-5780-a30a-41c7c3c702ce', 'MSDS availability', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9f7a6d7d-1311-58fe-8f53-16b165d5e291', '5924bcab-69a5-5780-a30a-41c7c3c702ce', 'Route risk assessment', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('cf6a5321-64a9-5c58-bc55-d830b7135450', '5924bcab-69a5-5780-a30a-41c7c3c702ce', 'Training of the personnel handling', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2ef6e65f-5fa5-5cea-9535-e464e2240110', 'd0c47b02-5808-5e69-a5b3-4d8d8851e42c', 'Storage', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('29529dc2-f173-54c0-91a3-d020f1eaa40f', 'd0c47b02-5808-5e69-a5b3-4d8d8851e42c', 'Permit', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4b440774-69af-5685-afb8-29330e2bb88a', 'd0c47b02-5808-5e69-a5b3-4d8d8851e42c', 'Training of the personnel handling the detonators', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('af48ce64-6593-56ae-8b1e-d6e783fbc63d', 'f5f7d7ed-cb36-58d3-9ba5-036ac8a6a23e', 'Random alcohol testing', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('fd9413e0-847d-5d1e-b126-430cb694f72b', 'f5f7d7ed-cb36-58d3-9ba5-036ac8a6a23e', 'Drug testing', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('39f56aa7-fa1b-5f8a-8257-4c9c9e1178cc', 'f5f7d7ed-cb36-58d3-9ba5-036ac8a6a23e', 'Disciplinary statistics', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('924a19c4-486e-5a54-ad62-723ff208c9e5', '3b6d40e7-57c3-52c4-a257-889efac703b2', 'Approved overtime memoranda', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6ad8e03b-0c0a-55ac-8654-aacdc3396cd1', '3b6d40e7-57c3-52c4-a257-889efac703b2', 'Overtime report and employees working excessive overtime', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b335a435-3425-56ab-a2a6-c3f5ddbe246c', 'fb12a79b-f9da-5d0a-908d-bbcb39175f23', 'Vacancies report', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3849f8b9-7fc4-53cd-aad6-6c9ff7dff970', 'fb12a79b-f9da-5d0a-908d-bbcb39175f23', 'Cycles times reports', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('76406715-2629-5546-9c06-13eb36173580', '5f2cbe2d-a9ff-5de9-96fa-b87ea70751d0', 'Availability and Reliability Statistics', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('cac22f74-eb9a-5dfa-9b38-47e5c8acedcb', '5f2cbe2d-a9ff-5de9-96fa-b87ea70751d0', 'Action plans to address deviations', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('337fbb4b-73fb-5b71-a27b-cc5517a169e3', 'e2534f81-b64d-53d3-b4ba-96a4df0f05f7', '1. List of critical components and current stock levels (you can also check past history)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8c2c7bbc-ded6-566a-a9f1-cfa616c3405c', 'c964ff22-eb5a-5fec-8af3-de2b4aad1121', 'Historic pollution, asbestos, PCB management programme (plan, testing reports etc)', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b0118858-0c1a-55ac-9fe0-90e053cbe37d', 'c964ff22-eb5a-5fec-8af3-de2b4aad1121', 'Programme Status report', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('04d4a027-baff-5c95-a037-39c3f4113c76', 'c964ff22-eb5a-5fec-8af3-de2b4aad1121', 'Action plans', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8a036fe3-dd84-5fbb-af00-c97c5087dcbb', '0e00ce1b-31cc-562a-93f8-cbb5c6cbbd09', 'Waste separation programme (colored binse)', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8fd372f9-aa72-5253-b874-d6c4550c0a22', '0e00ce1b-31cc-562a-93f8-cbb5c6cbbd09', 'Check adherence', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b633e70e-7268-580f-8bbe-e0e41e716078', '0e00ce1b-31cc-562a-93f8-cbb5c6cbbd09', 'Recycling records and safe storage of scrap in the premises', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e3b24597-461a-5329-9334-e9e759b0b7f9', '71de929d-3a69-56f3-b9dc-314e4319c049', 'Preservation can include identification, handling, contamination control, packaging, storage, transmission or transportation, and protection', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('fbea156f-4864-5931-b3a1-5a18cac84081', '6d33e8e8-4ed2-511c-a696-00ed2dbc2c88', 'Post-delivery activities can include actions under warranty provisions, contractual obligations such as maintenance services, and supplementary services such as recycling or final disposal.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4447c50b-4e76-57b0-bb1c-3078e2ed92c9', '6772591c-1c50-5bec-83a1-12fb3b417ace', 'Identification of hot spots', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('aca6ed1d-25ba-5886-8ea0-3a35b9b7b3ec', '6772591c-1c50-5bec-83a1-12fb3b417ace', 'Preventive and response plan', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e7accfc6-4a7f-53a7-887a-1f648ccca75d', '6772591c-1c50-5bec-83a1-12fb3b417ace', 'Risk arising from theft (analysis security incidents)', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e7e3f513-2348-59f4-b0e7-e656294d1fd9', '5bf90ce0-516d-56fa-ad13-daf666306e7a', '1. Current documents and available at the point of use.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('7c025ad1-af09-5a24-9315-0d01dfacd3aa', 'fc9fc961-878f-503d-8f86-29d7172d5793', '1. Document register
+2. Electronic copies of the original paper documents managed within the
+approved system.
+3. Links added in an applicable software system to the electronic scanned copies.
+4. Descriptive details (metadata) of these documents are captured on the applicable
+Transnet document management system.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('217014b7-5e02-5bd0-8b01-16bf02025d5d', '68d6f7ee-e492-5e17-8390-4198974a880f', 'Communication of the approved New or Updated Procedures', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1ea2839b-4904-5183-aea4-c9dabd8d92c4', '68d6f7ee-e492-5e17-8390-4198974a880f', 'Records Disposal Register', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('07a1c6ad-78ee-5662-b55d-195b2056f2b8', '68d6f7ee-e492-5e17-8390-4198974a880f', 'Completed document Control Change Request', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('97a2713d-c82e-5f1e-ba54-2b5f15ead0a0', '68d6f7ee-e492-5e17-8390-4198974a880f', 'Records Retention Guide.', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('dc76cfd0-6232-50e5-b719-76556e3c25f8', '68d6f7ee-e492-5e17-8390-4198974a880f', 'Certificate of secure and compliant destruction', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('703f5129-5a34-5259-ae3e-a003d1c4fd7b', 'd155bb7d-2c34-5427-95f7-fbf3910ebf30', 'Statement of work (SOW)', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a1a6fbc2-3c6f-5d69-8901-f8961a156f41', 'd155bb7d-2c34-5427-95f7-fbf3910ebf30', 'Specifications, etc', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('c09f980f-c82d-58e9-abf0-c52bcb7bc491', 'd155bb7d-2c34-5427-95f7-fbf3910ebf30', 'Customer Surveys', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b1b3af08-8f59-5ff8-9945-716c94044757', 'a76c5706-71eb-56e3-bad9-1ae23ac8830b', '1. Requirements noted / listed / communicated', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a21c8067-f046-5a74-a9a1-5d8849780eb1', '5d909755-e094-5cbf-a77a-9709e2a26a2d', 'Change documentation and records', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b0bffd76-5016-5e42-b68a-052140fe53a6', '5d909755-e094-5cbf-a77a-9709e2a26a2d', 'Attendance Registers', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('dcd0b88c-d3a8-5ec3-959c-81c27b72d645', '72adfeba-3bf6-58e8-b12c-2a213d48b31f', 'Project File', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3799c6be-ae59-52da-8e72-1d163c206dda', '72adfeba-3bf6-58e8-b12c-2a213d48b31f', 'Project meeting agenda and minutes', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b9dc565a-b9aa-5558-8bba-d145dd8e8aa5', 'a00a145c-63c5-56e5-b4d2-3a683a54fe3c', 'Meeting invite', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('28d19140-a5d3-5d35-afbf-279497a41acc', 'a00a145c-63c5-56e5-b4d2-3a683a54fe3c', 'Meeting attendance register', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('32f33106-1f8c-5c2d-9638-7d8962f8065b', '548a495e-f8ec-5ace-83f2-9093718f33bb', 'Meeting minutes', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('43ed42d8-a06e-5e5c-af20-488029933521', '548a495e-f8ec-5ace-83f2-9093718f33bb', 'Action plans with responsibility, due date and status', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8d3d494b-ed31-5cd7-a514-b70cec614e6a', 'c92e8f5e-9c00-51a0-abab-1d7b794820d5', '1. Signed-off user requirements specification for the project.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('97b8ec0c-0e85-5edb-a476-d33b04bcb589', 'f127d817-84e9-5eff-8c81-bb4638bc3eba', 'Project File', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ad59e463-31b9-502e-9c71-5504bed47c74', 'f127d817-84e9-5eff-8c81-bb4638bc3eba', 'Project meeting agenda and minutes', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('740efb35-c85d-5c2e-a14a-d54f0e5f61f5', '3cf4a0e8-60a2-5bb9-8bb1-e0232930012d', 'Letter of Intent/ authorising document date', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9cff1d0e-5d84-55ac-b386-2743653915cf', '3cf4a0e8-60a2-5bb9-8bb1-e0232930012d', 'Meeting minutes/Action plans', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('445ffd83-6ce2-5d16-a022-b67ee37ed156', 'f770b3e3-562e-5678-a2af-f38b021d16c2', 'Meeting invite', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b6e685c7-8de5-5ef6-afd5-40dc8af49ebd', 'f770b3e3-562e-5678-a2af-f38b021d16c2', 'Meeting attendance register', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('de86cea3-6849-54d2-bd86-eedc56c8b27e', '91fca7a7-f40e-5de1-a54a-57a40dbf08b3', 'Meeting minutes', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3d191c16-83b1-51b7-988d-a27d7d3c7a1a', '91fca7a7-f40e-5de1-a54a-57a40dbf08b3', 'Action plans with responsibility, due date and status', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('436693a8-3ae8-5c80-a541-ba3b52722cfc', 'ffc1d394-064a-5485-8b66-583d0c7a96f5', 'Change management process', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('c8580c38-4047-5d96-8b77-6078e83a671f', 'ffc1d394-064a-5485-8b66-583d0c7a96f5', 'Design change tracking sheet', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5a0c32d1-e273-5e44-8c98-4705a51716c5', 'c6bd2fdd-4499-5f21-9b37-51841b2da84e', 'Pilot/Prototype approval', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('61d8a1dd-457a-59da-977e-e597b8bc7b7f', 'c6bd2fdd-4499-5f21-9b37-51841b2da84e', 'Date of Pilot/Prototype approval', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9ec34ba7-4b89-504e-945d-feb47ce6fefe', '7c544245-ae1c-501a-a071-aa0c617c955b', '1. Operational readiness and commissioning sign-off.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1755016e-d252-5b06-9f22-6b009a8d3b1e', '106e11e6-6a07-54d4-b4fa-8295802ef076', 'Operational readiness and commissioning sign-off.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0a048c39-ffd0-5512-bf2d-efb128890cee', '106e11e6-6a07-54d4-b4fa-8295802ef076', 'Project plan', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('43b22581-be9a-5a78-8830-d7c11ffd5b2a', '1680dda0-fab7-57d5-8848-ed1ab0acd7d3', 'Project plan', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('574435f7-b962-5feb-9f70-28d62e2dedd0', '1680dda0-fab7-57d5-8848-ed1ab0acd7d3', 'Project Status reports', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b237fcf9-96d3-5049-a434-9430d595a335', 'a2775d44-3717-5729-8222-01a6d4e2ee44', 'Project plan', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b1752ec9-aa73-58a1-bbf3-fddfeeeba504', 'a2775d44-3717-5729-8222-01a6d4e2ee44', 'Project Status reports', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('175ddceb-70c0-53ab-b0f8-32dc7609cf67', 'cfc81393-d757-5b90-a155-95cc695db66b', 'Commissioning report', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('de99db6c-7a3d-51f2-bf56-6148afa98d24', 'cfc81393-d757-5b90-a155-95cc695db66b', 'Project NCR information', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('34f5a152-a6ae-5e75-a094-91fb7d7bee65', '8b8d4b4b-43b8-545b-b3ef-f71ec300efd5', '1. Letter of intent or authorising document', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4014f230-78b7-50cc-b6c7-6084e6475df9', '0de859b0-7816-50f2-b14d-c5e6d311eac7', '1. Letter of intent or authorising document              2. Billing information', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('bd793eb1-935c-55e9-9234-a5399947c314', '14f47f3a-2ccb-5130-90df-e90773fbffc8', '1. Condition assessment report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('67c87ffc-ebf7-5d0a-a4ee-4714387f283f', '6e25fe84-1cf1-51a2-88c8-8e50ae4d7fac', '1. Approved maintenance plans in the system', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('048f7f83-179e-55e9-b2db-73f673facbbf', 'be38efa5-cd7a-51c4-a6e5-124de81435cf', 'Disposal documents', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ac993352-cec4-5773-8a78-6053e6741b83', 'be38efa5-cd7a-51c4-a6e5-124de81435cf', 'Scrappring documents', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0bcfef7d-c8f3-5bdf-94ce-c00cccd1ddfa', '4f1ec419-9fd8-53b3-a311-bd03105fe5da', '1. Records of at least 3 years for each of the Life Cycle stages.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a4fc1868-185d-52e5-9db8-40d72f47eb9c', 'e2fa0638-60b8-5f48-a285-ac9eec1b7eae', '1. Records of at least 3 years for each of the Life Cycle stages.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('07f7bac1-9c81-5a4a-a4a6-6095d3363208', '9a5a6233-0a1c-5644-92a5-9040bbf35c78', '1. Service Level Agreements;
+· Siding Agreements;
+· Section 56 Agreements & 57 Licenses (NPA);
+· Access Agreements; Service Level Agreements;
+2. Interface register and agreements.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3db7e940-2205-5122-a456-652587c77e6f', 'd8db8788-cf11-5a51-8dd2-4070d6ad5d9d', 'Interface Agreements Register.', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('afcbba77-3e21-5996-8044-3d4eb1cad209', 'ff6bbcea-8944-54f7-936f-89a468fe5034', 'Engagement schedule', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('73817654-3579-5788-a4c4-1e0f6961053f', 'ff6bbcea-8944-54f7-936f-89a468fe5034', 'Minutes and attendance register', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5531a791-c201-51e2-90b6-6159cf7c963b', 'f4cbf225-9bb9-58c0-8968-6ab1a06c3c0c', '· Audits/inspections
+· Meetings
+· Workshops
+· Awareness
+· BCM/Emergency Situations/JOCs
+· Informal Engagements', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('70c65b97-00d2-5094-a9ad-78c6394cc421', '3cc55f3f-d5d1-5bb0-8c3d-0e3583a60a14', 'Non-conformance report
+Action plan status report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('82f64469-59df-5f76-9484-cf85c197c680', '2ea61479-9244-5fe1-a036-5e535b9c50a2', 'Risk register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('76bd9c18-af7e-5ae1-9117-31d71a259e9f', '178e6365-aedf-5a20-adf8-66e818c643de', 'Revised / updated Interface agreement
+Triggers for change of interface agreements include but not limited to the following:
+· New or amendments of the operational processes;
+· Occurrences and Lessons learnt;
+· Compliance Obligations (New or revised standards, legislation, internal policies and procedures; etc.)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ca2e6bd1-03cf-5039-99ce-5d90d5bfd326', '85f35702-03bf-5b29-b20e-c4eaac605902', 'Railway Occurrence: Annexure 8.8, Railway Occurrence Management Process Flow;
+Injury on Duty: Annexure 8.9 Injury on Duty Management Process Flow;
+Occupational Diseases and Illnesses: Annexure 8.10 Occupational Diseases & Illnesses Occurrence Management Process Flow;
+Environmental Occurrence: Annexure 8.11 Environmental Occurrence Management Process Flow;
+Asset and Property Damage (including Motor Vehicle) Occurrence: Annexure 8.13 Asset and Property Damage (including Motor Vehicle) Occurrence Management Process Flow;
+Security Occurrence: Annexure 8.14 Security Occurrence Management Process Flow;
+HAZMAT, Fire, Explosion and Other Safety Occurrences:  Annexure 8.15 HAZMAT Fire, Explosion and Other Safety Occurrences Management Process Flow', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0380bba6-86c2-59ba-9499-f6792f39f8f1', 'cf8eec72-7a62-5acc-b757-f0fc0120656c', 'Sample recent occurences (Level 1 & 2)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2c47cccf-27d0-5aa9-b914-585e6ee7b70f', '0885eb0a-47f9-5cef-86ca-0ecaf05e3d6b', '1. Check completion of the occurance notifications reports (Level 1 & 2), preliminary reports, investigation reports, CAP Register, NCRs and Action plans', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0f42b15b-2045-59fe-8486-04e7bde839aa', '1cff27fd-d61c-5f72-9b36-93e58dcac4f4', 'Appointments letter and training certificate of the Incident Commander', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('65c0503c-1f9c-5437-97ff-004c4e41b053', '89b5ee49-5239-5d0a-8b05-00e68d83236f', 'Effective close out of the findings in the systems with the objective evidence.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f577dc4e-b406-58b8-8e24-187905cb5bfb', '89b5ee49-5239-5d0a-8b05-00e68d83236f', 'Status report from IsoMetrix', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('fa0a9040-be59-54f1-b850-8a0515e64a16', '89b5ee49-5239-5d0a-8b05-00e68d83236f', 'Records on TIMS SharePoint', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('927c7e12-0866-5252-813e-025cd8740097', 'd5fac8a7-e0bc-5816-b8f3-f89832befca9', 'Training Certificates', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e3c34bd0-cf41-5d8f-b00d-ab271bc0a93b', 'd1a3f1fa-e655-546b-8e31-f1e2bc90be71', 'Investigation report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5580fe26-74de-52f2-bc18-0d5ac1ffe89f', 'ac680e7f-3dbc-5dd7-9336-bae2f82769b0', 'Preservation of evidence in line with Section 24 of the OHS Act 85 of 1992, Clearance of the occurrence site e.g. rehabilitationof the incident site', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d9ab8bf1-cd61-5abb-bb6e-8c7c638d8de2', '10722eac-013d-5d01-b23d-1f93aa0b1f55', 'Closed investigation report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b68a939f-7490-5d06-9da3-23870477efde', 'ae96d15c-04a6-5234-8c79-1bcb14a570ef', 'Proof of Risk Assessment Register review as a result of an occurance', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8eb22b09-8292-5a10-ace8-d765ae70ffa5', 'ae96d15c-04a6-5234-8c79-1bcb14a570ef', 'Attendance register', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d61d7116-800e-569a-99d7-c15bcf222dff', 'fb052dae-fdad-5dcd-b2d6-2aa3c2af4fe5', '1. Interface agreements (SLA''s).', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6def7589-67e5-5d0a-97d7-ab768b1e1acc', 'b38792ac-d01a-52a5-9766-8fdfb0933ce1', 'Appointment of the Contract Manager
+Risk register
+Contract Classification Category
+specifications
+Evaluation Criteria
+approved list of contractors/suppliers
+Pricing Schedule
+roles and responsibilities are clearly defined
+signed Agreement
+project is insured
+Contractor Execution Plan
+Approved Contractor Compliance File
+Contractor InductionAttendance Register.
+Employee Profile Dossier
+Completed Induction Indemnity Form
+Applicable permits and authorisations
+Completed Pre-site handover inspection
+Completed Site Access Certificate
+Progress Meeting minutes', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('85c31ca2-afff-5574-93b2-02c5268f05f8', '0f5d1823-3762-566c-9de9-d33ec5c5e467', 'Contractor Induction', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9e66f0b1-544a-5f07-945c-d52b9f492d69', '0f5d1823-3762-566c-9de9-d33ec5c5e467', 'Inspection and Audit reports and management of actions', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8d3eb6ee-f197-569c-a41c-37a319f0958d', '0f5d1823-3762-566c-9de9-d33ec5c5e467', 'Performance on-site', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('1ba20698-6ac6-5dec-946d-f38e2bc3406f', '0f5d1823-3762-566c-9de9-d33ec5c5e467', 'Deviation Management', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('48dc4050-8921-524d-82c9-2698e3c69c56', '0f5d1823-3762-566c-9de9-d33ec5c5e467', 'Operational permits  / licence issued e.g. Hotwork permit', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e72c0f53-022f-57bc-911e-0bf8e01795da', '4bc440e3-964f-54fe-9c79-de2f32a84678', '1) Site inspection 
+2) Signed Final Handover and Close-out Inspection                                               3) Completed Contractor Compliance
+File 
+4) post-contract evaluation meeting minutes (performance statistics analysed to determine trends, lessons learnt, summary of the findings and future corrective actions) 
+5) Communicated findings and lessons learnt to the project initiator.
+6) Updated contract register reflecting closing of project
+7) Release of retention monies and performance bonds at the expiry', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ebc0915c-0ceb-5051-bcce-a0215f4f45d4', '602b3b69-dad4-5628-b7bc-0799989403f5', 'Calibration register and the schedule.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f36997fd-f005-50cc-8e5e-4aea47df4079', '602b3b69-dad4-5628-b7bc-0799989403f5', 'IsoMetrix status report.', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8eeb5b8d-c6e2-5ead-ab2e-542872b6f4ed', '602b3b69-dad4-5628-b7bc-0799989403f5', 'Report on IsoMetrix.', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('7b9f5900-bbb1-51d2-a041-de0b774fca8d', '8aa5c7f9-f053-581a-9a11-d3f5f995a67f', 'Integrated Assurance universe and plan status report', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('54f46d56-341e-5494-8516-a310245b1935', '8aa5c7f9-f053-581a-9a11-d3f5f995a67f', 'Assurance reports', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('eabbaa46-2778-5421-9291-671548a87bd3', '8aa5c7f9-f053-581a-9a11-d3f5f995a67f', 'Assurance oversight meeting report', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2cc554c4-616b-522b-bedc-5b8b8f08c17d', '8aa5c7f9-f053-581a-9a11-d3f5f995a67f', 'IsoMetrix status report', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0836d34e-e877-59ca-9b56-82844b2880c7', '8aa5c7f9-f053-581a-9a11-d3f5f995a67f', 'Trend analysis report', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('11f2b30c-63a5-5b6f-9d51-667eedeea4a6', '1d4ac1f4-7f73-5199-bbb9-e59f01ce86e8', 'Status report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('cbad73a0-27cc-54fd-80cf-f1aef98ea8b1', '0f82d9f2-619c-5383-8f6a-db827b3d701a', 'Scheduling of audits/inspections', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('dc223934-9cf3-5acf-882a-614fbb30c7b8', '0f82d9f2-619c-5383-8f6a-db827b3d701a', 'Audit/inspection reports', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e819d2e4-03d1-5e8e-a991-f6200a618ded', '08c594c8-a5dd-5124-bb80-c32afae7c722', '1. Maintanance Engineering Stats and reports', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f1a3e545-2d90-5092-b1ab-913275b2cdd7', 'c58468a3-85fb-5ae7-9a85-1320cb1d9577', '1. Actions plans and progress report (status)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('af3b822f-ce2e-5049-b7ee-03449e1cade8', 'd7f09fd4-43e9-528b-81b0-30611ef805cb', 'Inspection reports signed off by the employer/chairperson of the SHE Committee', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('782dcd16-e003-577d-9e1c-36077932843d', 'd7f09fd4-43e9-528b-81b0-30611ef805cb', 'Idenfied deviations receive attention from management (status)', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('fd593862-4eef-5ab8-b5e0-3f454aff8d31', 'd7f09fd4-43e9-528b-81b0-30611ef805cb', 'Interview a SHE Representative', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f64a72e4-7e6a-5049-92d1-9ce24961247c', '4cf16229-eb83-563e-b07b-7ce3823a38a3', 'Evidence made available
+Repeat findings
+Ownership of the audit reports', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('c7e46473-3782-5a46-bcca-db8166322a62', '27fa450f-6d68-52f6-9f90-01b7d1f86652', '1. Signed off Business Impact Analysis', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('83752fd7-5fa7-58db-b980-de4fb64b746b', 'e383d75f-b50d-593b-ab60-81bd54068ee6', '1. Signed off BCP', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('7a3ba68c-ab30-5eb1-bab1-d9bf6776a759', 'c6cb2ebe-4347-561c-afec-44256c3c45f0', 'Annual Schedule', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f734b517-ff93-5826-91df-9a2dbbb3d7c8', 'c6cb2ebe-4347-561c-afec-44256c3c45f0', 'Control Self Assessment Report', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ee92d5e2-1487-554b-9023-e6b783aa2c97', 'c6cb2ebe-4347-561c-afec-44256c3c45f0', 'Action plan with status', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('e0e18d28-b115-5a00-92e7-f80543810362', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Simulation plan', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6ef85085-0829-58a1-8510-3f0a40e819cf', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Meeting minutes of the simulation planning', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f0f8fac8-257c-59b4-92fb-2025a5419e3e', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Attendance register', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('dc15fcf1-ac3c-58de-a9f2-dde37077f7c3', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Simulation report', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('5e1d0280-8ef0-5d3d-8276-ff1a430d34b7', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Debrief session meeting minutes and report', '5', 4);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('4d10d116-5f30-55b2-a790-1699a2a476bd', '39a97ad6-ce0a-545a-8813-4bb8982acb9c', 'Simulation results captured on IsoMetrix and report loaded on Sharepoint', '6', 5);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f9784103-e638-593d-a582-047aaf809e16', 'e690e786-b32d-589c-b39a-48d2293805e5', 'List of critical systems', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d9d51f45-2cbf-5e1f-b22c-eab9c2cbad73', '79009ec0-0c79-5963-983b-d492efa912e0', 'Test report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f3e5f97f-5b4c-5b2f-b2ad-465a350f433d', '2008ba50-1bdf-54fb-83b8-7bba3c363c04', 'Test report', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2bdac3a3-f8c0-57b3-a84a-033edfaa8bdc', 'ba4d3023-dccd-5c80-9d28-0883523d31e0', 'Integrated disaster management plan', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('756ba451-c6aa-5306-8daf-c9f228b0e260', '5ebc75e7-cbb6-55b8-bdbb-e8813c792ab7', 'Needs analysis', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('078cebd9-bde6-575b-b846-d2e8db4c33d0', '5ebc75e7-cbb6-55b8-bdbb-e8813c792ab7', 'Training plan', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('ae20e96e-6614-5515-a469-c3a69c728c92', '5ebc75e7-cbb6-55b8-bdbb-e8813c792ab7', 'Attendance registers', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b68094ec-185f-5722-9cb9-ca69421cd02d', '5ebc75e7-cbb6-55b8-bdbb-e8813c792ab7', 'Training programme evaluation report', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('226a8aa2-581b-5e65-9cdc-d556ee76568e', 'd88c845a-6ef7-5860-9a27-04e549a525d5', 'Integrated BCP', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('9d8d6e8e-9703-584e-af9a-8b583279240e', '0ff2a229-bfc2-5cc9-8b3b-6cebc6e7e861', 'Alignment on medical surveillance and employment of employees on chronic medication.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('921918b8-9958-5c1f-9942-e2b8e6b4147b', '0ff2a229-bfc2-5cc9-8b3b-6cebc6e7e861', 'Adherence to the Medical surveillance plan', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('d883608b-2718-58fb-aace-17d857c21c4a', '0ff2a229-bfc2-5cc9-8b3b-6cebc6e7e861', 'Compliance to Fit for duty declaration', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('41a79ace-e252-5eb9-97dd-b96f99624e24', '0ff2a229-bfc2-5cc9-8b3b-6cebc6e7e861', 'Management of employees with chronic conditions', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('192aec10-0f65-595a-b092-375eab64fafa', 'a494d85f-b08a-589c-b8ab-ee3e04bd7989', '1. Adherence to Quarterly review                 2. Management of risk pool personnel', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('bdd0879a-c4ae-57df-ab7e-403e9c9be88d', '711535e7-626b-552a-930a-ac2f5b9ce406', 'Human Factor in design', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('52a544ae-a827-5d7c-81ac-c741a9667409', '711535e7-626b-552a-930a-ac2f5b9ce406', 'Ergonomics assessment schedule and status', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b9ef0e32-33b5-5d89-9cb3-d4ab6703d4e7', '711535e7-626b-552a-930a-ac2f5b9ce406', 'Ergonomins assesment report', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('54c8dec7-45ce-5bae-96cf-2ae30dbb15e1', '711535e7-626b-552a-930a-ac2f5b9ce406', 'Corrective action plan monitoring status', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('551ea9a0-c30c-5182-90f6-bd6e77ffe2d5', '9b293e37-7c2d-528f-92c4-b6c6b9ce4911', '1. Recruitment and Selection (psychometric
+test, interview, experience and competence) 2. Wellness programme
+3. Man-job specifications
+4. Defined job classifications and additional checks required', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('8f414b1a-02f4-5894-aaa5-db4112810cc6', '94848d58-8f96-56a6-8089-385dbeea973c', 'Employee Occupational Risk Exposure Profile', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('224d3f39-e2ce-5829-9f90-86a8f656dd2c', '94848d58-8f96-56a6-8089-385dbeea973c', 'Status report on Occupational Risk Exposure Profile', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6c4385b4-0a8f-58d6-938e-7cafb7ad346b', 'a66a0303-4de8-5892-8420-f481370f7047', 'Health Risk register', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('6d402821-8b89-59c8-8d80-2b7fc8dd2ad2', 'f973f2e6-cea8-5e32-b578-fc299d791f15', 'Identified fatigue risks and recommended controls', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('b743da77-bc47-5b3b-9b2c-8497d17c79d2', 'f973f2e6-cea8-5e32-b578-fc299d791f15', 'Communication of the fatigue risks and controls', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('54962c05-b3e3-5ba1-9916-4c57efb4da2c', '9872731e-0730-5881-9ff9-9d68149e93f1', 'Identified Risk associated with pregancy', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('30f22b15-a3fb-5257-912c-c5248898ee9c', '9872731e-0730-5881-9ff9-9d68149e93f1', 'Recommendations for alternative placement if applicable dependent on the risk', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('edcedcd5-6ab0-59ec-ae35-93a51f0edfb4', '76026fe6-4b30-5b95-a835-1dca1232a508', '1. Completed Return to Work Interview
+2. Work life balance awareness
+3. Absenteeism management
+programme ( trends analysis and case
+management)
+4. Implementation plan of the Safety Behavioural Risk Assessment
+5. Wellness events', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('227bf206-346c-5009-b6d3-242601478c16', '06c7d410-ad1c-5379-b03b-0aab15e490fd', 'Health assessments;', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('315ae816-0e1c-5bf6-910a-87041769d16c', '06c7d410-ad1c-5379-b03b-0aab15e490fd', 'Employee referral programs;', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('0d232c24-7683-56ae-99d6-50173e20ce68', '06c7d410-ad1c-5379-b03b-0aab15e490fd', 'Rehabilitation; and', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('3277a325-b019-5d87-a9b4-900b7079130e', '06c7d410-ad1c-5379-b03b-0aab15e490fd', 'Return to work programs', '4', 3);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('2070ddc2-e327-5f6e-ad98-f2aefb467b6d', 'e243b14e-b2f5-566e-8d25-08ee2aa3216a', 'Noise, illumination, radiation, thermal stress, ventilation, dust, fumes, etc.', '1', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('cf43053e-05ba-5499-929c-19ae6aa95976', 'e243b14e-b2f5-566e-8d25-08ee2aa3216a', 'Frequency of the survey', '2', 1);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('f3485af3-c9d6-5226-8cbb-4629200433ba', 'e243b14e-b2f5-566e-8d25-08ee2aa3216a', 'Corrective Action Plans', '3', 2);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('a648378c-0431-532b-873b-2c0f594a9b07', '6bc43dde-6fa7-5fcd-8d33-d1767d61acfd', 'Overtime report (highest overtime earners)', '', 0);
+INSERT INTO procedure_evidence_items (id, procedure_item_id, evidence_text, sub_label, sort_order) VALUES ('02592337-1439-50a2-b936-1d286bbd651b', 'fa0dd31b-a21a-57b2-b8dd-f63c629df1fe', 'List with Continual Improvement initiatives and Project Plans.     
+- Examples of improvement can include correction, corrective action, continual improvement, breakthrough change, innovation and re-organization', '', 0);

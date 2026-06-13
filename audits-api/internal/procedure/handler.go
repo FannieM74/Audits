@@ -26,8 +26,8 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/api/procedures", h.ListAll)
 	r.Get("/api/audits/{id}/procedure-sections", h.SectionSummaries)
 	r.Get("/api/audits/{id}/procedures/{section}", h.SectionDetail)
-	r.Put("/api/audits/{id}/responses/{itemId}", h.SetResponse)
-	r.Post("/api/audits/{id}/responses/{itemId}/finding", h.CreateFindingForResponse)
+	r.Put("/api/audits/{id}/responses/{evidenceItemId}", h.SetResponse)
+	r.Post("/api/audits/{id}/controls/{controlId}/finding", h.CreateFindingForControl)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -43,7 +43,7 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 }
 
 func (h *Handler) ListAll(w http.ResponseWriter, r *http.Request) {
-	items, err := h.svc.ListAll(r.Context())
+	items, err := h.svc.repo.ListControlsBySection(r.Context(), 0)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to list procedures")
 		return
@@ -78,40 +78,18 @@ func (h *Handler) SectionDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	items, responses, err := h.svc.GetResponsesForSection(r.Context(), auditID, section)
+	result, err := h.svc.GetSectionDetail(r.Context(), auditID, section)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to get section detail")
 		return
-	}
-
-	responseMap := make(map[string]*AuditProcedureResponse)
-	for i := range responses {
-		responseMap[responses[i].ProcedureItemID.String()] = &responses[i]
-	}
-
-	type ItemWithResponse struct {
-		ProcedureItem
-		Response *string    `json:"response"`
-		FindingID *uuid.UUID `json:"finding_id,omitempty"`
-		Notes    string     `json:"notes"`
-	}
-
-	result := make([]ItemWithResponse, len(items))
-	for i, item := range items {
-		result[i].ProcedureItem = item
-		if apr, ok := responseMap[item.ID.String()]; ok {
-			result[i].Response = apr.Response
-			result[i].FindingID = apr.FindingID
-			result[i].Notes = apr.Notes
-		}
 	}
 
 	writeJSON(w, http.StatusOK, result)
 }
 
 type setResponseRequest struct {
-	Response  *string `json:"response"`
-	Notes     string  `json:"notes"`
+	Response *string `json:"response"`
+	Notes    string  `json:"notes"`
 }
 
 func (h *Handler) SetResponse(w http.ResponseWriter, r *http.Request) {
@@ -120,9 +98,9 @@ func (h *Handler) SetResponse(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid audit id")
 		return
 	}
-	itemID, err := uuid.Parse(chi.URLParam(r, "itemId"))
+	evidenceItemID, err := uuid.Parse(chi.URLParam(r, "evidenceItemId"))
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid item id")
+		writeError(w, http.StatusBadRequest, "invalid evidence item id")
 		return
 	}
 
@@ -132,7 +110,7 @@ func (h *Handler) SetResponse(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	apr, err := h.svc.SetResponse(r.Context(), auditID, itemID, req.Response, req.Notes)
+	apr, err := h.svc.SetEvidenceResponse(r.Context(), auditID, evidenceItemID, req.Response, req.Notes)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to set response")
 		return
@@ -156,15 +134,15 @@ type createFindingRequest struct {
 	AuditorID         string `json:"auditor_id"`
 }
 
-func (h *Handler) CreateFindingForResponse(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request) {
 	auditID, err := uuid.Parse(chi.URLParam(r, "id"))
 	if err != nil {
 		writeError(w, http.StatusBadRequest, "invalid audit id")
 		return
 	}
-	itemID, err := uuid.Parse(chi.URLParam(r, "itemId"))
+	controlID, err := uuid.Parse(chi.URLParam(r, "controlId"))
 	if err != nil {
-		writeError(w, http.StatusBadRequest, "invalid item id")
+		writeError(w, http.StatusBadRequest, "invalid control id")
 		return
 	}
 
@@ -175,15 +153,6 @@ func (h *Handler) CreateFindingForResponse(w http.ResponseWriter, r *http.Reques
 	}
 
 	claims := middleware.GetClaims(r)
-
-	// Upsert response as "no"
-	response := "no"
-	apr, err := h.svc.SetResponse(r.Context(), auditID, itemID, &response, "")
-	if err != nil {
-		log.Printf("set response error: %v", err)
-		writeError(w, http.StatusInternalServerError, "failed to set response")
-		return
-	}
 
 	findingID := uuid.New()
 	now := time.Now()
@@ -196,18 +165,13 @@ func (h *Handler) CreateFindingForResponse(w http.ResponseWriter, r *http.Reques
 	`,
 		findingID, auditID, claims.UserID, req.NcrRef, req.DateRaised, req.RaisedByName,
 		req.RaisedBySapNo, req.ContactDetails, req.OriginNcr, req.TypeNcr, req.Priority,
-		req.ContravenedClause, req.ShortDescription, req.Description, itemID, req.WorkTypeProcess,
+		req.ContravenedClause, req.ShortDescription, req.Description, controlID, req.WorkTypeProcess,
 		"open", 0, now, now,
 	)
 	if err != nil {
 		log.Printf("create finding error: %v", err)
 		writeError(w, http.StatusInternalServerError, "failed to create finding")
 		return
-	}
-
-	// Link response to finding
-	if err := h.svc.LinkFinding(r.Context(), apr.ID, findingID); err != nil {
-		log.Printf("link finding error: %v", err)
 	}
 
 	writeJSON(w, http.StatusCreated, map[string]any{"id": findingID})

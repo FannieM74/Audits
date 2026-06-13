@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { ItemWithResponse } from '@/types';
+import { SectionDetailResponse } from '@/types';
 import Link from 'next/link';
 
 export default function ProcedureSectionPage() {
   const { id, section } = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const [items, setItems] = useState<ItemWithResponse[]>([]);
-  const [sectionName, setSectionName] = useState('');
-  const [findingModal, setFindingModal] = useState<{ item: ItemWithResponse } | null>(null);
+  const [data, setData] = useState<SectionDetailResponse | null>(null);
+  const [expandedControl, setExpandedControl] = useState<string | null>(null);
+  const [findingModal, setFindingModal] = useState<{ controlId: string; nonCompliant: string[] } | null>(null);
   const [findingForm, setFindingForm] = useState({
     priority: 'Observation',
     short_description: '',
@@ -27,27 +27,26 @@ export default function ProcedureSectionPage() {
 
   const load = async () => {
     const res = await api.get(`/api/audits/${id}/procedures/${section}`);
-    setItems(res.data);
-    if (res.data.length > 0) {
-      setSectionName(res.data[0].section_name);
-    }
+    setData(res.data);
   };
 
   useEffect(() => { load(); }, [id, section]);
 
-  const handleResponse = async (itemId: string, response: string) => {
-    await api.put(`/api/audits/${id}/responses/${itemId}`, { response });
-    if (response === 'yes') {
-      load();
-    }
+  const handleResponse = async (evidenceItemId: string, response: string) => {
+    await api.put(`/api/audits/${id}/responses/${evidenceItemId}`, { response });
+    load();
   };
 
-  const openFindingModal = (item: ItemWithResponse) => {
-    setFindingModal({ item });
+  const toggleControl = (controlId: string) => {
+    setExpandedControl(prev => prev === controlId ? null : controlId);
+  };
+
+  const openFindingModal = (controlId: string, nonCompliant: string[]) => {
+    setFindingModal({ controlId, nonCompliant });
     setFindingForm({
       priority: 'Observation',
       short_description: '',
-      description: item.control_question,
+      description: nonCompliant.map(n => `• ${n}`).join('\n'),
       contravened_clause: '',
       origin_ncr: '',
       type_ncr: '',
@@ -61,11 +60,10 @@ export default function ProcedureSectionPage() {
     try {
       const body = {
         ...findingForm,
-        description: findingForm.description || findingModal.item.control_question,
         audit_id: id,
         date_raised: new Date().toISOString().split('T')[0],
       };
-      await api.post(`/api/audits/${id}/responses/${findingModal.item.id}/finding`, body);
+      await api.post(`/api/audits/${id}/controls/${findingModal.controlId}/finding`, body);
       setFindingModal(null);
       load();
     } catch {
@@ -75,65 +73,175 @@ export default function ProcedureSectionPage() {
     }
   };
 
-  const answered = items.filter((i) => i.response).length;
-  const total = items.length;
+  const desc = data?.section_description;
+  const controls = data?.controls || [];
+
+  // Count answered/total across all evidence items
+  const totalEvidence = controls.reduce((sum, c) => sum + (c.evidences?.length || 0), 0);
+  const answeredEvidence = controls.reduce((sum, c) =>
+    sum + (c.evidences?.filter(e => e.response).length || 0), 0);
+
+  // Parse section description into segments
+  const parseDesc = (text: string) => {
+    const segments: { icon: string; label: string; content: string }[] = [];
+    let remaining = text;
+    // Remove leading "N. Title" if present
+    remaining = remaining.replace(/^\d+\.\s+[^\n]*\n?/, '').trim();
+
+    const blocks = remaining.split(/\n(?=(?:People|Control|Safety|Process|Market|Operational|Contract|Security))/i);
+    for (const block of blocks) {
+      const lines = block.trim().split('\n');
+      const firstLine = lines[0]?.trim() || '';
+      let icon = '📋';
+      let label = '';
+      if (/^people/i.test(firstLine)) { icon = '👥'; label = 'People'; }
+      else if (/^control/i.test(firstLine)) { icon = '🎯'; label = 'Control'; }
+      else if (/^safety/i.test(firstLine)) { icon = '⚠️'; label = 'Safety, Health, Environment, Quality'; }
+      else if (/^process/i.test(firstLine)) { icon = '📋'; label = 'Process'; }
+      else if (/^market/i.test(firstLine)) { icon = '📈'; label = 'Market Growth'; }
+      else if (/^contract/i.test(firstLine)) { icon = '📝'; label = 'Contract'; }
+      else if (/^security/i.test(firstLine)) { icon = '🔒'; label = 'Security'; }
+      else if (/^operational/i.test(firstLine)) { icon = '⚙️'; label = 'Operational Efficiency'; }
+      else { icon = '📌'; label = firstLine; }
+
+      const rest = lines.slice(1).join('\n').trim();
+      if (rest) {
+        segments.push({ icon, label, content: rest });
+      }
+    }
+    return segments;
+  };
 
   return (
     <div className="min-h-dvh bg-gray-50 dark:bg-gray-900 p-3 sm:p-6">
       <div className="max-w-4xl mx-auto space-y-4">
         <div className="flex items-center gap-2">
-          <Link href={`/audits/${id}`} className="text-xs text-blue-600 dark:text-blue-400">&larr; Back</Link>
+          <Link href={`/audits/${id}`} className="text-xs text-blue-600 dark:text-blue-400">&larr; Back to Audit</Link>
+          <span className="text-xs text-gray-400">/</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">Procedure {section}</span>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold dark:text-white">{sectionName}</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Section {section}</p>
+        {desc && desc.description && (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
+            <h1 className="text-lg sm:text-xl font-bold dark:text-white mb-3">Section {section}: {data?.section_name}</h1>
+            <div className="space-y-2 text-xs sm:text-sm dark:text-gray-200">
+              {parseDesc(desc.description).map((seg, i) => (
+                <div key={i} className="flex gap-2">
+                  <span className="shrink-0 pt-0.5">{seg.icon}</span>
+                  <div>
+                    <span className="font-semibold">{seg.label}:</span>
+                    <div className="whitespace-pre-line text-gray-600 dark:text-gray-400">{seg.content}</div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="text-right">
-              <div className="text-sm font-medium dark:text-white">{answered}/{total} answered</div>
-              <div className="w-32 h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-1">
-                <div className="h-full rounded-full bg-blue-600 transition-all" style={{ width: `${total ? (answered / total) * 100 : 0}%` }} />
-              </div>
+          </div>
+        )}
+
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base sm:text-lg font-semibold dark:text-white">
+              Applicable Controls ({controls.length})
+            </h2>
+            <div className="text-right text-xs sm:text-sm">
+              <span className="text-gray-500 dark:text-gray-400">{answeredEvidence}/{totalEvidence} items answered</span>
             </div>
           </div>
 
-          <div className="space-y-1 divide-y dark:divide-gray-700">
-            {items.map((item, idx) => (
-              <div key={item.id} className="py-3">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-xs text-gray-400 dark:text-gray-500 font-mono w-6 shrink-0 pt-1">{idx + 1}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm dark:text-white">{item.control_question}</p>
-                    {item.evidence_required && (
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 italic">Evidence: {item.evidence_required}</p>
-                    )}
-                  </div>
-                  <div className="shrink-0 flex items-center gap-2">
-                    <select
-                      value={item.response || ''}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === 'no') {
-                          openFindingModal(item);
-                        } else {
-                          handleResponse(item.id, val);
-                        }
-                      }}
-                      className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white"
-                    >
-                      <option value="">—</option>
-                      <option value="yes">Yes</option>
-                      <option value="no">No</option>
-                    </select>
-                    {item.finding_id && (
-                      <Link href={`/findings/${item.finding_id}`} className="text-xs text-red-600 dark:text-red-400 font-medium shrink-0">View Finding</Link>
-                    )}
-                  </div>
+          <div className="space-y-2">
+            {controls.map((control, ci) => {
+              const evs = control.evidences || [];
+              const answeredCount = evs.filter(e => e.response).length;
+              const hasNo = evs.some(e => e.response === 'no');
+              const nonCompliantLabels = evs
+                .filter(e => e.response === 'no')
+                .map(e => e.procedure_evidence_item.sub_label || e.procedure_evidence_item.evidence_text)
+                .filter(Boolean);
+              const isExpanded = expandedControl === control.id;
+
+              return (
+                <div key={control.id} className="border dark:border-gray-700 rounded-lg overflow-hidden">
+                  <button
+                    onClick={() => toggleControl(control.id)}
+                    className="w-full flex items-center justify-between p-3 sm:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
+                      <span className="text-xs sm:text-sm font-medium dark:text-white line-clamp-2">{control.control_question}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0 ml-2">
+                      <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">{answeredCount}/{evs.length}</span>
+                      <div className="w-16 sm:w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                        <div className="h-full rounded-full transition-all" style={{
+                          width: `${evs.length ? (answeredCount / evs.length) * 100 : 0}%`,
+                          backgroundColor: evs.length && answeredCount === evs.length ? '#22c55e' : answeredCount > 0 ? '#3b82f6' : '#d1d5db'
+                        }} />
+                      </div>
+                      <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                    </div>
+                  </button>
+
+                  {isExpanded && (
+                    <div className="border-t dark:border-gray-700 px-3 sm:px-4 pb-4">
+                      {evs.length === 0 ? (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 py-3">No evidence items defined.</p>
+                      ) : (
+                        <div className="space-y-1.5 pt-3">
+                          {evs.map((ev) => {
+                            const item = ev.procedure_evidence_item;
+                            const label = item.sub_label ? `${item.sub_label}. ` : '';
+                            return (
+                              <div key={item.id} className="flex items-start gap-3 py-1.5">
+                                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono w-6 shrink-0 pt-1">
+                                  {item.sub_label || `${ci + 1}.${item.sort_order + 1}`}
+                                </span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-xs sm:text-sm dark:text-gray-200">{label}{item.evidence_text}</p>
+                                </div>
+                                <div className="shrink-0">
+                                  <select
+                                    value={ev.response || ''}
+                                    onChange={(e) => handleResponse(item.id, e.target.value)}
+                                    className={`text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white ${
+                                      ev.response === 'no' ? 'border-red-400 dark:border-red-500' :
+                                      ev.response === 'yes' ? 'border-green-400 dark:border-green-500' : ''
+                                    }`}
+                                  >
+                                    <option value="">—</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                  </select>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <div className="mt-3 pt-3 border-t dark:border-gray-700">
+                        {control.has_finding ? (
+                          <Link href={`/findings/${control.finding_id}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:underline">
+                            🔍 View Finding (linked to this control)
+                          </Link>
+                        ) : hasNo ? (
+                          <button
+                            onClick={() => openFindingModal(control.id, nonCompliantLabels)}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            ⚠️ Non-compliant: {nonCompliantLabels.join(', ')} — Create Finding
+                          </button>
+                        ) : (
+                          answeredCount > 0 && (
+                            <p className="text-xs text-green-600 dark:text-green-400 font-medium">✅ No findings required (all compliant)</p>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -141,8 +249,8 @@ export default function ProcedureSectionPage() {
       {findingModal && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setFindingModal(null)}>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-base font-bold mb-3 dark:text-white">Create Finding</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">{findingModal.item.control_question}</p>
+            <h2 className="text-base font-bold mb-1 dark:text-white">Create Finding for Control</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Non-compliant items: {findingModal.nonCompliant.join(', ')}</p>
             <div className="space-y-3">
               <div>
                 <label className="block text-xs mb-1 dark:text-gray-400">Priority</label>
