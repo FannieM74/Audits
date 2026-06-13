@@ -43,6 +43,7 @@ type Finding struct {
 	ActionAgreedApproved  bool       `json:"action_agreed_approved"`
 	StopCertificateIssued bool       `json:"stop_certificate_issued"`
 	Status                string     `json:"status"`
+	Completion            int        `json:"completion"`
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
 	Photos                []Photo    `json:"photos"`
@@ -68,7 +69,7 @@ const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_n
     item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
     priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
     raised_by_business_id, raised_against_business_id, description, work_type_process,
-    immediate_action_taken, action_agreed_approved, stop_certificate_issued, status,
+    immediate_action_taken, action_agreed_approved, stop_certificate_issued, status, completion,
     created_at, updated_at`
 
 func scanFinding(scanner interface {
@@ -81,7 +82,7 @@ func scanFinding(scanner interface {
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
 		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
 		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
-		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status,
+		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
 	)
 	if err != nil {
@@ -127,8 +128,9 @@ func (r *Repository) Create(ctx context.Context, f *Finding) error {
 			item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
 			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
 			raised_by_business_id, raised_against_business_id, description, work_type_process,
-			immediate_action_taken, action_agreed_approved, stop_certificate_issued)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
+			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
+			completion)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27)
 		RETURNING id, created_at, updated_at
 	`,
 		f.AuditID, f.AuditorID, f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
@@ -137,6 +139,7 @@ func (r *Repository) Create(ctx context.Context, f *Finding) error {
 		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName,
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID, f.Description, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
+		f.Completion,
 	).Scan(&f.ID, &f.CreatedAt, &f.UpdatedAt)
 }
 
@@ -152,8 +155,8 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 			raised_by_business_id=$18, raised_against_business_id=$19,
 			description=$20, work_type_process=$21,
 			immediate_action_taken=$22, action_agreed_approved=$23, stop_certificate_issued=$24,
-			status=$25, updated_at=NOW()
-		WHERE id=$26
+			status=$25, completion=$26, updated_at=NOW()
+		WHERE id=$27
 	`,
 		f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
@@ -163,7 +166,7 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 		f.RaisedByBusinessID, f.RaisedAgainstBusinessID,
 		f.Description, f.WorkTypeProcess,
 		f.ImmediateActionTaken, f.ActionAgreedApproved, f.StopCertificateIssued,
-		f.Status, f.ID,
+		f.Status, f.Completion, f.ID,
 	)
 	return err
 }

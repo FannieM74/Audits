@@ -28,6 +28,9 @@ type Audit struct {
 	LeadAuditor   *string       `json:"lead_auditor_name,omitempty"`
 	BusinessName  *string       `json:"business_name,omitempty"`
 	Auditors      []AuditorInfo `json:"auditors,omitempty"`
+	FindingCount  int           `json:"finding_count"`
+	ClosedCount   int           `json:"closed_count"`
+	Completion    int           `json:"completion"`
 }
 
 type Repository struct {
@@ -43,7 +46,10 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 		SELECT DISTINCT a.id, a.lead_auditor_id, a.title, a.description, a.audit_type,
 			   a.audit_days, a.audit_date, a.business_id, a.status, a.created_at,
 			   u.name || ' ' || u.surname AS lead_auditor_name,
-			   b.name AS business_name
+			   b.name AS business_name,
+			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id), 0) AS finding_count,
+			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id AND status = 'closed'), 0) AS closed_count,
+			   COALESCE((SELECT ROUND(AVG(completion)) FROM findings WHERE audit_id = a.id), 0) AS completion
 		FROM audits a
 		JOIN users u ON u.id = a.lead_auditor_id
 		LEFT JOIN audit_auditors aa ON aa.audit_id = a.id
@@ -61,7 +67,8 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 		var a Audit
 		var auditDate time.Time
 		if err := rows.Scan(&a.ID, &a.LeadAuditorID, &a.Title, &a.Description, &a.AuditType,
-			&a.AuditDays, &auditDate, &a.BusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName); err != nil {
+			&a.AuditDays, &auditDate, &a.BusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName,
+			&a.FindingCount, &a.ClosedCount, &a.Completion); err != nil {
 			return nil, err
 		}
 		a.AuditDate = auditDate.Format("2006-01-02")
@@ -77,13 +84,17 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Audit, error) 
 		SELECT a.id, a.lead_auditor_id, a.title, a.description, a.audit_type,
 			   a.audit_days, a.audit_date, a.business_id, a.status, a.created_at,
 			   u.name || ' ' || u.surname AS lead_auditor_name,
-			   b.name AS business_name
+			   b.name AS business_name,
+			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id), 0) AS finding_count,
+			   COALESCE((SELECT COUNT(*) FROM findings WHERE audit_id = a.id AND status = 'closed'), 0) AS closed_count,
+			   COALESCE((SELECT ROUND(AVG(completion)) FROM findings WHERE audit_id = a.id), 0) AS completion
 		FROM audits a
 		JOIN users u ON u.id = a.lead_auditor_id
 		LEFT JOIN businesses b ON b.id = a.business_id
 		WHERE a.id = $1
 	`, id).Scan(&a.ID, &a.LeadAuditorID, &a.Title, &a.Description, &a.AuditType,
-		&a.AuditDays, &auditDate, &a.BusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName)
+		&a.AuditDays, &auditDate, &a.BusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName,
+		&a.FindingCount, &a.ClosedCount, &a.Completion)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil

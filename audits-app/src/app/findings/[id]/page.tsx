@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth';
 import { Finding } from '@/types';
 import PhotoUpload from '@/components/photo-upload';
 import Link from 'next/link';
+import { AxiosError } from 'axios';
 
 export default function FindingDetailPage() {
   const { id } = useParams();
@@ -39,7 +40,7 @@ export default function FindingDetailPage() {
       <div className="max-w-3xl mx-auto">
         <button onClick={() => router.push(`/audits/${finding.audit_id}`)} className="text-sm text-blue-600 dark:text-blue-400 mb-3 block">&larr; Back</button>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
-          <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-start justify-between gap-2 mb-4">
             <div>
               <h1 className="text-lg sm:text-xl font-bold dark:text-white">{finding.ncr_ref || 'Finding'}</h1>
               <div className="flex gap-2 mt-1">
@@ -56,6 +57,25 @@ export default function FindingDetailPage() {
                 }`}>{finding.status}</span>
               </div>
             </div>
+            {canEdit && (
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-xs text-gray-500 dark:text-gray-400">%</span>
+                <input type="number" min={0} max={100} value={finding.completion}
+                  onChange={async (e) => {
+                    const val = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+                    const prevVal = finding.completion;
+                    setFinding(p => p ? { ...p, completion: val } : null);
+                    try {
+                      await api.put(`/api/findings/${id}`, { completion: val });
+                      await load();
+                    } catch {
+                      setFinding(p => p ? { ...p, completion: prevVal } : null);
+                      alert('Failed to update');
+                    }
+                  }}
+                  className="w-16 text-center border dark:border-gray-600 rounded px-2 py-1 dark:bg-gray-700 dark:text-white text-sm" />
+              </div>
+            )}
           </div>
 
           <dl className="space-y-3 text-sm">
@@ -117,11 +137,17 @@ export default function FindingDetailPage() {
             )}
             {canEdit && (
               <button onClick={async () => {
-                const newStatus = finding.status === 'closed' ? 'open' : 'closed';
-                try {
-                  await api.put(`/api/findings/${id}`, { status: newStatus });
-                  await load();
-                } catch { alert('Failed to update status'); }
+                if (finding.status === 'closed') {
+                  try {
+                    await api.put(`/api/findings/${id}`, { status: 'open', completion: 0 });
+                    await load();
+                  } catch { alert('Failed to reopen'); }
+                } else {
+                  try {
+                    await api.put(`/api/findings/${id}`, { status: 'closed', completion: 100 });
+                    await load();
+                  } catch { alert('Failed to close'); }
+                }
               }} className={`flex-1 text-center px-4 py-2.5 rounded text-sm font-medium ${
                 finding.status === 'closed'
                   ? 'bg-gray-200 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'

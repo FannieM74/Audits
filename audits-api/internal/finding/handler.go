@@ -138,6 +138,12 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	if f.Status == "" {
 		f.Status = existing.Status
 	}
+	if f.Status == "closed" {
+		f.Completion = 100
+	}
+	if f.Completion >= 100 {
+		f.Status = "closed"
+	}
 	if err := h.svc.Update(r.Context(), &f); err != nil {
 		log.Printf("update finding error: %v", err)
 		writeError(w, http.StatusInternalServerError, "update failed")

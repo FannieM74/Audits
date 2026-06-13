@@ -73,6 +73,15 @@ export default function AuditDetailPage() {
                 <p className="font-medium dark:text-gray-200">{audit.lead_auditor_name}</p>
               </div>
             </div>
+            {audit.finding_count > 0 && (
+              <div className="mt-3 pt-3 border-t dark:border-gray-700 flex items-center gap-3 text-sm">
+                <span className="text-gray-500 dark:text-gray-400">{audit.finding_count} finding{audit.finding_count !== 1 ? 's' : ''} ({audit.closed_count} closed)</span>
+                <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full max-w-[200px]">
+                  <div className="h-full rounded-full transition-all" style={{ width: `${audit.completion}%`, backgroundColor: audit.completion >= 100 ? '#22c55e' : audit.completion >= 50 ? '#eab308' : '#ef4444' }} />
+                </div>
+                <span className={`font-medium ${audit.completion >= 100 ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'}`}>{audit.completion}%</span>
+              </div>
+            )}
             {audit.description && (
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-3 pt-3 border-t dark:border-gray-700">{audit.description}</p>
             )}
@@ -101,6 +110,11 @@ export default function AuditDetailPage() {
                           f.priority === 'Area of Concern' ? 'bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300' :
                           'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
                         }`}>{f.priority}</span>
+                        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                          f.completion >= 100 ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300' :
+                          f.completion >= 50 ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
+                          'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
+                        }`}>{f.completion}%</span>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{f.description}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">By: {f.raised_by_name} | {f.date_raised}</p>

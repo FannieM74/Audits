@@ -26,6 +26,9 @@ export interface Audit {
   lead_auditor_name?: string;
   business_name?: string | null;
   auditors?: AuditorInfo[];
+  finding_count: number;
+  closed_count: number;
+  completion: number;
 }
 
 export interface Finding {
@@ -57,6 +60,7 @@ export interface Finding {
   action_agreed_approved: boolean;
   stop_certificate_issued: boolean;
   status: string;
+  completion: number;
   created_at: string;
   updated_at: string;
   photos: Photo[];

@@ -62,6 +62,13 @@ export default function DashboardPage() {
                       <h3 className="font-semibold text-sm sm:text-base dark:text-white truncate">{a.title}</h3>
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">{a.audit_type} &mdash; {new Date(a.audit_date).toLocaleDateString()}</p>
                       <p className="text-xs text-gray-400 dark:text-gray-500">Lead: {a.lead_auditor_name}</p>
+                      <div className="flex items-center gap-2 mt-2 text-xs">
+                        <span className="text-gray-500 dark:text-gray-400">{a.finding_count} finding{a.finding_count !== 1 ? 's' : ''} ({a.closed_count} closed)</span>
+                        <div className="flex-1 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full max-w-[100px]">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${a.completion}%`, backgroundColor: a.completion >= 100 ? '#22c55e' : a.completion >= 50 ? '#eab308' : '#ef4444' }} />
+                        </div>
+                        <span className="text-gray-500 dark:text-gray-400 w-8 text-right">{a.completion}%</span>
+                      </div>
                     </div>
                     <span className={`shrink-0 text-xs px-2 py-1 rounded font-medium ${
                       a.status === 'open'
