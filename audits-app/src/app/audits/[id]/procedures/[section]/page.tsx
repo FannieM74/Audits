@@ -32,9 +32,17 @@ export default function ProcedureSectionPage() {
 
   useEffect(() => { load(); }, [id, section]);
 
-  const handleResponse = async (evidenceItemId: string, response: string) => {
+  const handleResponse = async (evidenceItemId: string, response: string, controlId: string) => {
     await api.put(`/api/audits/${id}/responses/${evidenceItemId}`, { response });
     load();
+    if (response === 'no') {
+      const ctrl = controls.find(c => c.id === controlId);
+      const item = ctrl?.evidences?.find(e => e.id === evidenceItemId);
+      if (item) {
+        const label = item.sub_label || item.evidence_text;
+        openFindingModal(controlId, [label].filter(Boolean));
+      }
+    }
   };
 
   const toggleControl = (controlId: string) => {
@@ -66,6 +74,7 @@ export default function ProcedureSectionPage() {
       };
       await api.post(`/api/audits/${id}/controls/${findingModal.controlId}/finding`, body);
       setFindingModal(null);
+      setExpandedControl(findingModal.controlId);
       load();
     } catch {
       alert('Failed to create finding');
@@ -86,7 +95,6 @@ export default function ProcedureSectionPage() {
   const parseDesc = (text: string) => {
     const segments: { icon: string; label: string; content: string }[] = [];
     let remaining = text;
-    // Remove leading "N. Title" if present
     remaining = remaining.replace(/^\d+\.\s+[^\n]*\n?/, '').trim();
 
     const blocks = remaining.split(/\n(?=(?:People|Control|Safety|Process|Market|Operational|Contract|Security))/i);
@@ -95,17 +103,38 @@ export default function ProcedureSectionPage() {
       const firstLine = lines[0]?.trim() || '';
       let icon = '📋';
       let label = '';
-      if (/^people/i.test(firstLine)) { icon = '👥'; label = 'People'; }
-      else if (/^control/i.test(firstLine)) { icon = '🎯'; label = 'Control'; }
-      else if (/^safety/i.test(firstLine)) { icon = '⚠️'; label = 'Safety, Health, Environment, Quality'; }
-      else if (/^process/i.test(firstLine)) { icon = '📋'; label = 'Process'; }
-      else if (/^market/i.test(firstLine)) { icon = '📈'; label = 'Market Growth'; }
-      else if (/^contract/i.test(firstLine)) { icon = '📝'; label = 'Contract'; }
-      else if (/^security/i.test(firstLine)) { icon = '🔒'; label = 'Security'; }
-      else if (/^operational/i.test(firstLine)) { icon = '⚙️'; label = 'Operational Efficiency'; }
-      else { icon = '📌'; label = firstLine; }
+      let rest = lines.slice(1).join('\n').trim();
 
-      const rest = lines.slice(1).join('\n').trim();
+      // If rest is empty, the content may be on the same line as the label
+      // e.g. "Control : Implemented Integrated Management System"
+      if (!rest) {
+        const match = firstLine.match(/^(People|Control|Safety[^:]*|Process|Market|Contract|Security|Operational)\s*:\s*(.+)/i);
+        if (match) {
+          const rawLabel = match[1].toLowerCase();
+          if (/^people/.test(rawLabel)) { icon = '👥'; label = 'People'; }
+          else if (/^control/.test(rawLabel)) { icon = '🎯'; label = 'Control'; }
+          else if (/^safety/.test(rawLabel)) { icon = '⚠️'; label = 'Safety, Health, Environment, Quality'; }
+          else if (/^process/.test(rawLabel)) { icon = '📋'; label = 'Process'; }
+          else if (/^market/.test(rawLabel)) { icon = '📈'; label = 'Market Growth'; }
+          else if (/^contract/.test(rawLabel)) { icon = '📝'; label = 'Contract'; }
+          else if (/^security/.test(rawLabel)) { icon = '🔒'; label = 'Security'; }
+          else if (/^operational/.test(rawLabel)) { icon = '⚙️'; label = 'Operational Efficiency'; }
+          rest = match[2].trim();
+        }
+      }
+
+      if (!label) {
+        if (/^people/i.test(firstLine)) { icon = '👥'; label = 'People'; }
+        else if (/^control/i.test(firstLine)) { icon = '🎯'; label = 'Control'; }
+        else if (/^safety/i.test(firstLine)) { icon = '⚠️'; label = 'Safety, Health, Environment, Quality'; }
+        else if (/^process/i.test(firstLine)) { icon = '📋'; label = 'Process'; }
+        else if (/^market/i.test(firstLine)) { icon = '📈'; label = 'Market Growth'; }
+        else if (/^contract/i.test(firstLine)) { icon = '📝'; label = 'Contract'; }
+        else if (/^security/i.test(firstLine)) { icon = '🔒'; label = 'Security'; }
+        else if (/^operational/i.test(firstLine)) { icon = '⚙️'; label = 'Operational Efficiency'; }
+        else { icon = '📌'; label = firstLine; }
+      }
+
       if (rest) {
         segments.push({ icon, label, content: rest });
       }
@@ -168,6 +197,7 @@ export default function ProcedureSectionPage() {
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
+                      {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
                       <span className="text-xs sm:text-sm font-medium dark:text-white line-clamp-2">{control.control_question}</span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-2">
@@ -201,7 +231,7 @@ export default function ProcedureSectionPage() {
                                 <div className="shrink-0">
                                   <select
                                     value={ev.response || ''}
-                                    onChange={(e) => handleResponse(ev.id, e.target.value)}
+                                    onChange={(e) => handleResponse(ev.id, e.target.value, control.id)}
                                     className={`text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white ${
                                       ev.response === 'no' ? 'border-red-400 dark:border-red-500' :
                                       ev.response === 'yes' ? 'border-green-400 dark:border-green-500' : ''
@@ -221,19 +251,19 @@ export default function ProcedureSectionPage() {
                       <div className="mt-3 pt-3 border-t dark:border-gray-700">
                         {control.has_finding ? (
                           <Link href={`/findings/${control.finding_id}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:underline">
-                            🔍 View Finding (linked to this control)
+                            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 transition">
+                            🔍 View Finding #{control.finding_id?.slice(0, 8)} — Click to open
                           </Link>
                         ) : hasNo ? (
                           <button
                             onClick={() => openFindingModal(control.id, nonCompliantLabels)}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline"
                           >
                             ⚠️ Non-compliant: {nonCompliantLabels.join(', ')} — Create Finding
                           </button>
                         ) : (
                           answeredCount > 0 && (
-                            <p className="text-xs text-green-600 dark:text-green-400 font-medium">✅ No findings required (all compliant)</p>
+                            <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">✅ All items compliant — no finding required</p>
                           )
                         )}
                       </div>
@@ -252,6 +282,11 @@ export default function ProcedureSectionPage() {
             <h2 className="text-base font-bold mb-1 dark:text-white">Create Finding for Control</h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">Non-compliant items: {findingModal.nonCompliant.join(', ')}</p>
             <div className="space-y-3">
+              <div>
+                <label className="block text-xs mb-1 dark:text-gray-400">Procedure</label>
+                <input value={`${section}`} disabled
+                  className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-70" />
+              </div>
               <div>
                 <label className="block text-xs mb-1 dark:text-gray-400">Priority</label>
                 <select value={findingForm.priority} onChange={(e) => setFindingForm({ ...findingForm, priority: e.target.value })}
