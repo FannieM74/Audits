@@ -47,6 +47,7 @@ type Finding struct {
 	CreatedAt             time.Time  `json:"created_at"`
 	UpdatedAt             time.Time  `json:"updated_at"`
 	Photos                []Photo    `json:"photos"`
+	AuditorName           string     `json:"auditor_name"`
 }
 
 type Photo struct {
@@ -93,7 +94,11 @@ func scanFinding(scanner interface {
 }
 
 func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Finding, error) {
-	rows, err := r.pool.Query(ctx, `SELECT `+findingCols+` FROM findings WHERE audit_id = $1 ORDER BY created_at DESC`, auditID)
+	rows, err := r.pool.Query(ctx, `SELECT f.`+findingCols+`,
+		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name
+		FROM findings f
+		LEFT JOIN users u ON u.id = f.auditor_id
+		WHERE f.audit_id = $1 ORDER BY f.created_at DESC`, auditID)
 	if err != nil {
 		return nil, err
 	}
@@ -101,12 +106,36 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID) ([]Find
 	var findings []Finding
 	for rows.Next() {
 		var f Finding
-		if err := scanFinding(rows, &f); err != nil {
+		if err := scanFindingWithAuditor(rows, &f); err != nil {
 			return nil, err
 		}
 		findings = append(findings, f)
 	}
 	return findings, nil
+}
+
+const findingAuditorCols = findingCols + `,
+	COALESCE(u.name || ' ' || u.surname, '') AS auditor_name`
+
+func scanFindingWithAuditor(scanner interface {
+	Scan(dest ...any) error
+}, f *Finding) error {
+	var dateRaised time.Time
+	err := scanner.Scan(
+		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
+		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
+		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
+		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName,
+		&f.RaisedByBusinessID, &f.RaisedAgainstBusinessID, &f.Description, &f.WorkTypeProcess,
+		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
+		&f.CreatedAt, &f.UpdatedAt,
+		&f.AuditorName,
+	)
+	if err != nil {
+		return err
+	}
+	f.DateRaised = dateRaised.Format("2006-01-02")
+	return nil
 }
 
 func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error) {

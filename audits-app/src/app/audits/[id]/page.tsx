@@ -99,7 +99,7 @@ export default function AuditDetailPage() {
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {findings.map((f) => (
-                <div key={f.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4">
+                <Link key={f.id} href={`/findings/${f.id}`} className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.99]">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -117,16 +117,18 @@ export default function AuditDetailPage() {
                         }`}>{f.completion}%</span>
                       </div>
                       <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1 line-clamp-2">{f.description}</p>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">By: {f.raised_by_name} | {f.date_raised}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        {f.raised_by_name} | {f.date_raised}
+                        {f.auditor_name && <span> | Auditor: {f.auditor_name}</span>}
+                      </p>
                     </div>
-                    <div className="flex gap-2 shrink-0">
-                      <Link href={`/findings/${f.id}`} className="text-blue-600 dark:text-blue-400 text-xs sm:text-sm font-medium">View</Link>
+                    <div className="flex gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
                       {(f.auditor_id === user?.id || isLead) && (
-                        <Link href={`/findings/${f.id}/edit`} className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium">Edit</Link>
+                        <Link href={`/findings/${f.id}/edit`} className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm font-medium hover:text-gray-900 dark:hover:text-white">Edit</Link>
                       )}
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}

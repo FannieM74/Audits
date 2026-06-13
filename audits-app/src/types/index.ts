@@ -61,6 +61,7 @@ export interface Finding {
   stop_certificate_issued: boolean;
   status: string;
   completion: number;
+  auditor_name?: string;
   created_at: string;
   updated_at: string;
   photos: Photo[];
