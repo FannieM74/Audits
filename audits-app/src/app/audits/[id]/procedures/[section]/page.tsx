@@ -193,7 +193,7 @@ export default function ProcedureSectionPage() {
                 <div key={control.id} className="border dark:border-gray-700 rounded-lg overflow-hidden">
                   <button
                     onClick={() => toggleControl(control.id)}
-                    className="w-full text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition"
+                    className="w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                   >
                     <div className="flex items-center justify-between p-3 sm:p-4 pb-1 sm:pb-1">
                       <div className="flex items-center gap-2">

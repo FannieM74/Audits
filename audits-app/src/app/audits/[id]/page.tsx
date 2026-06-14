@@ -118,7 +118,7 @@ export default function AuditDetailPage() {
                 const pct = s.total_items ? Math.round((s.answered / s.total_items) * 100) : 0;
                 return (
                   <Link key={s.section_number} href={`/audits/${id}/procedures/${s.section_number}`}
-                    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.98]">
+                    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition active:scale-[0.98]">
                     <div className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center leading-tight">{String(s.section_number).padStart(3, '0')}</div>
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center mb-2 leading-tight">{s.section_name}</div>
                     <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
