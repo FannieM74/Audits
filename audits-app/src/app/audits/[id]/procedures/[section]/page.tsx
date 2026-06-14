@@ -148,12 +148,12 @@ export default function ProcedureSectionPage() {
         <div className="flex items-center gap-2">
           <Link href={`/audits/${id}`} className="text-xs text-blue-600 dark:text-blue-400">&larr; Back to Audit</Link>
           <span className="text-xs text-gray-400">/</span>
-          <span className="text-xs text-gray-600 dark:text-gray-400">{String(section).padStart(3, '0')} {data?.section_name}</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400"><strong className="text-gray-800 dark:text-gray-200">{String(section).padStart(3, '0')}</strong> {data?.section_name}</span>
         </div>
 
         {desc && desc.description && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
-            <h1 className="text-lg sm:text-xl font-bold dark:text-white mb-3">{String(section).padStart(3, '0')} {data?.section_name}</h1>
+            <h1 className="mb-3"><span className="text-2xl font-bold dark:text-white">{String(section).padStart(3, '0')}</span><span className="text-lg sm:text-xl dark:text-gray-300 ml-2">{data?.section_name}</span></h1>
             <div className="space-y-2 text-sm dark:text-gray-200">
               {parseDesc(desc.description).map((seg, i) => (
                 <div key={i} className="flex gap-2">
