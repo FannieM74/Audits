@@ -221,27 +221,29 @@ export default function ProcedureSectionPage() {
                       {evs.length === 0 ? (
                         <p className="text-xs text-gray-400 dark:text-gray-500 py-3">No evidence items defined.</p>
                       ) : (
-                        <div className="space-y-2 pt-3">
+                        <div className="space-y-3 pt-3">
                           {evs.map((ev) => (
-                            <div key={ev.id} className="flex items-start gap-2 py-1">
-                              <p className="flex-1 text-xs sm:text-sm dark:text-gray-200 leading-relaxed">
-                                <span className="text-gray-400 dark:text-gray-500 font-mono">
+                            <div key={ev.id}>
+                              <div className="flex items-center justify-between mb-0.5">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 font-mono">
                                   {ev.sub_label || `${ci + 1}.${ev.sort_order + 1}`}.
-                                </span>{' '}
+                                </span>
+                                <select
+                                  value={ev.response || ''}
+                                  onChange={(e) => handleResponse(ev.id, e.target.value, control.id)}
+                                  className={`text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white ${
+                                    ev.response === 'no' ? 'border-red-400 dark:border-red-500' :
+                                    ev.response === 'yes' ? 'border-green-400 dark:border-green-500' : ''
+                                  }`}
+                                >
+                                  <option value="">—</option>
+                                  <option value="yes">Yes</option>
+                                  <option value="no">No</option>
+                                </select>
+                              </div>
+                              <p className="text-xs sm:text-sm dark:text-gray-200 leading-relaxed">
                                 {ev.evidence_text}
                               </p>
-                              <select
-                                value={ev.response || ''}
-                                onChange={(e) => handleResponse(ev.id, e.target.value, control.id)}
-                                className={`shrink-0 text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white ${
-                                  ev.response === 'no' ? 'border-red-400 dark:border-red-500' :
-                                  ev.response === 'yes' ? 'border-green-400 dark:border-green-500' : ''
-                                }`}
-                              >
-                                <option value="">—</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                              </select>
                             </div>
                           ))}
                         </div>
