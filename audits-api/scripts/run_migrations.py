@@ -64,14 +64,26 @@ print("  Done")
 
 # Migration 015 - rebuild procedure_items
 print("=== Running 015_rebuild_procedure_items.sql ===")
-run_sql(open(os.path.join(base, "015_rebuild_procedure_items.sql")).read())
-print("  Done")
+cur.execute("SELECT COUNT(*) FROM procedure_items")
+if cur.fetchone()[0] > 0:
+    print("  Skipped (procedure_items already populated - would destroy existing data)")
+else:
+    run_sql(open(os.path.join(base, "015_rebuild_procedure_items.sql")).read())
+    print("  Done")
 
 # Migration 016 - seed data
 print("=== Running 016_seed_sections_and_evidence.sql ===")
-# Execute as single SQL via statement split to handle semicolons in data
-run_sql(open(os.path.join(base, "016_seed_sections_and_evidence.sql")).read())
-print("  Done")
+# Execute as a single statement (not split_sql_stmts) because evidence text
+# contains semicolons inside string literals that break the split function.
+try:
+    cur.execute(open(os.path.join(base, "016_seed_sections_and_evidence.sql")).read())
+    print("  Done")
+except Exception as e:
+    err = str(e)
+    if 'already exists' in err or 'duplicate' in err.lower():
+        print(f"  Skip (exists): {err[:80]}")
+    else:
+        raise
 
 # Migration 019 - drop_ncr_ref
 print("=== Running 019_drop_ncr_ref.sql ===")
@@ -81,6 +93,11 @@ print("  Done")
 # Migration 020 - add raised_by_business_id to audits
 print("=== Running 020_add_audit_raised_by_business_id.sql ===")
 run_sql(open(os.path.join(base, "020_add_audit_raised_by_business_id.sql")).read())
+print("  Done")
+
+# Migration 021 - snapshot business details on audits
+print("=== Running 021_audit_business_details.sql ===")
+run_sql(open(os.path.join(base, "021_audit_business_details.sql")).read())
 print("  Done")
 
 cur.close()

@@ -191,7 +191,11 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 	}
 
 	var raisedByBusinessID, raisedAgainstBusinessID *uuid.UUID
-	h.pool.QueryRow(r.Context(), "SELECT business_id, raised_by_business_id FROM audits WHERE id=$1", auditID).Scan(&raisedAgainstBusinessID, &raisedByBusinessID)
+	var respPersonIntName, respPersonIntSap string
+	h.pool.QueryRow(r.Context(),
+		"SELECT business_id, raised_by_business_id, raised_against_business_responsible_person, raised_against_business_sap_no FROM audits WHERE id=$1",
+		auditID,
+	).Scan(&raisedAgainstBusinessID, &raisedByBusinessID, &respPersonIntName, &respPersonIntSap)
 
 	_, err = h.pool.Exec(r.Context(), `
 		INSERT INTO findings (
@@ -211,7 +215,7 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 		raisedBySapNo, contactDetails, originNcr, typeNcr, req.Priority,
 		req.ContravenedClause, req.ShortDescription, req.Description, controlID, workType,
 		proc, "", "", "", "", "",
-		"", "", "",
+		respPersonIntName, respPersonIntSap, "",
 		false, false, false,
 		"open", 0, now, now,
 		raisedByBusinessID, raisedAgainstBusinessID,

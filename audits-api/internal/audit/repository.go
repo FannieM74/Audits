@@ -29,6 +29,14 @@ type Audit struct {
 	LeadAuditor   *string       `json:"lead_auditor_name,omitempty"`
 	BusinessName  *string       `json:"business_name,omitempty"`
 	RaisedByBusinessName *string `json:"raised_by_business_name,omitempty"`
+	RaisedByBusinessPlant         string `json:"raised_by_business_plant"`
+	RaisedByBusinessSite          string `json:"raised_by_business_site"`
+	RaisedByBusinessResponsiblePerson string `json:"raised_by_business_responsible_person"`
+	RaisedByBusinessSapNo         string `json:"raised_by_business_sap_no"`
+	RaisedAgainstBusinessPlant         string `json:"raised_against_business_plant"`
+	RaisedAgainstBusinessSite          string `json:"raised_against_business_site"`
+	RaisedAgainstBusinessResponsiblePerson string `json:"raised_against_business_responsible_person"`
+	RaisedAgainstBusinessSapNo         string `json:"raised_against_business_sap_no"`
 	Auditors      []AuditorInfo `json:"auditors,omitempty"`
 	FindingCount  int           `json:"finding_count"`
 	ClosedCount   int           `json:"closed_count"`
@@ -48,6 +56,8 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 	query := `
 		SELECT DISTINCT a.id, a.lead_auditor_id, a.title, a.description, a.audit_type,
 			   a.audit_days, a.audit_date, a.business_id, a.raised_by_business_id, a.status, a.created_at,
+			   a.raised_by_business_plant, a.raised_by_business_site, a.raised_by_business_responsible_person, a.raised_by_business_sap_no,
+			   a.raised_against_business_plant, a.raised_against_business_site, a.raised_against_business_responsible_person, a.raised_against_business_sap_no,
 			   u.name || ' ' || u.surname AS lead_auditor_name,
 			   b.name AS business_name,
 			   rb.name AS raised_by_business_name,
@@ -76,7 +86,10 @@ func (r *Repository) ListForUser(ctx context.Context, userID uuid.UUID) ([]Audit
 		var a Audit
 		var auditDate time.Time
 		if err := rows.Scan(&a.ID, &a.LeadAuditorID, &a.Title, &a.Description, &a.AuditType,
-			&a.AuditDays, &auditDate, &a.BusinessID, &a.RaisedByBusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName,
+			&a.AuditDays, &auditDate, &a.BusinessID, &a.RaisedByBusinessID, &a.Status, &a.CreatedAt,
+			&a.RaisedByBusinessPlant, &a.RaisedByBusinessSite, &a.RaisedByBusinessResponsiblePerson, &a.RaisedByBusinessSapNo,
+			&a.RaisedAgainstBusinessPlant, &a.RaisedAgainstBusinessSite, &a.RaisedAgainstBusinessResponsiblePerson, &a.RaisedAgainstBusinessSapNo,
+			&a.LeadAuditor, &a.BusinessName,
 			&a.RaisedByBusinessName,
 			&a.FindingCount, &a.ClosedCount, &a.Completion, &a.AuditorNames); err != nil {
 			return nil, err
@@ -93,6 +106,8 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Audit, error) 
 	err := r.pool.QueryRow(ctx, `
 		SELECT a.id, a.lead_auditor_id, a.title, a.description, a.audit_type,
 			   a.audit_days, a.audit_date, a.business_id, a.raised_by_business_id, a.status, a.created_at,
+			   a.raised_by_business_plant, a.raised_by_business_site, a.raised_by_business_responsible_person, a.raised_by_business_sap_no,
+			   a.raised_against_business_plant, a.raised_against_business_site, a.raised_against_business_responsible_person, a.raised_against_business_sap_no,
 			   u.name || ' ' || u.surname AS lead_auditor_name,
 			   b.name AS business_name,
 			   rb.name AS raised_by_business_name,
@@ -105,7 +120,10 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Audit, error) 
 		LEFT JOIN businesses rb ON rb.id = a.raised_by_business_id
 		WHERE a.id = $1
 	`, id).Scan(&a.ID, &a.LeadAuditorID, &a.Title, &a.Description, &a.AuditType,
-		&a.AuditDays, &auditDate, &a.BusinessID, &a.RaisedByBusinessID, &a.Status, &a.CreatedAt, &a.LeadAuditor, &a.BusinessName,
+		&a.AuditDays, &auditDate, &a.BusinessID, &a.RaisedByBusinessID, &a.Status, &a.CreatedAt,
+		&a.RaisedByBusinessPlant, &a.RaisedByBusinessSite, &a.RaisedByBusinessResponsiblePerson, &a.RaisedByBusinessSapNo,
+		&a.RaisedAgainstBusinessPlant, &a.RaisedAgainstBusinessSite, &a.RaisedAgainstBusinessResponsiblePerson, &a.RaisedAgainstBusinessSapNo,
+		&a.LeadAuditor, &a.BusinessName,
 		&a.RaisedByBusinessName,
 		&a.FindingCount, &a.ClosedCount, &a.Completion)
 	if err != nil {
@@ -120,20 +138,62 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Audit, error) 
 
 func (r *Repository) Create(ctx context.Context, a *Audit) error {
 	auditDate, _ := time.Parse("2006-01-02", a.AuditDate)
+	// Snapshot business details at creation time
+	if a.BusinessID != nil {
+		r.pool.QueryRow(ctx,
+			"SELECT COALESCE(plant_no, ''), COALESCE(site, ''), COALESCE(responsible_person, ''), COALESCE(sap_no, '') FROM businesses WHERE id=$1",
+			*a.BusinessID,
+		).Scan(&a.RaisedAgainstBusinessPlant, &a.RaisedAgainstBusinessSite, &a.RaisedAgainstBusinessResponsiblePerson, &a.RaisedAgainstBusinessSapNo)
+	}
+	if a.RaisedByBusinessID != nil {
+		r.pool.QueryRow(ctx,
+			"SELECT COALESCE(plant_no, ''), COALESCE(site, ''), COALESCE(responsible_person, ''), COALESCE(sap_no, '') FROM businesses WHERE id=$1",
+			*a.RaisedByBusinessID,
+		).Scan(&a.RaisedByBusinessPlant, &a.RaisedByBusinessSite, &a.RaisedByBusinessResponsiblePerson, &a.RaisedByBusinessSapNo)
+	}
 	return r.pool.QueryRow(ctx, `
-		INSERT INTO audits (lead_auditor_id, title, description, audit_type, audit_days, audit_date, business_id, raised_by_business_id)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO audits (lead_auditor_id, title, description, audit_type, audit_days, audit_date,
+			business_id, raised_by_business_id,
+			raised_by_business_plant, raised_by_business_site, raised_by_business_responsible_person, raised_by_business_sap_no,
+			raised_against_business_plant, raised_against_business_site, raised_against_business_responsible_person, raised_against_business_sap_no)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
 		RETURNING id, created_at
-	`, a.LeadAuditorID, a.Title, a.Description, a.AuditType, a.AuditDays, auditDate, a.BusinessID, a.RaisedByBusinessID,
+	`,
+		a.LeadAuditorID, a.Title, a.Description, a.AuditType, a.AuditDays, auditDate,
+		a.BusinessID, a.RaisedByBusinessID,
+		a.RaisedByBusinessPlant, a.RaisedByBusinessSite, a.RaisedByBusinessResponsiblePerson, a.RaisedByBusinessSapNo,
+		a.RaisedAgainstBusinessPlant, a.RaisedAgainstBusinessSite, a.RaisedAgainstBusinessResponsiblePerson, a.RaisedAgainstBusinessSapNo,
 	).Scan(&a.ID, &a.CreatedAt)
 }
 
 func (r *Repository) Update(ctx context.Context, a *Audit) error {
 	auditDate, _ := time.Parse("2006-01-02", a.AuditDate)
+	// Re-snapshot business details if business IDs changed
+	if a.BusinessID != nil {
+		r.pool.QueryRow(ctx,
+			"SELECT COALESCE(plant_no, ''), COALESCE(site, ''), COALESCE(responsible_person, ''), COALESCE(sap_no, '') FROM businesses WHERE id=$1",
+			*a.BusinessID,
+		).Scan(&a.RaisedAgainstBusinessPlant, &a.RaisedAgainstBusinessSite, &a.RaisedAgainstBusinessResponsiblePerson, &a.RaisedAgainstBusinessSapNo)
+	}
+	if a.RaisedByBusinessID != nil {
+		r.pool.QueryRow(ctx,
+			"SELECT COALESCE(plant_no, ''), COALESCE(site, ''), COALESCE(responsible_person, ''), COALESCE(sap_no, '') FROM businesses WHERE id=$1",
+			*a.RaisedByBusinessID,
+		).Scan(&a.RaisedByBusinessPlant, &a.RaisedByBusinessSite, &a.RaisedByBusinessResponsiblePerson, &a.RaisedByBusinessSapNo)
+	}
 	_, err := r.pool.Exec(ctx, `
-		UPDATE audits SET title=$1, description=$2, audit_type=$3, audit_days=$4, audit_date=$5, status=$6, business_id=$9, raised_by_business_id=$10
+		UPDATE audits SET
+			title=$1, description=$2, audit_type=$3, audit_days=$4, audit_date=$5, status=$6,
+			business_id=$9, raised_by_business_id=$10,
+			raised_by_business_plant=$11, raised_by_business_site=$12, raised_by_business_responsible_person=$13, raised_by_business_sap_no=$14,
+			raised_against_business_plant=$15, raised_against_business_site=$16, raised_against_business_responsible_person=$17, raised_against_business_sap_no=$18
 		WHERE id=$7 AND lead_auditor_id=$8
-	`, a.Title, a.Description, a.AuditType, a.AuditDays, auditDate, a.Status, a.ID, a.LeadAuditorID, a.BusinessID, a.RaisedByBusinessID)
+	`,
+		a.Title, a.Description, a.AuditType, a.AuditDays, auditDate, a.Status, a.ID, a.LeadAuditorID,
+		a.BusinessID, a.RaisedByBusinessID,
+		a.RaisedByBusinessPlant, a.RaisedByBusinessSite, a.RaisedByBusinessResponsiblePerson, a.RaisedByBusinessSapNo,
+		a.RaisedAgainstBusinessPlant, a.RaisedAgainstBusinessSite, a.RaisedAgainstBusinessResponsiblePerson, a.RaisedAgainstBusinessSapNo,
+	)
 	return err
 }
 

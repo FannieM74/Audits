@@ -27,6 +27,14 @@ export interface Audit {
   lead_auditor_name?: string;
   business_name?: string | null;
   raised_by_business_name?: string | null;
+  raised_by_business_plant: string;
+  raised_by_business_site: string;
+  raised_by_business_responsible_person: string;
+  raised_by_business_sap_no: string;
+  raised_against_business_plant: string;
+  raised_against_business_site: string;
+  raised_against_business_responsible_person: string;
+  raised_against_business_sap_no: string;
   auditors?: AuditorInfo[];
   finding_count: number;
   closed_count: number;

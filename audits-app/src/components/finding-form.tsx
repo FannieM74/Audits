@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
-import { Business, Finding, SectionSummary, User } from '@/types';
+import { Audit, Business, Finding, SectionSummary, User } from '@/types';
 
 interface FindingFormProps {
   auditId: string;
@@ -88,18 +88,36 @@ function Fieldset({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
+function BusinessInfoBox({ plant, site, responsiblePerson, sapNo }: {
+  plant: string; site: string; responsiblePerson: string; sapNo: string;
+}) {
+  if (!plant && !site && !responsiblePerson && !sapNo) return null;
+  return (
+    <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
+      {plant && <span className="mr-3">Plant: {plant}</span>}
+      {site && <span className="mr-3">Site: {site}</span>}
+      {responsiblePerson && <span className="mr-3">Person: {responsiblePerson}</span>}
+      {sapNo && <span>SAP: {sapNo}</span>}
+    </div>
+  );
+}
+
 export default function FindingForm({ auditId, initial, onSave, onCancel, loading, user, saved, renderAfterActions }: FindingFormProps) {
   const [form, setForm] = useState<FormState>(initForm(initial, user));
   const [sections, setSections] = useState<SectionSummary[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [auditData, setAuditData] = useState<Audit | null>(null);
 
   useEffect(() => {
     api.get(`/api/audits/${auditId}`).then((res) => {
-      const a = res.data;
+      const a = res.data as Audit;
+      setAuditData(a);
       setForm((prev) => ({
         ...prev,
         raised_by_business_id: a.raised_by_business_id || prev.raised_by_business_id,
         raised_against_business_id: prev.raised_against_business_id || a.business_id || '',
+        resp_person_int_name: prev.resp_person_int_name || a.raised_against_business_responsible_person || '',
+        resp_person_int_sap: prev.resp_person_int_sap || a.raised_against_business_sap_no || '',
       }));
     }).catch(() => {});
     api.get('/api/businesses').then((res) => {
@@ -148,11 +166,23 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         <option value="">Select business...</option>
         {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
       </Select>
+      <BusinessInfoBox
+        plant={auditData?.raised_by_business_plant || ''}
+        site={auditData?.raised_by_business_site || ''}
+        responsiblePerson={auditData?.raised_by_business_responsible_person || ''}
+        sapNo={auditData?.raised_by_business_sap_no || ''}
+      />
 
       <Select label="Raised Against Business" value={form.raised_against_business_id} onChange={handleRaisedAgainstChange}>
         <option value="">Select business...</option>
         {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
       </Select>
+      <BusinessInfoBox
+        plant={auditData?.raised_against_business_plant || ''}
+        site={auditData?.raised_against_business_site || ''}
+        responsiblePerson={auditData?.raised_against_business_responsible_person || ''}
+        sapNo={auditData?.raised_against_business_sap_no || ''}
+      />
 
       <Select label="Origin of NCR" value={form.origin_ncr} onChange={update('origin_ncr')}>
         <option value="">Select origin...</option>
