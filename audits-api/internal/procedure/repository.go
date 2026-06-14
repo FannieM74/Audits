@@ -202,6 +202,9 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 		}
 		summaries = append(summaries, s)
 	}
+	if summaries == nil {
+		summaries = []SectionSummary{}
+	}
 	return summaries, nil
 }
 

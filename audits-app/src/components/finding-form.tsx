@@ -94,15 +94,18 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
   const [businesses, setBusinesses] = useState<Business[]>([]);
 
   useEffect(() => {
+    api.get(`/api/audits/${auditId}`).then((res) => {
+      const a = res.data;
+      setForm((prev) => ({
+        ...prev,
+        raised_by_business_id: a.raised_by_business_id || prev.raised_by_business_id,
+        raised_against_business_id: prev.raised_against_business_id || a.business_id || '',
+      }));
+    }).catch(() => {});
     api.get('/api/businesses').then((res) => {
-      const biz = res.data;
-      setBusinesses(biz);
-      const facInfra = biz.find((b: Business) => b.name === 'Facilities and Infrastructure');
-      if (facInfra) {
-        setForm((prev) => ({ ...prev, raised_by_business_id: facInfra.id }));
-      }
+      setBusinesses(res.data);
     });
-  }, []);
+  }, [auditId]);
 
   useEffect(() => {
     api.get(`/api/audits/${auditId}/procedure-sections`).then((res) => setSections(res.data)).catch(() => {});

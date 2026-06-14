@@ -21,10 +21,12 @@ export interface Audit {
   audit_days: number;
   audit_date: string;
   business_id?: string | null;
+  raised_by_business_id?: string | null;
   status: string;
   created_at: string;
   lead_auditor_name?: string;
   business_name?: string | null;
+  raised_by_business_name?: string | null;
   auditors?: AuditorInfo[];
   finding_count: number;
   closed_count: number;

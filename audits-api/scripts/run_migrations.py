@@ -73,9 +73,14 @@ print("=== Running 016_seed_sections_and_evidence.sql ===")
 run_sql(open(os.path.join(base, "016_seed_sections_and_evidence.sql")).read())
 print("  Done")
 
-# Migration 017 - update responses
-print("=== Running 017_update_responses.sql ===")
-run_sql(open(os.path.join(base, "017_update_responses.sql")).read())
+# Migration 019 - drop_ncr_ref
+print("=== Running 019_drop_ncr_ref.sql ===")
+run_sql(open(os.path.join(base, "019_drop_ncr_ref.sql")).read())
+print("  Done")
+
+# Migration 020 - add raised_by_business_id to audits
+print("=== Running 020_add_audit_raised_by_business_id.sql ===")
+run_sql(open(os.path.join(base, "020_add_audit_raised_by_business_id.sql")).read())
 print("  Done")
 
 cur.close()

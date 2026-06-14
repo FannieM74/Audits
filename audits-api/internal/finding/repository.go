@@ -160,6 +160,9 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditor
 		}
 		findings = append(findings, f)
 	}
+	if findings == nil {
+		findings = []Finding{}
+	}
 	return findings, nil
 }
 

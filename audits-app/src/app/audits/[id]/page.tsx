@@ -88,6 +88,18 @@ export default function AuditDetailPage() {
                 <span className="text-gray-500 dark:text-gray-400 text-xs">Lead Auditor</span>
                 <p className="font-medium dark:text-gray-200">{audit.lead_auditor_name}</p>
               </div>
+              {audit.business_name && (
+                <div className="col-span-2">
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Business Being Audited</span>
+                  <p className="font-medium dark:text-gray-200">{audit.business_name}</p>
+                </div>
+              )}
+              {audit.raised_by_business_name && (
+                <div className="col-span-2">
+                  <span className="text-gray-500 dark:text-gray-400 text-xs">Raised By Business</span>
+                  <p className="font-medium dark:text-gray-200">{audit.raised_by_business_name}</p>
+                </div>
+              )}
               {audit.auditors && audit.auditors.length > 0 && (
                 <div className="col-span-2 sm:col-span-4">
                   <span className="text-gray-500 dark:text-gray-400 text-xs">Auditors</span>
@@ -112,7 +124,7 @@ export default function AuditDetailPage() {
             </div>
           </div>
 
-          {sections.length > 0 && (
+          {sections && sections.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
               {sections.map((s) => {
                 const pct = s.total_items ? Math.round((s.answered / s.total_items) * 100) : 0;
@@ -136,7 +148,7 @@ export default function AuditDetailPage() {
           )}
 
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({findings.length})</h2>
+            <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({(findings || []).length})</h2>
             <div className="flex gap-2">
               <select value={filterAuditor} onChange={(e) => setFilterAuditor(e.target.value)}
                 className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">
@@ -151,7 +163,7 @@ export default function AuditDetailPage() {
               <select value={filterProcedure} onChange={(e) => setFilterProcedure(e.target.value)}
                 className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">
                 <option value="">All Procedures</option>
-                {sections.map((s) => {
+                {(sections || []).map((s) => {
                   const label = `${String(s.section_number).padStart(3, '0')} ${s.section_name}`;
                   return <option key={s.section_number} value={label}>{label}</option>;
                 })}
@@ -159,18 +171,18 @@ export default function AuditDetailPage() {
             </div>
           </div>
 
-          {findings.length === 0 && !filterAuditor && !filterProcedure ? (
+          {(findings || []).length === 0 && !filterAuditor && !filterProcedure ? (
             <div className="text-center py-12 sm:py-16">
               <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base mb-4">No findings yet.</p>
               <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-sm font-medium inline-block">
                 + Create First Finding
               </Link>
             </div>
-          ) : findings.length === 0 ? (
+          ) : (findings || []).length === 0 ? (
             <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">No findings match the selected filters.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
-              {findings.map((f) => (
+              {(findings || []).map((f) => (
                 <Link key={f.id} href={`/findings/${f.id}`} className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.99]">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">

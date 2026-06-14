@@ -89,6 +89,11 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		h.svc.pool.QueryRow(r.Context(), "SELECT business_id FROM audits WHERE id=$1", auditID).Scan(&businessID)
 		f.RaisedAgainstBusinessID = businessID
 	}
+	if f.RaisedByBusinessID == nil {
+		var raisedBy *uuid.UUID
+		h.svc.pool.QueryRow(r.Context(), "SELECT raised_by_business_id FROM audits WHERE id=$1", auditID).Scan(&raisedBy)
+		f.RaisedByBusinessID = raisedBy
+	}
 	if err := h.svc.Create(r.Context(), &f); err != nil {
 		log.Printf("create finding error: %v", err)
 		writeError(w, http.StatusBadRequest, err.Error())

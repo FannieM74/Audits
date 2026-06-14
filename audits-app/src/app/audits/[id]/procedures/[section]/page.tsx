@@ -68,11 +68,15 @@ export default function ProcedureSectionPage() {
     if (!findingModal) return;
     setCreating(true);
     try {
+      const auditRes = await api.get(`/api/audits/${id}`);
+      const audit = auditRes.data;
       const body = {
         ...findingForm,
         audit_id: id,
         date_raised: new Date().toISOString().split('T')[0],
         procedure: `${String(section).padStart(3, '0')} ${data?.section_name || ''}`,
+        raised_by_business_id: audit.raised_by_business_id || null,
+        raised_against_business_id: audit.business_id || null,
       };
       await api.post(`/api/audits/${id}/controls/${findingModal.controlId}/finding`, body);
       setFindingModal(null);

@@ -190,6 +190,9 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 		proc = "1"
 	}
 
+	var raisedByBusinessID, raisedAgainstBusinessID *uuid.UUID
+	h.pool.QueryRow(r.Context(), "SELECT business_id, raised_by_business_id FROM audits WHERE id=$1", auditID).Scan(&raisedAgainstBusinessID, &raisedByBusinessID)
+
 	_, err = h.pool.Exec(r.Context(), `
 		INSERT INTO findings (
 			id, audit_id, auditor_id, date_raised, raised_by_name,
@@ -198,9 +201,11 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 			procedure, item_no, serial_batch_no, customer_name, vendor_name, vendor_no,
 			resp_person_int_name, resp_person_int_sap, resp_person_ext_name,
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
-			status, completion, created_at, updated_at)
+			status, completion, created_at, updated_at,
+			raised_by_business_id, raised_against_business_id)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
-			$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)
+			$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,
+			$32,$33)
 	`,
 		findingID, auditID, claims.UserID, dateRaised, raisedByName,
 		raisedBySapNo, contactDetails, originNcr, typeNcr, req.Priority,
@@ -209,6 +214,7 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 		"", "", "",
 		false, false, false,
 		"open", 0, now, now,
+		raisedByBusinessID, raisedAgainstBusinessID,
 	)
 	if err != nil {
 		log.Printf("create finding error: %v", err)

@@ -11,7 +11,7 @@ export default function EditAuditPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     description: '', audit_type: 'Second Party', audit_days: 3,
-    audit_date: '', status: 'open', business_id: '',
+    audit_date: '', status: 'open', business_id: '', raised_by_business_id: '',
   });
   const [auditors, setAuditors] = useState<{ id: string; name: string }[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -30,6 +30,7 @@ export default function EditAuditPage() {
         audit_type: res.data.audit_type, audit_days: res.data.audit_days,
         audit_date: res.data.audit_date, status: res.data.status,
         business_id: res.data.business_id || '',
+        raised_by_business_id: res.data.raised_by_business_id || '',
       });
       setAuditors(res.data.auditors || []);
     });
@@ -110,6 +111,15 @@ export default function EditAuditPage() {
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Business Being Audited</label>
             <select value={form.business_id} onChange={update('business_id')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base">
+              <option value="">Select business...</option>
+              {businesses.map((b) => (
+                <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Raised By Business</label>
+            <select value={form.raised_by_business_id} onChange={update('raised_by_business_id')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base">
               <option value="">Select business...</option>
               {businesses.map((b) => (
                 <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>

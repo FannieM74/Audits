@@ -15,13 +15,17 @@ export default function NewAuditPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [form, setForm] = useState({
     description: '', audit_type: 'Second Party', audit_days: 3,
-    audit_date: '', business_id: '', auditor_ids: [] as string[],
+    audit_date: '', business_id: '', raised_by_business_id: '', auditor_ids: [] as string[],
   });
   const [error, setError] = useState('');
 
   useEffect(() => {
     api.get('/api/users').then((res) => setUsers(res.data));
-    api.get('/api/businesses').then((res) => setBusinesses(res.data));
+    api.get('/api/businesses').then((res) => {
+      setBusinesses(res.data);
+      const fi = res.data.find((b: Business) => b.name === 'Facilities and Infrastructure');
+      if (fi) setForm((f) => ({ ...f, raised_by_business_id: fi.id }));
+    });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,6 +81,15 @@ export default function NewAuditPage() {
           <div>
             <label className="block text-sm font-medium mb-1 dark:text-gray-300">Business Being Audited</label>
             <select value={form.business_id} onChange={update('business_id')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base">
+              <option value="">Select business...</option>
+              {businesses.map((b) => (
+                <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 dark:text-gray-300">Raised By Business</label>
+            <select value={form.raised_by_business_id} onChange={update('raised_by_business_id')} className="w-full border dark:border-gray-600 rounded px-3 py-2.5 dark:bg-gray-700 dark:text-white text-base">
               <option value="">Select business...</option>
               {businesses.map((b) => (
                 <option key={b.id} value={b.id}>{b.name} &mdash; Plant {b.plant_no}</option>

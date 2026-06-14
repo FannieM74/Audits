@@ -9,6 +9,17 @@ import (
 	"github.com/fanniem74/audits-api/internal/middleware"
 )
 
+func cleanUUIDFields(raw map[string]json.RawMessage, fields ...string) {
+	for _, key := range fields {
+		if v, ok := raw[key]; ok {
+			var s string
+			if err := json.Unmarshal(v, &s); err == nil && s == "" {
+				raw[key] = json.RawMessage("null")
+			}
+		}
+	}
+}
+
 type Handler struct {
 	svc *Service
 }
@@ -49,8 +60,17 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	claims := middleware.GetClaims(r)
+
+	var raw map[string]json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&raw); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+	cleanUUIDFields(raw, "business_id", "raised_by_business_id")
+
+	cleaned, _ := json.Marshal(raw)
 	var a Audit
-	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
+	if err := json.Unmarshal(cleaned, &a); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request")
 		return
 	}
@@ -83,8 +103,17 @@ func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid id")
 		return
 	}
+
+	var raw map[string]json.RawMessage
+	if err := json.NewDecoder(r.Body).Decode(&raw); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+	cleanUUIDFields(raw, "business_id", "raised_by_business_id")
+
+	cleaned, _ := json.Marshal(raw)
 	var a Audit
-	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
+	if err := json.Unmarshal(cleaned, &a); err != nil {
 		writeError(w, http.StatusBadRequest, "invalid request")
 		return
 	}
