@@ -39,7 +39,7 @@ export default function ProcedureSectionPage() {
       const ctrl = controls.find(c => c.id === controlId);
       const item = ctrl?.evidences?.find(e => e.id === evidenceItemId);
       if (item) {
-        const label = item.sub_label || item.evidence_text;
+        const label = item.sub_label ? `${item.sub_label} ${item.evidence_text}` : item.evidence_text;
         openFindingModal(controlId, [label].filter(Boolean));
       }
     }
@@ -189,7 +189,7 @@ export default function ProcedureSectionPage() {
               const hasNo = evs.some(e => e.response === 'no');
               const nonCompliantLabels = evs
                 .filter(e => e.response === 'no')
-                .map(e => e.sub_label || e.evidence_text)
+                .map(e => e.sub_label ? `${e.sub_label} ${e.evidence_text}` : e.evidence_text)
                 .filter(Boolean);
               const isExpanded = expandedControl === control.id;
 
