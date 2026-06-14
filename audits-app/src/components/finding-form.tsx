@@ -61,14 +61,15 @@ function Input({ label, value, onChange, type, placeholder }: {
   );
 }
 
-function Select({ label, value, onChange, children }: {
+function Select({ label, value, onChange, children, disabled }: {
   label: string; value: string; onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  children: React.ReactNode;
+  children: React.ReactNode; disabled?: boolean;
 }) {
   return (
     <div>
       <label className="block text-sm font-medium mb-1 dark:text-gray-300">{label}</label>
-      <select value={value} onChange={onChange} className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white">
+      <select value={value} onChange={onChange} disabled={disabled}
+        className="w-full border dark:border-gray-600 rounded px-3 py-2 dark:bg-gray-700 dark:text-white disabled:opacity-60 disabled:cursor-not-allowed">
         {children}
       </select>
     </div>
@@ -148,7 +149,7 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
       </Select>
 
-      <Select label="Procedure" value={form.procedure} onChange={update('procedure')}>
+      <Select label="Procedure" value={form.procedure} onChange={update('procedure')} disabled={!!initial?.procedure}>
         <option value="">Select procedure...</option>
         {sections.map((s) => {
           const label = `${String(s.section_number).padStart(3, '0')} ${s.section_name}`;
