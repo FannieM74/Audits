@@ -90,6 +90,9 @@ export default function ProcedureSectionPage() {
   const totalEvidence = controls.reduce((sum, c) => sum + (c.evidences?.length || 0), 0);
   const answeredEvidence = controls.reduce((sum, c) =>
     sum + (c.evidences?.filter(e => e.response).length || 0), 0);
+  const pendingFinding = controls.filter(c =>
+    c.evidences?.some(e => e.response === 'no') && !c.has_finding
+  ).length;
 
   // Parse section description into segments
   const parseDesc = (text: string) => {
@@ -175,6 +178,7 @@ export default function ProcedureSectionPage() {
             </h2>
             <div className="text-right text-xs sm:text-sm">
               <span className="text-gray-500 dark:text-gray-400">{answeredEvidence}/{totalEvidence} items answered</span>
+              {pendingFinding > 0 && <span className="text-orange-500 dark:text-orange-400 ml-2 font-medium">{pendingFinding} pending</span>}
             </div>
           </div>
 
@@ -190,7 +194,7 @@ export default function ProcedureSectionPage() {
               const isExpanded = expandedControl === control.id;
 
               return (
-                <div key={control.id} className="border dark:border-gray-700 rounded-lg overflow-hidden">
+                <div key={control.id} className={`border dark:border-gray-700 rounded-lg overflow-hidden ${hasNo && !control.has_finding ? 'border-l-2 border-l-orange-400 dark:border-l-orange-500' : ''}`}>
                   <button
                     onClick={() => toggleControl(control.id)}
                     className="w-full text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition"
@@ -201,11 +205,12 @@ export default function ProcedureSectionPage() {
                         {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        {hasNo && !control.has_finding && <span className="text-orange-500 text-[10px]">⚠️</span>}
                         <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">{answeredCount}/{evs.length}</span>
                         <div className="w-16 sm:w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
                           <div className="h-full rounded-full transition-all" style={{
                             width: `${evs.length ? (answeredCount / evs.length) * 100 : 0}%`,
-                            backgroundColor: evs.length && answeredCount === evs.length ? '#22c55e' : answeredCount > 0 ? '#3b82f6' : '#d1d5db'
+                            backgroundColor: control.has_finding ? '#22c55e' : hasNo ? '#f97316' : evs.length && answeredCount === evs.length ? '#22c55e' : answeredCount > 0 ? '#3b82f6' : '#d1d5db'
                           }} />
                         </div>
                         <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
