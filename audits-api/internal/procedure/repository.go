@@ -50,6 +50,7 @@ type SectionSummary struct {
 	TotalItems    int    `json:"total_items"`
 	Answered      int    `json:"answered"`
 	Findings      int    `json:"findings"`
+	Pending       int    `json:"pending"`
 }
 
 type ControlWithEvidence struct {
@@ -180,7 +181,8 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 			pi.section_name,
 			COUNT(pei.id) AS total_items,
 			COUNT(apr.response) FILTER (WHERE apr.response IS NOT NULL) AS answered,
-			COUNT(DISTINCT f.id) FILTER (WHERE f.id IS NOT NULL AND f.procedure_item_id = pi.id) AS findings
+			COUNT(DISTINCT f.id) FILTER (WHERE f.id IS NOT NULL AND f.procedure_item_id = pi.id) AS findings,
+			COUNT(DISTINCT pi.id) FILTER (WHERE apr.response = 'no' AND f.id IS NULL) AS pending
 		FROM procedure_items pi
 		LEFT JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
 		LEFT JOIN audit_procedure_responses apr ON apr.evidence_item_id = pei.id AND apr.audit_id = $1
@@ -195,7 +197,7 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 	var summaries []SectionSummary
 	for rows.Next() {
 		var s SectionSummary
-		if err := rows.Scan(&s.SectionNumber, &s.SectionName, &s.TotalItems, &s.Answered, &s.Findings); err != nil {
+		if err := rows.Scan(&s.SectionNumber, &s.SectionName, &s.TotalItems, &s.Answered, &s.Findings, &s.Pending); err != nil {
 			return nil, err
 		}
 		summaries = append(summaries, s)

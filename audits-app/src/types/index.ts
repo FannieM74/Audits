@@ -132,6 +132,7 @@ export interface SectionSummary {
   total_items: number;
   answered: number;
   findings: number;
+  pending: number;
 }
 
 export interface Business {

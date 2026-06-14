@@ -118,15 +118,16 @@ export default function AuditDetailPage() {
                 const pct = s.total_items ? Math.round((s.answered / s.total_items) * 100) : 0;
                 return (
                   <Link key={s.section_number} href={`/audits/${id}/procedures/${s.section_number}`}
-                    className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition active:scale-[0.98]">
+                    className={`block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition active:scale-[0.98] ${s.pending > 0 ? 'border-l-2 border-l-orange-400 dark:border-l-orange-500' : ''}`}>
                     <div className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center leading-tight">{String(s.section_number).padStart(3, '0')}</div>
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center mb-2 leading-tight">{s.section_name}</div>
                     <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
                       <span>{s.answered}/{s.total_items}</span>
                       <span className={s.findings > 0 ? 'text-red-500 font-medium' : ''}>{s.findings} finding{s.findings !== 1 ? 's' : ''}</span>
                     </div>
+                    {s.pending > 0 && <div className="text-[10px] text-orange-500 font-medium text-center mb-1">⚠️ {s.pending} pending</div>}
                     <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
-                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: pct >= 100 ? '#22c55e' : pct > 0 ? '#3b82f6' : '#d1d5db' }} />
+                      <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, backgroundColor: s.pending > 0 ? '#f97316' : pct >= 100 ? '#22c55e' : pct > 0 ? '#3b82f6' : '#d1d5db' }} />
                     </div>
                   </Link>
                 );
