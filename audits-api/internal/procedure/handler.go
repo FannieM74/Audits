@@ -173,6 +173,14 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 	if raisedByName == "" {
 		raisedByName = claims.Name
 	}
+	raisedBySapNo := req.RaisedBySapNo
+	if raisedBySapNo == "" {
+		h.pool.QueryRow(r.Context(), "SELECT sap_no FROM users WHERE id=$1", claims.UserID).Scan(&raisedBySapNo)
+	}
+	contactDetails := req.ContactDetails
+	if contactDetails == "" {
+		h.pool.QueryRow(r.Context(), "SELECT work_tel FROM users WHERE id=$1", claims.UserID).Scan(&contactDetails)
+	}
 	originNcr := req.OriginNcr
 	if originNcr == "" {
 		originNcr = "Internal"
@@ -200,7 +208,7 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 			$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
 	`,
 		findingID, auditID, claims.UserID, ncrRef, dateRaised, raisedByName,
-		req.RaisedBySapNo, req.ContactDetails, originNcr, typeNcr, req.Priority,
+		raisedBySapNo, contactDetails, originNcr, typeNcr, req.Priority,
 		req.ContravenedClause, req.ShortDescription, req.Description, controlID, workType,
 		proc, "", "", "", "", "",
 		"", "", "",

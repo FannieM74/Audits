@@ -21,6 +21,8 @@ export default function ProcedureSectionPage() {
     contravened_clause: '',
     origin_ncr: '',
     type_ncr: '',
+    raised_by_sap_no: '',
+    contact_details: '',
   });
   const [creating, setCreating] = useState(false);
 
@@ -57,6 +59,8 @@ export default function ProcedureSectionPage() {
       contravened_clause: '',
       origin_ncr: '',
       type_ncr: '',
+      raised_by_sap_no: user?.sap_no || '',
+      contact_details: user?.work_tel || '',
     });
   };
 

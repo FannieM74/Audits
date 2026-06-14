@@ -42,6 +42,8 @@ type Finding struct {
 	RaisedAgainstBusinessResponsiblePerson *string `json:"raised_against_business_responsible_person,omitempty"`
 	RaisedByBusinessSapNo *string `json:"raised_by_business_sap_no,omitempty"`
 	RaisedAgainstBusinessSapNo *string `json:"raised_against_business_sap_no,omitempty"`
+	RaisedByBusinessSite      *string  `json:"raised_by_business_site,omitempty"`
+	RaisedAgainstBusinessSite *string  `json:"raised_against_business_site,omitempty"`
 	ShortDescription      string     `json:"short_description"`
 	Description           string     `json:"description"`
 	ProcedureItemID       *uuid.UUID `json:"procedure_item_id,omitempty"`
@@ -96,6 +98,7 @@ func scanFinding(scanner interface {
 		&f.CreatedAt, &f.UpdatedAt,
 		&f.RaisedByBusinessName, &f.RaisedByBusinessPlant, &f.RaisedByBusinessResponsiblePerson, &f.RaisedByBusinessSapNo,
 		&f.RaisedAgainstBusinessName, &f.RaisedAgainstBusinessPlant, &f.RaisedAgainstBusinessResponsiblePerson, &f.RaisedAgainstBusinessSapNo,
+		&f.RaisedByBusinessSite, &f.RaisedAgainstBusinessSite,
 	)
 	if err != nil {
 		return err
@@ -123,7 +126,9 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditor
 		COALESCE(rab.name, '') AS raised_against_business_name,
 		COALESCE(rab.plant_no, '') AS raised_against_business_plant,
 		COALESCE(rab.responsible_person, '') AS raised_against_business_responsible_person,
-		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no
+		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no,
+		COALESCE(rb.site, '') AS raised_by_business_site,
+		COALESCE(rab.site, '') AS raised_against_business_site
 		FROM findings f
 		LEFT JOIN users u ON u.id = f.auditor_id
 		LEFT JOIN businesses rb ON rb.id = f.raised_by_business_id
@@ -174,6 +179,7 @@ func scanFindingWithAuditor(scanner interface {
 		&f.AuditorName,
 		&f.RaisedByBusinessName, &f.RaisedByBusinessPlant, &f.RaisedByBusinessResponsiblePerson, &f.RaisedByBusinessSapNo,
 		&f.RaisedAgainstBusinessName, &f.RaisedAgainstBusinessPlant, &f.RaisedAgainstBusinessResponsiblePerson, &f.RaisedAgainstBusinessSapNo,
+		&f.RaisedByBusinessSite, &f.RaisedAgainstBusinessSite,
 	)
 	if err != nil {
 		return err
@@ -192,7 +198,9 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error
 		COALESCE(rab.name, '') AS raised_against_business_name,
 		COALESCE(rab.plant_no, '') AS raised_against_business_plant,
 		COALESCE(rab.responsible_person, '') AS raised_against_business_responsible_person,
-		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no
+		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no,
+		COALESCE(rb.site, '') AS raised_by_business_site,
+		COALESCE(rab.site, '') AS raised_against_business_site
 		FROM findings f
 		LEFT JOIN businesses rb ON rb.id = f.raised_by_business_id
 		LEFT JOIN businesses rab ON rab.id = f.raised_against_business_id

@@ -21,21 +21,36 @@ def _tc_text(tc):
 
 
 def _set_tc_text(tc, value):
-    """Replace content of first <w:t> in cell, or create one."""
+    """Replace content of first <w:t> in cell with 9pt font, or create one."""
     t = tc.find(f".//{{{NS}}}t")
     if t is not None:
         t.text = value
+        r = t.getparent()
+        rpr = r.find(f"{{{NS}}}rPr")
+        if rpr is None:
+            rpr = etree.Element(etree.QName(NS, "rPr"))
+            r.insert(0, rpr)
+        sz = rpr.find(f"{{{NS}}}sz")
+        if sz is None:
+            sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
+        sz.set(etree.QName(NS, "val"), "18")
         return
     p = etree.SubElement(tc, etree.QName(NS, "p"))
     r = etree.SubElement(p, etree.QName(NS, "r"))
+    rpr = etree.SubElement(r, etree.QName(NS, "rPr"))
+    sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
+    sz.set(etree.QName(NS, "val"), "18")
     t = etree.SubElement(r, etree.QName(NS, "t"))
     t.text = value
 
 
 def _add_x_to_tc(tc):
-    """Append a <w:p><w:r><w:t>X</w:t></w:r></w:p> to the cell."""
+    """Append a <w:p><w:r><w:rPr><w:sz w:val="18"/></w:rPr><w:t>X</w:t></w:r></w:p> to the cell."""
     p = etree.SubElement(tc, etree.QName(NS, "p"))
     r = etree.SubElement(p, etree.QName(NS, "r"))
+    rpr = etree.SubElement(r, etree.QName(NS, "rPr"))
+    sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
+    sz.set(etree.QName(NS, "val"), "18")
     t = etree.SubElement(r, etree.QName(NS, "t"))
     t.text = "X"
 
@@ -64,10 +79,37 @@ def _find_tc(table, marker):
     return None, None
 
 
+def _find_tc_by_row(table, marker, row_index):
+    """Return (tc, next_tc) for *marker* within a specific *row_index*."""
+    row = table.rows[row_index]._tr
+    tcs = row.findall(f"{{{NS}}}tc")
+    for i, tc in enumerate(tcs):
+        if marker in _tc_text(tc):
+            next_tc = tcs[i + 1] if i + 1 < len(tcs) else None
+            return tc, next_tc
+    return None, None
+
+
 # ── main logic ───────────────────────────────────────────────────────
 
 def esc(s):
     return str(s) if s is not None else ""
+
+
+def _set_description_value(table, value):
+    """Write NCR Description data and align cell content to top."""
+    tc, nxt = _find_tc(table, "NCR Description:")
+    if nxt is None:
+        return
+    if value:
+        _set_tc_text(nxt, value)
+    tcpr = nxt.find(f"{{{NS}}}tcPr")
+    if tcpr is None:
+        tcpr = etree.SubElement(nxt, etree.QName(NS, "tcPr"))
+    valign = tcpr.find(f"{{{NS}}}vAlign")
+    if valign is None:
+        valign = etree.SubElement(tcpr, etree.QName(NS, "vAlign"))
+    valign.set(etree.QName(NS, "val"), "top")
 
 
 def main():
@@ -99,6 +141,13 @@ def main():
         if nxt is not None:
             _set_tc_text(nxt, value)
 
+    def _set_next_in_row(marker, value, row_index):
+        if not value:
+            return
+        tc, nxt = _find_tc_by_row(table, marker, row_index)
+        if nxt is not None:
+            _set_tc_text(nxt, value)
+
     def _check_next(marker):
         """Put X in the cell immediately after the cell containing *marker*."""
         tc, nxt = _find_tc(table, marker)
@@ -112,7 +161,7 @@ def main():
     _set_next("Vendor No.:",                 esc(f.get("vendor_no", "")))
     _set_next("Item No.:",                   esc(f.get("item_no", "")))
     _set_next("Serial / Batch No.:",         esc(f.get("serial_batch_no", "")))
-    _set_next("NCR Description:",            esc(f.get("description", "")))
+    _set_description_value(table,            esc(f.get("description", "")))
     _set_next("Type of work, processes or equipment involved:",
                                               esc(f.get("work_type_process", "")))
     _set_next("Responsible Person (Int):",
@@ -122,7 +171,11 @@ def main():
     _set_next("Responsible Person (Ext):",   esc(f.get("resp_person_ext_name", "")))
     _set_next("Date Raised:",                esc(f.get("date_raised", "")))
     _set_next("NCR Raised by which Business:", esc(f.get("raised_by_business_name", "")))
+    _set_next_in_row("Plant No.:", esc(f.get("raised_by_business_plant", "")), 12)
+    _set_next_in_row("Name of Site:", esc(f.get("raised_by_business_site", "")), 12)
     _set_next("NCR Raised against which Business:", esc(f.get("raised_against_business_name", "")))
+    _set_next_in_row("Plant No.:", esc(f.get("raised_against_business_plant", "")), 13)
+    _set_next_in_row("Name of Site:", esc(f.get("raised_against_business_site", "")), 13)
 
     # ── origin checkboxes ────────────────────────────────────────────
     origin = f.get("origin_ncr", "")

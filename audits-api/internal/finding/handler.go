@@ -247,16 +247,18 @@ func (h *Handler) DownloadWord(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if f.RaisedByBusinessID != nil {
-		var name, site string
-		h.svc.pool.QueryRow(r.Context(), "SELECT name, site FROM businesses WHERE id=$1", f.RaisedByBusinessID).Scan(&name, &site)
+		var name, plant, site string
+		h.svc.pool.QueryRow(r.Context(), "SELECT name, plant_no, site FROM businesses WHERE id=$1", f.RaisedByBusinessID).Scan(&name, &plant, &site)
 		f.RaisedByBusinessName = &name
-		f.RaisedByBusinessPlant = &site
+		f.RaisedByBusinessPlant = &plant
+		f.RaisedByBusinessSite = &site
 	}
 	if f.RaisedAgainstBusinessID != nil {
-		var name, site string
-		h.svc.pool.QueryRow(r.Context(), "SELECT name, site FROM businesses WHERE id=$1", f.RaisedAgainstBusinessID).Scan(&name, &site)
+		var name, plant, site string
+		h.svc.pool.QueryRow(r.Context(), "SELECT name, plant_no, site FROM businesses WHERE id=$1", f.RaisedAgainstBusinessID).Scan(&name, &plant, &site)
 		f.RaisedAgainstBusinessName = &name
-		f.RaisedAgainstBusinessPlant = &site
+		f.RaisedAgainstBusinessPlant = &plant
+		f.RaisedAgainstBusinessSite = &site
 	}
 
 	docxBytes, err := h.generateDocxPython(f)
