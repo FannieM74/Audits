@@ -172,13 +172,13 @@ export default function ProcedureSectionPage() {
         )}
 
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-5">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4">
             <h2 className="text-base sm:text-lg font-semibold dark:text-white">
               Applicable Controls ({controls.length})
             </h2>
-            <div className="text-right text-xs sm:text-sm">
-              <span className="text-gray-500 dark:text-gray-400">{answeredEvidence}/{totalEvidence} items answered</span>
-              {pendingFinding > 0 && <span className="text-orange-500 dark:text-orange-400 ml-2 font-medium">{pendingFinding} pending</span>}
+            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              {answeredEvidence}/{totalEvidence} items answered
+              {pendingFinding > 0 && <span className="text-orange-500 dark:text-orange-400 font-medium ml-2">{pendingFinding} pending</span>}
             </div>
           </div>
 
