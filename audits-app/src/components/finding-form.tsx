@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
-import { Business, Finding, User } from '@/types';
+import { Business, Finding, SectionSummary, User } from '@/types';
 
 interface FindingFormProps {
   auditId: string;
@@ -18,8 +18,6 @@ interface FindingFormProps {
 const PRIORITIES = ['Major', 'Minor', 'Area of Concern', 'Observation'] as const;
 const ORIGINS = ['Legal', 'System (Non-conformance)', 'Other Non-compliance'] as const;
 const TYPES = ['Environment', 'Health', 'Railway Safety', 'Customer Complaint', 'Fire', 'Maritime', 'Vendor', 'System', 'HAZMAT', 'Quality', 'Audit', 'Other (Specify)'] as const;
-const PROCEDURES = Array.from({ length: 18 }, (_, i) => `Procedure ${i + 1}`);
-
 function initForm(initial?: Partial<Finding>, user?: User | null) {
   return {
     date_raised: initial?.date_raised || new Date().toISOString().split('T')[0],
@@ -88,6 +86,7 @@ function Fieldset({ label, children }: { label: string; children: React.ReactNod
 
 export default function FindingForm({ auditId, initial, onSave, onCancel, loading, user, saved, renderAfterActions }: FindingFormProps) {
   const [form, setForm] = useState<FormState>(initForm(initial, user));
+  const [sections, setSections] = useState<SectionSummary[]>([]);
 
   useEffect(() => {
     api.get('/api/businesses').then((res) => {
@@ -98,6 +97,10 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
       }
     });
   }, []);
+
+  useEffect(() => {
+    api.get(`/api/audits/${auditId}/procedure-sections`).then((res) => setSections(res.data)).catch(() => {});
+  }, [auditId]);
 
   const update = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [field]: e.target.value });
@@ -147,7 +150,10 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
 
       <Select label="Procedure" value={form.procedure} onChange={update('procedure')}>
         <option value="">Select procedure...</option>
-        {PROCEDURES.map((p) => <option key={p} value={p}>{p}</option>)}
+        {sections.map((s) => {
+          const label = `${String(s.section_number).padStart(3, '0')} ${s.section_name}`;
+          return <option key={s.section_number} value={label}>{label}</option>;
+        })}
       </Select>
 
       <Input label="Contravened Standard Clause" value={form.contravened_clause} onChange={update('contravened_clause')} />

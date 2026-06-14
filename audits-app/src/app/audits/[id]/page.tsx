@@ -7,8 +7,6 @@ import { useAuth } from '@/lib/auth';
 import { Audit, Finding, SectionSummary } from '@/types';
 import Link from 'next/link';
 
-const PROCEDURES = Array.from({ length: 18 }, (_, i) => `Procedure ${i + 1}`);
-
 export default function AuditDetailPage() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -121,8 +119,7 @@ export default function AuditDetailPage() {
                 return (
                   <Link key={s.section_number} href={`/audits/${id}/procedures/${s.section_number}`}
                     className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.98]">
-                    <div className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium mb-1">Section {s.section_number}</div>
-                    <div className="text-xs font-medium dark:text-white leading-tight mb-2 line-clamp-2">{s.section_name}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-medium mb-1">{String(s.section_number).padStart(3, '0')} {s.section_name}</div>
                     <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
                       <span>{s.answered}/{s.total_items}</span>
                       <span className={s.findings > 0 ? 'text-red-500 font-medium' : ''}>{s.findings} finding{s.findings !== 1 ? 's' : ''}</span>
@@ -152,7 +149,10 @@ export default function AuditDetailPage() {
               <select value={filterProcedure} onChange={(e) => setFilterProcedure(e.target.value)}
                 className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">
                 <option value="">All Procedures</option>
-                {PROCEDURES.map((p) => <option key={p} value={p}>{p}</option>)}
+                {sections.map((s) => {
+                  const label = `${String(s.section_number).padStart(3, '0')} ${s.section_name}`;
+                  return <option key={s.section_number} value={label}>{label}</option>;
+                })}
               </select>
             </div>
           </div>

@@ -70,7 +70,7 @@ export default function ProcedureSectionPage() {
         ...findingForm,
         audit_id: id,
         date_raised: new Date().toISOString().split('T')[0],
-        procedure: section,
+        procedure: `${String(section).padStart(3, '0')} ${data?.section_name || ''}`,
       };
       await api.post(`/api/audits/${id}/controls/${findingModal.controlId}/finding`, body);
       setFindingModal(null);
@@ -148,12 +148,12 @@ export default function ProcedureSectionPage() {
         <div className="flex items-center gap-2">
           <Link href={`/audits/${id}`} className="text-xs text-blue-600 dark:text-blue-400">&larr; Back to Audit</Link>
           <span className="text-xs text-gray-400">/</span>
-          <span className="text-xs text-gray-600 dark:text-gray-400">Procedure {section}</span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">{String(section).padStart(3, '0')} {data?.section_name}</span>
         </div>
 
         {desc && desc.description && (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-5">
-            <h1 className="text-lg sm:text-xl font-bold dark:text-white mb-3">Section {section}: {data?.section_name}</h1>
+            <h1 className="text-lg sm:text-xl font-bold dark:text-white mb-3">{String(section).padStart(3, '0')} {data?.section_name}</h1>
             <div className="space-y-2 text-sm dark:text-gray-200">
               {parseDesc(desc.description).map((seg, i) => (
                 <div key={i} className="flex gap-2">
@@ -285,7 +285,7 @@ export default function ProcedureSectionPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs mb-1 dark:text-gray-400">Procedure</label>
-                <input value={`${section} - ${data?.section_name || ''}`} disabled
+                <input value={`${String(section).padStart(3, '0')} ${data?.section_name || ''}`} disabled
                   className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white bg-gray-100 dark:bg-gray-900 cursor-not-allowed opacity-70" />
               </div>
               <div>
