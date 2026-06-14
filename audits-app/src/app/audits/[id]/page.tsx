@@ -52,6 +52,23 @@ export default function AuditDetailPage() {
             {isLead && (
               <Link href={`/audits/${id}/edit`} className="bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded text-xs sm:text-sm font-medium hover:bg-gray-300 dark:hover:bg-gray-600 dark:text-gray-200">Edit</Link>
             )}
+            <button onClick={async () => {
+              try {
+                const res = await api.get(`/api/audits/${id}/procedures/export`, { responseType: 'blob' });
+                const url = window.URL.createObjectURL(new Blob([res.data]));
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `procedures-${(id as string).slice(0, 8)}.xlsx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+              } catch (err) {
+                console.error('export failed', err);
+              }
+            }} className="bg-green-600 text-white px-3 py-1.5 rounded text-xs sm:text-sm font-medium hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600">
+              Export XLSX
+            </button>
             <Link href={`/audits/${id}/findings/new`} className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs sm:text-sm font-medium hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
               + Finding
             </Link>

@@ -1,0 +1,132 @@
+#!/usr/bin/env python3
+"""Generate XLSX from Procedures.xlsx template, filling M (Yes/No) and N (finding description) columns with audit data."""
+import sys
+import json
+import os
+import re
+import io
+from collections import OrderedDict
+
+import psycopg2
+import openpyxl
+
+
+def main():
+    data = json.load(sys.stdin)
+    audit_id = data["audit_id"]
+    db_url = data.get("db_url", os.environ.get("DATABASE_URL", ""))
+    template_path = data.get("template_path", "Procedures.xlsx")
+
+    conn = psycopg2.connect(db_url)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT pi.id, pi.section_number, pi.sort_order, pi.control_question,
+               pei.id, pei.evidence_text
+        FROM procedure_items pi
+        LEFT JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
+        ORDER BY pi.sort_order, pei.sort_order
+    """)
+
+    pi_by_sort = OrderedDict()
+    evidence_to_pi = {}
+    pi_to_id = {}
+
+    for row in cur.fetchall():
+        pi_id, section, sort_order, question, ev_id, ev_text = row
+        if sort_order not in pi_by_sort:
+            pi_by_sort[sort_order] = {
+                "id": pi_id,
+                "section": section,
+                "question": question or "",
+                "evidence_ids": [],
+            }
+        if ev_id:
+            pi_by_sort[sort_order]["evidence_ids"].append(ev_id)
+            evidence_to_pi[ev_id] = sort_order
+
+    # Fetch audit responses
+    cur.execute("""
+        SELECT evidence_item_id, response
+        FROM audit_procedure_responses
+        WHERE audit_id = %s
+    """, (audit_id,))
+
+    responses_by_sort = {}
+    for ev_id, response in cur.fetchall():
+        sort_order_key = evidence_to_pi.get(ev_id)
+        if sort_order_key:
+            responses_by_sort.setdefault(sort_order_key, []).append(response)
+
+    # Fetch findings linked to controls
+    cur.execute("""
+        SELECT f.short_description, pi.sort_order
+        FROM findings f
+        JOIN procedure_items pi ON pi.id = f.procedure_item_id
+        WHERE f.audit_id = %s AND f.procedure_item_id IS NOT NULL
+    """, (audit_id,))
+
+    findings_by_sort = {}
+    for short_desc, sort_order in cur.fetchall():
+        if sort_order not in findings_by_sort:
+            findings_by_sort[sort_order] = short_desc or ""
+
+    cur.close()
+    conn.close()
+
+    # Load template XLSX
+    wb = openpyxl.load_workbook(template_path)
+    ws = wb["Working Paper"]
+
+    current_section_num = None
+    control_counter = 0
+
+    for row_idx in range(8, ws.max_row + 1):
+        col_b = str(ws.cell(row=row_idx, column=2).value or "").strip()
+        col_k = str(ws.cell(row=row_idx, column=11).value or "").strip()
+
+        if not col_b and not col_k:
+            continue
+
+        sm = re.match(r"^(\d+)\.\s", col_b)
+        if sm and col_k:
+            current_section_num = int(sm.group(1))
+            control_counter = 0
+            control_counter += 1
+            _fill_row(ws, row_idx, current_section_num, control_counter,
+                      pi_by_sort, responses_by_sort, findings_by_sort)
+        elif col_k and current_section_num:
+            control_counter += 1
+            _fill_row(ws, row_idx, current_section_num, control_counter,
+                      pi_by_sort, responses_by_sort, findings_by_sort)
+
+    output = io.BytesIO()
+    wb.save(output)
+    sys.stdout.buffer.write(output.getvalue())
+
+
+def _fill_row(ws, row_idx, section_num, control_counter,
+              pi_by_sort, responses_by_sort, findings_by_sort):
+    sort_order = section_num * 100 + control_counter
+    pi = pi_by_sort.get(sort_order)
+    if not pi:
+        # No matching DB record for this row — leave as-is
+        return
+
+    resp_list = responses_by_sort.get(sort_order, [])
+
+    if not resp_list:
+        m_val = None
+    elif any(r.lower() == "no" for r in resp_list):
+        m_val = "No"
+    else:
+        m_val = "Yes"
+
+    n_val = findings_by_sort.get(sort_order, "")
+
+    ws.cell(row=row_idx, column=13).value = m_val  # Column M
+    ws.cell(row=row_idx, column=14).value = n_val if n_val else None  # Column N
+
+
+if __name__ == "__main__":
+    main()

@@ -1,9 +1,12 @@
 package procedure
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"os/exec"
 	"strconv"
 	"time"
 
@@ -14,12 +17,14 @@ import (
 )
 
 type Handler struct {
-	svc  *Service
-	pool *pgxpool.Pool
+	svc              *Service
+	pool             *pgxpool.Pool
+	xlsxTemplatePath string
+	xlsxGenScript    string
 }
 
-func NewHandler(svc *Service, pool *pgxpool.Pool) *Handler {
-	return &Handler{svc: svc, pool: pool}
+func NewHandler(svc *Service, pool *pgxpool.Pool, xlsxTemplatePath, xlsxGenScript string) *Handler {
+	return &Handler{svc: svc, pool: pool, xlsxTemplatePath: xlsxTemplatePath, xlsxGenScript: xlsxGenScript}
 }
 
 func (h *Handler) RegisterRoutes(r chi.Router) {
@@ -30,6 +35,7 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Post("/api/audits/{id}/controls/{controlId}/finding", h.CreateFindingForControl)
 	r.Post("/api/audits/{id}/controls/{controlId}/link-finding", h.LinkFinding)
 	r.Get("/api/audits/{id}/orphan-findings", h.ListOrphanFindings)
+	r.Get("/api/audits/{id}/procedures/export", h.ExportXLSX)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -316,4 +322,37 @@ func (h *Handler) ListOrphanFindings(w http.ResponseWriter, r *http.Request) {
 		ids = []uuid.UUID{}
 	}
 	writeJSON(w, http.StatusOK, ids)
+}
+
+func (h *Handler) ExportXLSX(w http.ResponseWriter, r *http.Request) {
+	auditID, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid audit id")
+		return
+	}
+
+	input := map[string]any{
+		"audit_id":      auditID.String(),
+		"template_path": h.xlsxTemplatePath,
+	}
+	inputJSON, err := json.Marshal(input)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "json marshal error")
+		return
+	}
+
+	cmd := exec.Command("python3", h.xlsxGenScript)
+	cmd.Stdin = bytes.NewReader(inputJSON)
+	output, err := cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Printf("xlsx generation stderr: %s", string(ee.Stderr))
+		}
+		writeError(w, http.StatusInternalServerError, "xlsx generation failed")
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=procedures-%s.xlsx", auditID.String()[:8]))
+	w.Write(output)
 }

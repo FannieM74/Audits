@@ -3,13 +3,15 @@ package config
 import "os"
 
 type Config struct {
-	Port           string
-	DBURL          string
-	JWTSecret      string
-	UploadDir      string
-	TemplatePath   string
-	DocxGenScript  string
-	CORSOrigins    string
+	Port             string
+	DBURL            string
+	JWTSecret        string
+	UploadDir        string
+	TemplatePath     string
+	DocxGenScript    string
+	CORSOrigins      string
+	XLSXTemplatePath string
+	XLSXGenScript    string
 }
 
 func Load() *Config {
@@ -19,8 +21,10 @@ func Load() *Config {
 		JWTSecret:      getEnv("JWT_SECRET", "dev-secret-change-in-production"),
 		UploadDir:      getEnv("UPLOAD_DIR", "./uploads"),
 		TemplatePath:   getEnv("TEMPLATE_PATH", "./template.docx"),
-		DocxGenScript:  getEnv("DOCX_GEN_SCRIPT", "internal/finding/gen_docx.py"),
-		CORSOrigins:    getEnv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://192.168.0.218:3001,http://192.168.0.218:8080"),
+		DocxGenScript:    getEnv("DOCX_GEN_SCRIPT", "internal/finding/gen_docx.py"),
+		XLSXTemplatePath: getEnv("XLSX_TEMPLATE_PATH", "Procedures.xlsx"),
+		XLSXGenScript:    getEnv("XLSX_GEN_SCRIPT", "internal/procedure/gen_procedures_xlsx.py"),
+		CORSOrigins:      getEnv("CORS_ORIGINS", "http://localhost:3000,http://localhost:3001,http://192.168.0.218:3001,http://192.168.0.218:8080"),
 	}
 }
 

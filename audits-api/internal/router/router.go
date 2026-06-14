@@ -75,7 +75,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	// Procedures
 	procRepo := procedure.NewRepository(pool)
 	procSvc := procedure.NewService(procRepo, pool)
-	procH := procedure.NewHandler(procSvc, pool)
+	procH := procedure.NewHandler(procSvc, pool, cfg.XLSXTemplatePath, cfg.XLSXGenScript)
 	procH.RegisterRoutes(protected)
 
 	return r
