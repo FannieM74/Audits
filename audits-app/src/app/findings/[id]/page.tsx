@@ -95,7 +95,7 @@ export default function FindingDetailPage() {
                 <dd className="dark:text-white">{finding.raised_by_business_name}</dd>
                 <dd className="text-xs text-gray-500 dark:text-gray-400">
                   Plant: {finding.raised_by_business_plant || '—'} |
-                  Site: {finding.raised_by_business_name || '—'} |
+                  Site: {finding.raised_by_business_site || '—'} |
                   Resp: {finding.raised_by_business_responsible_person || '—'} |
                   SAP: {finding.raised_by_business_sap_no || '—'}
                 </dd>
@@ -108,7 +108,7 @@ export default function FindingDetailPage() {
                 <dd className="dark:text-white">{finding.raised_against_business_name}</dd>
                 <dd className="text-xs text-gray-500 dark:text-gray-400">
                   Plant: {finding.raised_against_business_plant || '—'} |
-                  Site: {finding.raised_against_business_name || '—'} |
+                  Site: {finding.raised_against_business_site || '—'} |
                   Resp: {finding.raised_against_business_responsible_person || '—'} |
                   SAP: {finding.raised_against_business_sap_no || '—'}
                 </dd>
