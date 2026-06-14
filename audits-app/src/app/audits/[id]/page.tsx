@@ -175,7 +175,7 @@ export default function AuditDetailPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-semibold text-sm sm:text-base dark:text-white">{f.ncr_ref || 'NCR'}</span>
+                        <span className="font-semibold text-sm sm:text-base dark:text-white">{f.id ? f.id.substring(0, 8) : 'NCR'}</span>
                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                           f.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
                           f.priority === 'Minor' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :

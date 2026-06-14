@@ -34,15 +34,17 @@ func (h *Handler) List(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	var req struct {
-		Name    string `json:"name"`
-		PlantNo string `json:"plant_no"`
-		Site    string `json:"site"`
+		Name              string `json:"name"`
+		PlantNo           string `json:"plant_no"`
+		Site              string `json:"site"`
+		ResponsiblePerson string `json:"responsible_person"`
+		SapNo             string `json:"sap_no"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, `{"error":"invalid request"}`, http.StatusBadRequest)
 		return
 	}
-	b, err := h.svc.Create(r.Context(), req.Name, req.PlantNo, req.Site)
+	b, err := h.svc.Create(r.Context(), req.Name, req.PlantNo, req.Site, req.ResponsiblePerson, req.SapNo)
 	if err != nil {
 		http.Error(w, `{"error":"failed to create business"}`, http.StatusInternalServerError)
 		return
@@ -55,15 +57,17 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) Update(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	var req struct {
-		Name    string `json:"name"`
-		PlantNo string `json:"plant_no"`
-		Site    string `json:"site"`
+		Name              string `json:"name"`
+		PlantNo           string `json:"plant_no"`
+		Site              string `json:"site"`
+		ResponsiblePerson string `json:"responsible_person"`
+		SapNo             string `json:"sap_no"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, `{"error":"invalid request"}`, http.StatusBadRequest)
 		return
 	}
-	b, err := h.svc.Update(r.Context(), id, req.Name, req.PlantNo, req.Site)
+	b, err := h.svc.Update(r.Context(), id, req.Name, req.PlantNo, req.Site, req.ResponsiblePerson, req.SapNo)
 	if err != nil {
 		http.Error(w, `{"error":"failed to update business"}`, http.StatusInternalServerError)
 		return

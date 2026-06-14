@@ -21,7 +21,6 @@ export default function ProcedureSectionPage() {
     contravened_clause: '',
     origin_ncr: '',
     type_ncr: '',
-    ncr_ref: '',
   });
   const [creating, setCreating] = useState(false);
 
@@ -58,7 +57,6 @@ export default function ProcedureSectionPage() {
       contravened_clause: '',
       origin_ncr: '',
       type_ncr: '',
-      ncr_ref: '',
     });
   };
 
@@ -306,11 +304,6 @@ export default function ProcedureSectionPage() {
                   className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white" />
               </div>
               <div>
-                <label className="block text-xs mb-1 dark:text-gray-400">NCR Ref</label>
-                <input value={findingForm.ncr_ref} onChange={(e) => setFindingForm({ ...findingForm, ncr_ref: e.target.value })}
-                  className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white" />
-              </div>
-              <div>
                 <label className="block text-xs mb-1 dark:text-gray-400">Origin of NCR</label>
                 <select value={findingForm.origin_ncr} onChange={(e) => setFindingForm({ ...findingForm, origin_ncr: e.target.value })}
                   className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white">
@@ -329,7 +322,7 @@ export default function ProcedureSectionPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs mb-1 dark:text-gray-400">Contravened Clause</label>
+                <label className="block text-xs mb-1 dark:text-gray-400">Contravened Standard Clause</label>
                 <input value={findingForm.contravened_clause} onChange={(e) => setFindingForm({ ...findingForm, contravened_clause: e.target.value })}
                   className="w-full border dark:border-gray-600 rounded px-3 py-2 text-sm dark:bg-gray-700 dark:text-white" />
               </div>

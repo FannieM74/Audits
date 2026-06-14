@@ -1,0 +1,2 @@
+ALTER TABLE businesses ADD COLUMN responsible_person TEXT NOT NULL DEFAULT '';
+ALTER TABLE businesses ADD COLUMN sap_no TEXT NOT NULL DEFAULT '';

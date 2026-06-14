@@ -36,7 +36,6 @@ export interface Finding {
   id: string;
   audit_id: string;
   auditor_id: string;
-  ncr_ref: string;
   date_raised: string;
   raised_by_name: string;
   raised_by_sap_no: string;
@@ -55,6 +54,14 @@ export interface Finding {
   resp_person_ext_name: string;
   raised_by_business_id: string | null;
   raised_against_business_id: string | null;
+  raised_by_business_name?: string | null;
+  raised_against_business_name?: string | null;
+  raised_by_business_plant?: string | null;
+  raised_against_business_plant?: string | null;
+  raised_by_business_responsible_person?: string | null;
+  raised_against_business_responsible_person?: string | null;
+  raised_by_business_sap_no?: string | null;
+  raised_against_business_sap_no?: string | null;
   short_description: string;
   description: string;
   procedure_item_id?: string | null;
@@ -140,6 +147,8 @@ export interface Business {
   name: string;
   plant_no: string;
   site: string;
+  responsible_person: string;
+  sap_no: string;
 }
 
 export interface AuthResponse {

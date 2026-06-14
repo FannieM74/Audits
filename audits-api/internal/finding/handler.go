@@ -266,13 +266,8 @@ func (h *Handler) DownloadWord(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ncrRef := f.NcrRef
-	if ncrRef == "" {
-		ncrRef = "ncr-" + f.ID.String()
-	}
-
 	w.Header().Set("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-	w.Header().Set("Content-Disposition", "attachment; filename="+ncrRef+".docx")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=ncr-%s.docx", f.ID.String()))
 	w.Write(docxBytes)
 }
 

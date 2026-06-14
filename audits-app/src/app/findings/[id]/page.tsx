@@ -41,7 +41,7 @@ export default function FindingDetailPage() {
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 sm:p-6">
           <div className="flex items-start justify-between gap-2 mb-4">
             <div>
-              <h1 className="text-lg sm:text-xl font-bold dark:text-white">{finding.ncr_ref || 'Finding'}</h1>
+              <h1 className="text-lg sm:text-xl font-bold dark:text-white">Finding {finding.id ? finding.id.substring(0, 8) : ''}</h1>
               <div className="flex gap-2 mt-1">
                 <span className={`inline-block text-xs px-2 py-0.5 rounded font-medium ${
                   finding.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
@@ -86,6 +86,32 @@ export default function FindingDetailPage() {
               <div>
                 <dt className="text-gray-500 dark:text-gray-400 text-xs">Type of NCR</dt>
                 <dd className="dark:text-white">{finding.type_ncr}</dd>
+              </div>
+            )}
+
+            {finding.raised_by_business_name && (
+              <div className="border-t dark:border-gray-700 pt-3 mt-3">
+                <dt className="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1">Raised By Business</dt>
+                <dd className="dark:text-white">{finding.raised_by_business_name}</dd>
+                <dd className="text-xs text-gray-500 dark:text-gray-400">
+                  Plant: {finding.raised_by_business_plant || '—'} |
+                  Site: {finding.raised_by_business_name || '—'} |
+                  Resp: {finding.raised_by_business_responsible_person || '—'} |
+                  SAP: {finding.raised_by_business_sap_no || '—'}
+                </dd>
+              </div>
+            )}
+
+            {finding.raised_against_business_name && (
+              <div className="border-t dark:border-gray-700 pt-3 mt-3">
+                <dt className="text-gray-500 dark:text-gray-400 text-xs font-semibold mb-1">Raised Against Business</dt>
+                <dd className="dark:text-white">{finding.raised_against_business_name}</dd>
+                <dd className="text-xs text-gray-500 dark:text-gray-400">
+                  Plant: {finding.raised_against_business_plant || '—'} |
+                  Site: {finding.raised_against_business_name || '—'} |
+                  Resp: {finding.raised_against_business_responsible_person || '—'} |
+                  SAP: {finding.raised_against_business_sap_no || '—'}
+                </dd>
               </div>
             )}
 

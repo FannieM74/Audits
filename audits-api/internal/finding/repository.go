@@ -14,7 +14,6 @@ type Finding struct {
 	ID                    uuid.UUID  `json:"id"`
 	AuditID               uuid.UUID  `json:"audit_id"`
 	AuditorID             uuid.UUID  `json:"auditor_id"`
-	NcrRef                string     `json:"ncr_ref"`
 	DateRaised            string     `json:"date_raised"`
 	RaisedByName          string     `json:"raised_by_name"`
 	RaisedBySapNo         string     `json:"raised_by_sap_no"`
@@ -39,6 +38,10 @@ type Finding struct {
 	RaisedAgainstBusinessName *string `json:"raised_against_business_name,omitempty"`
 	RaisedByBusinessPlant   *string  `json:"raised_by_business_plant,omitempty"`
 	RaisedAgainstBusinessPlant *string `json:"raised_against_business_plant,omitempty"`
+	RaisedByBusinessResponsiblePerson *string `json:"raised_by_business_responsible_person,omitempty"`
+	RaisedAgainstBusinessResponsiblePerson *string `json:"raised_against_business_responsible_person,omitempty"`
+	RaisedByBusinessSapNo *string `json:"raised_by_business_sap_no,omitempty"`
+	RaisedAgainstBusinessSapNo *string `json:"raised_against_business_sap_no,omitempty"`
 	ShortDescription      string     `json:"short_description"`
 	Description           string     `json:"description"`
 	ProcedureItemID       *uuid.UUID `json:"procedure_item_id,omitempty"`
@@ -69,7 +72,7 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 	return &Repository{pool: pool}
 }
 
-const findingCols = `id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
+const findingCols = `id, audit_id, auditor_id, date_raised, raised_by_name, raised_by_sap_no,
     contact_details, origin_ncr, type_ncr,
     item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
     priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
@@ -83,7 +86,7 @@ func scanFinding(scanner interface {
 }, f *Finding) error {
 	var dateRaised time.Time
 	err := scanner.Scan(
-		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
+		&f.ID, &f.AuditID, &f.AuditorID, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
 		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
@@ -91,6 +94,8 @@ func scanFinding(scanner interface {
 		&f.ProcedureItemID, &f.WorkTypeProcess,
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
+		&f.RaisedByBusinessName, &f.RaisedByBusinessPlant, &f.RaisedByBusinessResponsiblePerson, &f.RaisedByBusinessSapNo,
+		&f.RaisedAgainstBusinessName, &f.RaisedAgainstBusinessPlant, &f.RaisedAgainstBusinessResponsiblePerson, &f.RaisedAgainstBusinessSapNo,
 	)
 	if err != nil {
 		return err
@@ -99,7 +104,7 @@ func scanFinding(scanner interface {
 	return nil
 }
 
-const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.ncr_ref, f.date_raised,
+const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.date_raised,
     f.raised_by_name, f.raised_by_sap_no, f.contact_details, f.origin_ncr, f.type_ncr,
     f.item_no, f.serial_batch_no, f.customer_name, f.vendor_name, f.vendor_no, f.contravened_clause,
     f.priority, f.resp_person_int_name, f.resp_person_int_sap, f.resp_person_ext_name, f.procedure,
@@ -110,9 +115,19 @@ const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.ncr_ref, f.date_r
 
 func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditorID *uuid.UUID, procedure string) ([]Finding, error) {
 	query := `SELECT ` + findingColsPrefixed + `,
-		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name
+		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name,
+		COALESCE(rb.name, '') AS raised_by_business_name,
+		COALESCE(rb.plant_no, '') AS raised_by_business_plant,
+		COALESCE(rb.responsible_person, '') AS raised_by_business_responsible_person,
+		COALESCE(rb.sap_no, '') AS raised_by_business_sap_no,
+		COALESCE(rab.name, '') AS raised_against_business_name,
+		COALESCE(rab.plant_no, '') AS raised_against_business_plant,
+		COALESCE(rab.responsible_person, '') AS raised_against_business_responsible_person,
+		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no
 		FROM findings f
 		LEFT JOIN users u ON u.id = f.auditor_id
+		LEFT JOIN businesses rb ON rb.id = f.raised_by_business_id
+		LEFT JOIN businesses rab ON rab.id = f.raised_against_business_id
 		WHERE f.audit_id = $1`
 	args := []any{auditID}
 	argIdx := 2
@@ -148,7 +163,7 @@ func scanFindingWithAuditor(scanner interface {
 }, f *Finding) error {
 	var dateRaised time.Time
 	err := scanner.Scan(
-		&f.ID, &f.AuditID, &f.AuditorID, &f.NcrRef, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
+		&f.ID, &f.AuditID, &f.AuditorID, &dateRaised, &f.RaisedByName, &f.RaisedBySapNo,
 		&f.ContactDetails, &f.OriginNcr, &f.TypeNcr,
 		&f.ItemNo, &f.SerialBatchNo, &f.CustomerName, &f.VendorName, &f.VendorNo, &f.ContravenedClause,
 		&f.Priority, &f.RespPersonIntName, &f.RespPersonIntSap, &f.RespPersonExtName, &f.Procedure,
@@ -157,6 +172,8 @@ func scanFindingWithAuditor(scanner interface {
 		&f.ImmediateActionTaken, &f.ActionAgreedApproved, &f.StopCertificateIssued, &f.Status, &f.Completion,
 		&f.CreatedAt, &f.UpdatedAt,
 		&f.AuditorName,
+		&f.RaisedByBusinessName, &f.RaisedByBusinessPlant, &f.RaisedByBusinessResponsiblePerson, &f.RaisedByBusinessSapNo,
+		&f.RaisedAgainstBusinessName, &f.RaisedAgainstBusinessPlant, &f.RaisedAgainstBusinessResponsiblePerson, &f.RaisedAgainstBusinessSapNo,
 	)
 	if err != nil {
 		return err
@@ -167,7 +184,19 @@ func scanFindingWithAuditor(scanner interface {
 
 func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error) {
 	var f Finding
-	if err := scanFinding(r.pool.QueryRow(ctx, `SELECT `+findingCols+` FROM findings WHERE id = $1`, id), &f); err != nil {
+	if err := scanFinding(r.pool.QueryRow(ctx, `SELECT `+findingCols+`,
+		COALESCE(rb.name, '') AS raised_by_business_name,
+		COALESCE(rb.plant_no, '') AS raised_by_business_plant,
+		COALESCE(rb.responsible_person, '') AS raised_by_business_responsible_person,
+		COALESCE(rb.sap_no, '') AS raised_by_business_sap_no,
+		COALESCE(rab.name, '') AS raised_against_business_name,
+		COALESCE(rab.plant_no, '') AS raised_against_business_plant,
+		COALESCE(rab.responsible_person, '') AS raised_against_business_responsible_person,
+		COALESCE(rab.sap_no, '') AS raised_against_business_sap_no
+		FROM findings f
+		LEFT JOIN businesses rb ON rb.id = f.raised_by_business_id
+		LEFT JOIN businesses rab ON rab.id = f.raised_against_business_id
+		WHERE f.id = $1`, id), &f); err != nil {
 		if err == pgx.ErrNoRows {
 			return nil, nil
 		}
@@ -179,17 +208,17 @@ func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error
 func (r *Repository) Create(ctx context.Context, f *Finding) error {
 	dateRaised, _ := time.Parse("2006-01-02", f.DateRaised)
 	return r.pool.QueryRow(ctx, `
-		INSERT INTO findings (audit_id, auditor_id, ncr_ref, date_raised, raised_by_name, raised_by_sap_no,
+		INSERT INTO findings (audit_id, auditor_id, date_raised, raised_by_name, raised_by_sap_no,
 			contact_details, origin_ncr, type_ncr,
 			item_no, serial_batch_no, customer_name, vendor_name, vendor_no, contravened_clause,
 			priority, resp_person_int_name, resp_person_int_sap, resp_person_ext_name, procedure,
 			raised_by_business_id, raised_against_business_id, short_description, description, procedure_item_id, work_type_process,
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
 			completion)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29)
 		RETURNING id, created_at, updated_at
 	`,
-		f.AuditID, f.AuditorID, f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
+		f.AuditID, f.AuditorID, dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo, f.ContravenedClause,
 		f.Priority, f.RespPersonIntName, f.RespPersonIntSap, f.RespPersonExtName, f.Procedure,
@@ -203,18 +232,18 @@ func (r *Repository) Update(ctx context.Context, f *Finding) error {
 	dateRaised, _ := time.Parse("2006-01-02", f.DateRaised)
 	_, err := r.pool.Exec(ctx, `
 		UPDATE findings SET
-			ncr_ref=$1, date_raised=$2, raised_by_name=$3, raised_by_sap_no=$4,
-			contact_details=$5, origin_ncr=$6, type_ncr=$7,
-			item_no=$8, serial_batch_no=$9, customer_name=$10, vendor_name=$11, vendor_no=$12,
-			contravened_clause=$13, priority=$14,
-			resp_person_int_name=$15, resp_person_int_sap=$16, resp_person_ext_name=$17, procedure=$18,
-			raised_by_business_id=$19, raised_against_business_id=$20,
-			short_description=$21, description=$22, procedure_item_id=$23, work_type_process=$24,
-			immediate_action_taken=$25, action_agreed_approved=$26, stop_certificate_issued=$27,
-			status=$28, completion=$29, updated_at=NOW()
-		WHERE id=$30
+			date_raised=$1, raised_by_name=$2, raised_by_sap_no=$3,
+			contact_details=$4, origin_ncr=$5, type_ncr=$6,
+			item_no=$7, serial_batch_no=$8, customer_name=$9, vendor_name=$10, vendor_no=$11,
+			contravened_clause=$12, priority=$13,
+			resp_person_int_name=$14, resp_person_int_sap=$15, resp_person_ext_name=$16, procedure=$17,
+			raised_by_business_id=$18, raised_against_business_id=$19,
+			short_description=$20, description=$21, procedure_item_id=$22, work_type_process=$23,
+			immediate_action_taken=$24, action_agreed_approved=$25, stop_certificate_issued=$26,
+			status=$27, completion=$28, updated_at=NOW()
+		WHERE id=$29
 	`,
-		f.NcrRef, dateRaised, f.RaisedByName, f.RaisedBySapNo,
+		dateRaised, f.RaisedByName, f.RaisedBySapNo,
 		f.ContactDetails, f.OriginNcr, f.TypeNcr,
 		f.ItemNo, f.SerialBatchNo, f.CustomerName, f.VendorName, f.VendorNo,
 		f.ContravenedClause, f.Priority,
