@@ -60,6 +60,8 @@ export interface Finding {
   raised_against_business_name?: string | null;
   raised_by_business_plant?: string | null;
   raised_against_business_plant?: string | null;
+  raised_by_business_site?: string | null;
+  raised_against_business_site?: string | null;
   raised_by_business_responsible_person?: string | null;
   raised_against_business_responsible_person?: string | null;
   raised_by_business_sap_no?: string | null;
