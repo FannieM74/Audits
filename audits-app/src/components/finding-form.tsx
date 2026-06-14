@@ -22,7 +22,6 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
   return {
     date_raised: initial?.date_raised || new Date().toISOString().split('T')[0],
     raised_by_name: initial?.raised_by_name || (user ? `${user.name} ${user.surname}` : ''),
-    procedure_item_id: initial?.procedure_item_id || '',
     raised_by_sap_no: initial?.raised_by_sap_no || user?.sap_no || '',
     contact_details: initial?.contact_details || user?.work_tel || '',
     origin_ncr: initial?.origin_ncr || '',
