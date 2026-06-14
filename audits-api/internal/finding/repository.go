@@ -184,7 +184,7 @@ func scanFindingWithAuditor(scanner interface {
 
 func (r *Repository) GetByID(ctx context.Context, id uuid.UUID) (*Finding, error) {
 	var f Finding
-	if err := scanFinding(r.pool.QueryRow(ctx, `SELECT `+findingCols+`,
+	if err := scanFinding(r.pool.QueryRow(ctx, `SELECT `+findingColsPrefixed+`,
 		COALESCE(rb.name, '') AS raised_by_business_name,
 		COALESCE(rb.plant_no, '') AS raised_by_business_plant,
 		COALESCE(rb.responsible_person, '') AS raised_by_business_responsible_person,
