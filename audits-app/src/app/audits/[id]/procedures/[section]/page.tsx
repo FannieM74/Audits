@@ -193,22 +193,26 @@ export default function ProcedureSectionPage() {
                 <div key={control.id} className="border dark:border-gray-700 rounded-lg overflow-hidden">
                   <button
                     onClick={() => toggleControl(control.id)}
-                    className="w-full flex items-center justify-between p-3 sm:p-4 text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition"
+                    className="w-full text-left hover:bg-gray-50 dark:hover:bg-gray-750 transition"
                   >
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
-                      {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
-                      <span className="text-xs sm:text-sm font-medium dark:text-white">{control.control_question}</span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0 ml-2">
-                      <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">{answeredCount}/{evs.length}</span>
-                      <div className="w-16 sm:w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
-                        <div className="h-full rounded-full transition-all" style={{
-                          width: `${evs.length ? (answeredCount / evs.length) * 100 : 0}%`,
-                          backgroundColor: evs.length && answeredCount === evs.length ? '#22c55e' : answeredCount > 0 ? '#3b82f6' : '#d1d5db'
-                        }} />
+                    <div className="flex items-center justify-between p-3 sm:p-4 pb-1 sm:pb-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
+                        {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
                       </div>
-                      <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[10px] sm:text-xs text-gray-400 dark:text-gray-500">{answeredCount}/{evs.length}</span>
+                        <div className="w-16 sm:w-20 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
+                          <div className="h-full rounded-full transition-all" style={{
+                            width: `${evs.length ? (answeredCount / evs.length) * 100 : 0}%`,
+                            backgroundColor: evs.length && answeredCount === evs.length ? '#22c55e' : answeredCount > 0 ? '#3b82f6' : '#d1d5db'
+                          }} />
+                        </div>
+                        <span className={`text-xs transition-transform ${isExpanded ? 'rotate-180' : ''}`}>▼</span>
+                      </div>
+                    </div>
+                    <div className="px-3 sm:px-4 pb-3 sm:pb-4 text-xs sm:text-sm font-medium dark:text-white leading-relaxed">
+                      {control.control_question}
                     </div>
                   </button>
 
@@ -222,7 +226,7 @@ export default function ProcedureSectionPage() {
                             const label = ev.sub_label ? `${ev.sub_label}. ` : '';
                             return (
                               <div key={ev.id} className="flex items-start gap-3 py-1.5">
-                                <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono w-6 shrink-0 pt-1">
+                                <span className="text-xs text-gray-400 dark:text-gray-500 font-mono w-7 shrink-0 pt-1">
                                   {ev.sub_label || `${ci + 1}.${ev.sort_order + 1}`}
                                 </span>
                                 <div className="flex-1 min-w-0">
