@@ -35,6 +35,9 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
     priority: initial?.priority || 'Observation',
     raised_by_business_id: '',
     raised_against_business_id: initial?.raised_against_business_id || '',
+    resp_person_int_name: initial?.resp_person_int_name || '',
+    resp_person_int_sap: initial?.resp_person_int_sap || '',
+    resp_person_ext_name: initial?.resp_person_ext_name || '',
     short_description: initial?.short_description || '',
     description: initial?.description || '',
     work_type_process: initial?.work_type_process || '',
@@ -88,10 +91,12 @@ function Fieldset({ label, children }: { label: string; children: React.ReactNod
 export default function FindingForm({ auditId, initial, onSave, onCancel, loading, user, saved, renderAfterActions }: FindingFormProps) {
   const [form, setForm] = useState<FormState>(initForm(initial, user));
   const [sections, setSections] = useState<SectionSummary[]>([]);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
 
   useEffect(() => {
     api.get('/api/businesses').then((res) => {
       const biz = res.data;
+      setBusinesses(biz);
       const facInfra = biz.find((b: Business) => b.name === 'Facilities and Infrastructure');
       if (facInfra) {
         setForm((prev) => ({ ...prev, raised_by_business_id: facInfra.id }));
@@ -119,9 +124,32 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
 
   const showCustomerFields = form.type_ncr === 'Customer Complaint';
 
+  const handleRaisedAgainstChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const bizId = e.target.value;
+    setForm((prev) => {
+      const biz = businesses.find((b) => b.id === bizId);
+      return {
+        ...prev,
+        raised_against_business_id: bizId,
+        resp_person_int_name: prev.resp_person_int_name || (biz?.responsible_person || ''),
+        resp_person_int_sap: prev.resp_person_int_sap || (biz?.sap_no || ''),
+      };
+    });
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Input label="Date Raised" type="date" value={form.date_raised} onChange={update('date_raised')} />
+
+      <Select label="Raised By Business" value={form.raised_by_business_id} onChange={update('raised_by_business_id')}>
+        <option value="">Select business...</option>
+        {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+      </Select>
+
+      <Select label="Raised Against Business" value={form.raised_against_business_id} onChange={handleRaisedAgainstChange}>
+        <option value="">Select business...</option>
+        {businesses.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+      </Select>
 
       <Select label="Origin of NCR" value={form.origin_ncr} onChange={update('origin_ncr')}>
         <option value="">Select origin...</option>
@@ -156,6 +184,10 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
           return <option key={s.section_number} value={label}>{label}</option>;
         })}
       </Select>
+
+      <Input label="Responsible Person (Int)" value={form.resp_person_int_name} onChange={update('resp_person_int_name')} />
+      <Input label="Resp Person SAP No" value={form.resp_person_int_sap} onChange={update('resp_person_int_sap')} />
+      <Input label="Responsible Person (Ext)" value={form.resp_person_ext_name} onChange={update('resp_person_ext_name')} />
 
       <Input label="Contravened Standard Clause" value={form.contravened_clause} onChange={update('contravened_clause')} />
 

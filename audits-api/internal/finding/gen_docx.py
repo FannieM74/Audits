@@ -115,7 +115,10 @@ def main():
     _set_next("NCR Description:",            esc(f.get("description", "")))
     _set_next("Type of work, processes or equipment involved:",
                                               esc(f.get("work_type_process", "")))
-    _set_next("Responsible Person (Int):",   esc(f.get("resp_person_int_name", "")))
+    _set_next("Responsible Person (Int):",
+              esc(f.get("resp_person_int_name", "") or f.get("raised_against_business_responsible_person", "")))
+    _set_next("SAP No.:",
+              esc(f.get("resp_person_int_sap", "") or f.get("raised_against_business_sap_no", "")))
     _set_next("Responsible Person (Ext):",   esc(f.get("resp_person_ext_name", "")))
     _set_next("Date Raised:",                esc(f.get("date_raised", "")))
     _set_next("NCR Raised by which Business:", esc(f.get("raised_by_business_name", "")))
