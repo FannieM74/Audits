@@ -17,6 +17,14 @@ def main():
     db_url = data.get("db_url", os.environ.get("DATABASE_URL", ""))
     template_path = data.get("template_path", "Procedures.xlsx")
 
+    if not db_url:
+        print("FATAL: DATABASE_URL not set", file=sys.stderr)
+        sys.exit(1)
+
+    if not os.path.exists(template_path):
+        print(f"FATAL: template not found: {template_path} (cwd={os.getcwd()})", file=sys.stderr)
+        sys.exit(1)
+
     conn = psycopg2.connect(db_url)
     cur = conn.cursor()
 
