@@ -2,7 +2,6 @@ package procedure
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -161,10 +160,6 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 	today := now.Format("2006-01-02")
 
 	// Default values for NOT NULL columns
-	ncrRef := req.NcrRef
-	if ncrRef == "" {
-		ncrRef = fmt.Sprintf("NCR-%s-%d", auditID.String()[:8], now.UnixMilli()%100000)
-	}
 	dateRaised := req.DateRaised
 	if dateRaised == "" {
 		dateRaised = today
@@ -197,7 +192,7 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 
 	_, err = h.pool.Exec(r.Context(), `
 		INSERT INTO findings (
-			id, audit_id, auditor_id, ncr_ref, date_raised, raised_by_name,
+			id, audit_id, auditor_id, date_raised, raised_by_name,
 			raised_by_sap_no, contact_details, origin_ncr, type_ncr, priority,
 			contravened_clause, short_description, description, procedure_item_id, work_type_process,
 			procedure, item_no, serial_batch_no, customer_name, vendor_name, vendor_no,
@@ -205,9 +200,9 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 			immediate_action_taken, action_agreed_approved, stop_certificate_issued,
 			status, completion, created_at, updated_at)
 		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,
-			$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32)
+			$17,$18,$19,$20,$21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31)
 	`,
-		findingID, auditID, claims.UserID, ncrRef, dateRaised, raisedByName,
+		findingID, auditID, claims.UserID, dateRaised, raisedByName,
 		raisedBySapNo, contactDetails, originNcr, typeNcr, req.Priority,
 		req.ContravenedClause, req.ShortDescription, req.Description, controlID, workType,
 		proc, "", "", "", "", "",
