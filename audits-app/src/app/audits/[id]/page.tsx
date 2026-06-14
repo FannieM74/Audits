@@ -182,12 +182,19 @@ export default function AuditDetailPage() {
             <p className="text-gray-500 dark:text-gray-400 text-sm text-center py-8">No findings match the selected filters.</p>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
-              {(findings || []).map((f) => (
-                <Link key={f.id} href={`/findings/${f.id}`} className="block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 transition active:scale-[0.99]">
+              {(findings || []).map((f) => {
+                const isOrphan = !f.procedure_item_id;
+                return (
+                <Link key={f.id} href={`/findings/${f.id}`} className={`block rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 sm:p-4 hover:shadow-md transition active:scale-[0.99] ${
+                  isOrphan
+                    ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-300 dark:border-amber-700 hover:border-amber-500 dark:hover:border-amber-500'
+                    : 'bg-white dark:bg-gray-800 hover:border-blue-300 dark:hover:border-blue-600'
+                }`}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-semibold text-sm sm:text-base dark:text-white">{f.id ? f.id.substring(0, 8) : 'NCR'}</span>
+                        {isOrphan && <span className="text-xs px-1.5 py-0.5 rounded font-medium bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200">Unlinked</span>}
                         <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                           f.priority === 'Major' ? 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300' :
                           f.priority === 'Minor' ? 'bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-300' :
@@ -214,7 +221,7 @@ export default function AuditDetailPage() {
                     </div>
                   </div>
                 </Link>
-              ))}
+              );})}
             </div>
           )}
         </div>

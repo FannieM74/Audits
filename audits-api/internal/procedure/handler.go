@@ -28,6 +28,8 @@ func (h *Handler) RegisterRoutes(r chi.Router) {
 	r.Get("/api/audits/{id}/procedures/{section}", h.SectionDetail)
 	r.Put("/api/audits/{id}/responses/{evidenceItemId}", h.SetResponse)
 	r.Post("/api/audits/{id}/controls/{controlId}/finding", h.CreateFindingForControl)
+	r.Post("/api/audits/{id}/controls/{controlId}/link-finding", h.LinkFinding)
+	r.Get("/api/audits/{id}/orphan-findings", h.ListOrphanFindings)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
@@ -43,7 +45,13 @@ func writeError(w http.ResponseWriter, status int, msg string) {
 }
 
 func (h *Handler) ListAll(w http.ResponseWriter, r *http.Request) {
-	items, err := h.svc.repo.ListControlsBySection(r.Context(), 0)
+	sectionNum := 0
+	if s := r.URL.Query().Get("section"); s != "" {
+		if n, err := strconv.Atoi(s); err == nil {
+			sectionNum = n
+		}
+	}
+	items, err := h.svc.repo.ListControlsBySection(r.Context(), sectionNum)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to list procedures")
 		return
@@ -190,6 +198,16 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 		proc = "1"
 	}
 
+	exists, err := h.svc.repo.FindingExistsForControl(r.Context(), auditID, controlID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to check existing finding")
+		return
+	}
+	if exists {
+		writeError(w, http.StatusConflict, "a finding already exists for this control")
+		return
+	}
+
 	var raisedByBusinessID, raisedAgainstBusinessID *uuid.UUID
 	var respPersonIntName, respPersonIntSap string
 	h.pool.QueryRow(r.Context(),
@@ -226,5 +244,76 @@ func (h *Handler) CreateFindingForControl(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	// Auto-create No responses for all evidence items under this control
+	if err := h.svc.repo.AutoCreateNoResponses(r.Context(), auditID, controlID, findingID); err != nil {
+		log.Printf("auto-create responses error: %v", err)
+	}
+
 	writeJSON(w, http.StatusCreated, map[string]any{"id": findingID})
+}
+
+func (h *Handler) LinkFinding(w http.ResponseWriter, r *http.Request) {
+	auditID, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid audit id")
+		return
+	}
+	controlID, err := uuid.Parse(chi.URLParam(r, "controlId"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid control id")
+		return
+	}
+
+	var req struct {
+		FindingID uuid.UUID `json:"finding_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid request")
+		return
+	}
+
+	exists, err := h.svc.repo.FindingExistsForControl(r.Context(), auditID, controlID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to check existing finding")
+		return
+	}
+	if exists {
+		writeError(w, http.StatusConflict, "a finding already exists for this control")
+		return
+	}
+
+	// Link finding to control
+	_, err = h.pool.Exec(r.Context(),
+		"UPDATE findings SET procedure_item_id=$1, updated_at=NOW() WHERE id=$2 AND audit_id=$3 AND procedure_item_id IS NULL",
+		controlID, req.FindingID, auditID,
+	)
+	if err != nil {
+		log.Printf("link finding error: %v", err)
+		writeError(w, http.StatusInternalServerError, "failed to link finding")
+		return
+	}
+
+	// Auto-create No responses for all evidence items under this control
+	if err := h.svc.repo.AutoCreateNoResponses(r.Context(), auditID, controlID, req.FindingID); err != nil {
+		log.Printf("auto-create responses error: %v", err)
+	}
+
+	writeJSON(w, http.StatusOK, map[string]any{"message": "finding linked"})
+}
+
+func (h *Handler) ListOrphanFindings(w http.ResponseWriter, r *http.Request) {
+	auditID, err := uuid.Parse(chi.URLParam(r, "id"))
+	if err != nil {
+		writeError(w, http.StatusBadRequest, "invalid audit id")
+		return
+	}
+	ids, err := h.svc.repo.ListOrphanFindings(r.Context(), auditID)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, "failed to list orphan findings")
+		return
+	}
+	if ids == nil {
+		ids = []uuid.UUID{}
+	}
+	writeJSON(w, http.StatusOK, ids)
 }

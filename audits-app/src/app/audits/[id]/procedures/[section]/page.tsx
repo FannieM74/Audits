@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import api from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { SectionDetailResponse } from '@/types';
+import { Finding, SectionDetailResponse } from '@/types';
 import Link from 'next/link';
 
 export default function ProcedureSectionPage() {
@@ -25,6 +25,9 @@ export default function ProcedureSectionPage() {
     contact_details: '',
   });
   const [creating, setCreating] = useState(false);
+  const [orphanFindings, setOrphanFindings] = useState<{ id: string; short_description: string }[]>([]);
+  const [linkModal, setLinkModal] = useState<{ controlId: string; findingId: string } | null>(null);
+  const [linking, setLinking] = useState(false);
 
   const load = async () => {
     const res = await api.get(`/api/audits/${id}/procedures/${section}`);
@@ -32,6 +35,12 @@ export default function ProcedureSectionPage() {
   };
 
   useEffect(() => { load(); }, [id, section]);
+
+  useEffect(() => {
+    api.get(`/api/audits/${id}/orphan-findings`).then((res) => {
+      setOrphanFindings(res.data || []);
+    }).catch(() => {});
+  }, [id]);
 
   const handleResponse = async (evidenceItemId: string, response: string, controlId: string) => {
     await api.put(`/api/audits/${id}/responses/${evidenceItemId}`, { response });
@@ -260,23 +269,31 @@ export default function ProcedureSectionPage() {
                         </div>
                       )}
 
-                      <div className="mt-3 pt-3 border-t dark:border-gray-700">
+                      <div className="mt-3 pt-3 border-t dark:border-gray-700 flex flex-wrap items-center gap-2">
                         {control.has_finding ? (
                           <Link href={`/findings/${control.finding_id}`}
                             className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-3 py-2 rounded-lg border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 transition">
-                            🔍 View Finding #{control.finding_id?.slice(0, 8)} — Click to open
+                            🔍 View Finding #{control.finding_id?.slice(0, 8)}
                           </Link>
                         ) : hasNo ? (
                           <button
                             onClick={() => openFindingModal(control.id, nonCompliantLabels)}
                             className="inline-flex items-center gap-1.5 text-xs font-medium text-orange-600 dark:text-orange-400 hover:underline"
                           >
-                            ⚠️ Non-compliant: {nonCompliantLabels.join(', ')} — Create Finding
+                            ⚠️ Non-compliant — Create Finding
                           </button>
                         ) : (
                           answeredCount > 0 && (
-                            <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">✅ All items compliant — no finding required</p>
+                            <p className="text-xs text-green-600 dark:text-green-400 font-medium flex items-center gap-1">✅ All items compliant</p>
                           )
+                        )}
+                        {!control.has_finding && orphanFindings.length > 0 && (
+                          <button
+                            onClick={() => setLinkModal({ controlId: control.id, findingId: '' })}
+                            className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                          >
+                            🔗 Link Finding
+                          </button>
                         )}
                       </div>
                     </div>
@@ -287,6 +304,59 @@ export default function ProcedureSectionPage() {
           </div>
         </div>
       </div>
+
+      {linkModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setLinkModal(null)}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-base font-bold mb-3 dark:text-white">Link Orphan Finding</h2>
+            {orphanFindings.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">No orphan findings available.</p>
+            ) : (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {orphanFindings.map((of) => (
+                  <label key={of.id} className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition ${
+                    linkModal.findingId === of.id
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
+                  }`}>
+                    <input
+                      type="radio" name="orphan" value={of.id}
+                      checked={linkModal.findingId === of.id}
+                      onChange={() => setLinkModal({ ...linkModal, findingId: of.id })}
+                      className="mt-0.5"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{of.id.slice(0, 8)}</p>
+                      <p className="text-sm dark:text-gray-200 line-clamp-2">{of.short_description || '(no description)'}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            )}
+            <div className="flex gap-3 mt-5">
+              <button onClick={() => setLinkModal(null)} className="flex-1 bg-gray-200 dark:bg-gray-700 dark:text-gray-200 py-2.5 rounded text-sm font-medium">Cancel</button>
+              <button
+                onClick={async () => {
+                  if (!linkModal.findingId) return;
+                  setLinking(true);
+                  try {
+                    await api.post(`/api/audits/${id}/controls/${linkModal.controlId}/link-finding`, { finding_id: linkModal.findingId });
+                    setLinkModal(null);
+                    load();
+                    api.get(`/api/audits/${id}/orphan-findings`).then((res) => setOrphanFindings(res.data || [])).catch(() => {});
+                  } catch (e: any) {
+                    alert(e?.response?.data?.error || 'Failed to link finding');
+                  } finally {
+                    setLinking(false);
+                  }
+                }}
+                disabled={!linkModal.findingId || linking}
+                className="flex-1 bg-blue-600 text-white py-2.5 rounded text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+              >{linking ? 'Linking...' : 'Link Finding'}</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {findingModal && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" onClick={() => setFindingModal(null)}>

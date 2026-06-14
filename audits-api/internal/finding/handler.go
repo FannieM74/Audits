@@ -94,10 +94,33 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 		h.svc.pool.QueryRow(r.Context(), "SELECT raised_by_business_id FROM audits WHERE id=$1", auditID).Scan(&raisedBy)
 		f.RaisedByBusinessID = raisedBy
 	}
+	// Check duplicate if procedure_item_id is set
+	if f.ProcedureItemID != nil {
+		var exists bool
+		h.svc.pool.QueryRow(r.Context(),
+			"SELECT EXISTS(SELECT 1 FROM findings WHERE audit_id=$1 AND procedure_item_id=$2)",
+			auditID, *f.ProcedureItemID,
+		).Scan(&exists)
+		if exists {
+			writeError(w, http.StatusConflict, "a finding already exists for this control")
+			return
+		}
+	}
 	if err := h.svc.Create(r.Context(), &f); err != nil {
 		log.Printf("create finding error: %v", err)
 		writeError(w, http.StatusBadRequest, err.Error())
 		return
+	}
+	// Auto-create No responses for all evidence items under this control
+	if f.ProcedureItemID != nil {
+		h.svc.pool.Exec(r.Context(), `
+			INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response, finding_id)
+			SELECT $1, pei.id, 'No', $3
+			FROM procedure_evidence_items pei
+			WHERE pei.procedure_item_id = $2
+			ON CONFLICT (audit_id, evidence_item_id)
+			DO UPDATE SET response = 'No', finding_id = $3, updated_at = NOW()
+		`, auditID, *f.ProcedureItemID, f.ID)
 	}
 	writeJSON(w, http.StatusCreated, f)
 }

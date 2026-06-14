@@ -216,3 +216,38 @@ func (r *Repository) GetFindingForControl(ctx context.Context, auditID uuid.UUID
 	}
 	return &findingID, nil
 }
+
+func (r *Repository) FindingExistsForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (bool, error) {
+	var exists bool
+	err := r.pool.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM findings WHERE audit_id=$1 AND procedure_item_id=$2)", auditID, controlID).Scan(&exists)
+	return exists, err
+}
+
+func (r *Repository) AutoCreateNoResponses(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID, findingID uuid.UUID) error {
+	_, err := r.pool.Exec(ctx, `
+		INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response, finding_id)
+		SELECT $1, pei.id, 'No', $3
+		FROM procedure_evidence_items pei
+		WHERE pei.procedure_item_id = $2
+		ON CONFLICT (audit_id, evidence_item_id)
+		DO UPDATE SET response = 'No', finding_id = $3, updated_at = NOW()
+	`, auditID, controlID, findingID)
+	return err
+}
+
+func (r *Repository) ListOrphanFindings(ctx context.Context, auditID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := r.pool.Query(ctx, "SELECT id FROM findings WHERE audit_id=$1 AND procedure_item_id IS NULL", auditID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var ids []uuid.UUID
+	for rows.Next() {
+		var id uuid.UUID
+		if err := rows.Scan(&id); err != nil {
+			return nil, err
+		}
+		ids = append(ids, id)
+	}
+	return ids, nil
+}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import api from '@/lib/api';
-import { Audit, Business, Finding, SectionSummary, User } from '@/types';
+import { Audit, Business, Finding, ProcedureItem, SectionSummary, User } from '@/types';
 
 interface FindingFormProps {
   auditId: string;
@@ -22,6 +22,7 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
   return {
     date_raised: initial?.date_raised || new Date().toISOString().split('T')[0],
     raised_by_name: initial?.raised_by_name || (user ? `${user.name} ${user.surname}` : ''),
+    procedure_item_id: initial?.procedure_item_id || '',
     raised_by_sap_no: initial?.raised_by_sap_no || user?.sap_no || '',
     contact_details: initial?.contact_details || user?.work_tel || '',
     origin_ncr: initial?.origin_ncr || '',
@@ -46,6 +47,7 @@ function initForm(initial?: Partial<Finding>, user?: User | null) {
     stop_certificate_issued: initial?.stop_certificate_issued || false,
     completion: initial?.completion ?? 0,
     procedure: initial?.procedure || '',
+    procedure_item_id: initial?.procedure_item_id || '',
   };
 }
 
@@ -105,6 +107,7 @@ function BusinessInfoBox({ plant, site, responsiblePerson, sapNo }: {
 export default function FindingForm({ auditId, initial, onSave, onCancel, loading, user, saved, renderAfterActions }: FindingFormProps) {
   const [form, setForm] = useState<FormState>(initForm(initial, user));
   const [sections, setSections] = useState<SectionSummary[]>([]);
+  const [controls, setControls] = useState<ProcedureItem[]>([]);
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [auditData, setAuditData] = useState<Audit | null>(null);
 
@@ -129,6 +132,21 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
     api.get(`/api/audits/${auditId}/procedure-sections`).then((res) => setSections(res.data)).catch(() => {});
   }, [auditId]);
 
+  // Fetch controls when procedure section changes
+  useEffect(() => {
+    const match = form.procedure.match(/^(\d+)\s/);
+    const sectionNum = match ? parseInt(match[1], 10) : 0;
+    if (sectionNum > 0) {
+      api.get(`/api/procedures?section=${sectionNum}`).then((res) => {
+        setControls(res.data);
+        setForm((prev) => ({ ...prev, procedure_item_id: '' }));
+      }).catch(() => setControls([]));
+    } else {
+      setControls([]);
+      setForm((prev) => ({ ...prev, procedure_item_id: '' }));
+    }
+  }, [form.procedure]);
+
   const update = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [field]: e.target.value });
 
@@ -140,6 +158,7 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
     const data = { ...form, audit_id: auditId } as Record<string, unknown>;
     if (!data.raised_by_business_id) data.raised_by_business_id = null;
     if (!data.raised_against_business_id) data.raised_against_business_id = null;
+    if (!data.procedure_item_id) data.procedure_item_id = null;
     onSave(data);
   };
 
@@ -210,13 +229,31 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         {PRIORITIES.map((p) => <option key={p}>{p}</option>)}
       </Select>
 
-      <Select label="Procedure" value={form.procedure} onChange={update('procedure')} disabled={!!initial?.procedure}>
-        <option value="">Select procedure...</option>
+      <Select label="Procedure Section" value={form.procedure} onChange={update('procedure')} disabled={!!initial?.procedure}>
+        <option value="">Select section...</option>
         {sections.map((s) => {
           const label = `${String(s.section_number).padStart(3, '0')} ${s.section_name}`;
           return <option key={s.section_number} value={label}>{label}</option>;
         })}
       </Select>
+
+      {controls.length > 0 && (
+        <Select label="Control Question" value={form.procedure_item_id} onChange={(e) => {
+          const selected = controls.find((c) => c.id === e.target.value);
+          setForm((prev) => ({
+            ...prev,
+            procedure_item_id: e.target.value,
+            procedure: selected ? `${String(selected.section_number).padStart(3, '0')} ${selected.section_name}` : prev.procedure,
+          }));
+        }}>
+          <option value="">Select control...</option>
+          {controls.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.sort_order}. {c.control_question}
+            </option>
+          ))}
+        </Select>
+      )}
 
       <Input label="Responsible Person (Int)" value={form.resp_person_int_name} onChange={update('resp_person_int_name')} />
       <Input label="Resp Person SAP No" value={form.resp_person_int_sap} onChange={update('resp_person_int_sap')} />
