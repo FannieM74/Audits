@@ -89,16 +89,17 @@ function Fieldset({ label, children }: { label: string; children: React.ReactNod
   );
 }
 
-function BusinessInfoBox({ plant, site, responsiblePerson, sapNo }: {
-  plant: string; site: string; responsiblePerson: string; sapNo: string;
+function BusinessInfoBox({ plant, site, responsiblePerson, sapNo, tel }: {
+  plant: string; site: string; responsiblePerson: string; sapNo: string; tel?: string;
 }) {
-  if (!plant && !site && !responsiblePerson && !sapNo) return null;
+  if (!plant && !site && !responsiblePerson && !sapNo && !tel) return null;
   return (
     <div className="mt-1 text-xs text-gray-500 dark:text-gray-400 space-y-0.5">
       {plant && <span className="mr-3">Plant: {plant}</span>}
       {site && <span className="mr-3">Site: {site}</span>}
       {responsiblePerson && <span className="mr-3">Person: {responsiblePerson}</span>}
-      {sapNo && <span>SAP: {sapNo}</span>}
+      {sapNo && <span className="mr-3">SAP: {sapNo}</span>}
+      {tel && <span>Tel: {tel}</span>}
     </div>
   );
 }
@@ -170,6 +171,7 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         raised_against_business_id: bizId,
         resp_person_int_name: prev.resp_person_int_name || (biz?.responsible_person || ''),
         resp_person_int_sap: prev.resp_person_int_sap || (biz?.sap_no || ''),
+        resp_person_ext_name: prev.resp_person_ext_name || (biz?.responsible_person_tel || ''),
       };
     });
   };
@@ -187,6 +189,7 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         site={auditData?.raised_by_business_site || ''}
         responsiblePerson={auditData?.raised_by_business_responsible_person || ''}
         sapNo={auditData?.raised_by_business_sap_no || ''}
+        tel={businesses.find(b => b.id === (auditData?.raised_by_business_id || ''))?.responsible_person_tel}
       />
 
       <Select label="Raised Against Business" value={form.raised_against_business_id} onChange={handleRaisedAgainstChange}>
@@ -198,6 +201,7 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
         site={auditData?.raised_against_business_site || ''}
         responsiblePerson={auditData?.raised_against_business_responsible_person || ''}
         sapNo={auditData?.raised_against_business_sap_no || ''}
+        tel={businesses.find(b => b.id === (auditData?.business_id || ''))?.responsible_person_tel}
       />
 
       <Select label="Origin of NCR" value={form.origin_ncr} onChange={update('origin_ncr')}>
