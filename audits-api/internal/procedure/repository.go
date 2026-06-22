@@ -253,11 +253,10 @@ type OrphanFinding struct {
 	Description      string    `json:"description"`
 	Priority         string    `json:"priority"`
 	DateRaised       time.Time `json:"date_raised"`
-	NcrRef           string    `json:"ncr_ref"`
 }
 
 func (r *Repository) ListOrphanFindings(ctx context.Context, auditID uuid.UUID) ([]OrphanFinding, error) {
-	rows, err := r.pool.Query(ctx, "SELECT id, short_description, description, priority, date_raised, ncr_ref FROM findings WHERE audit_id=$1 AND procedure_item_id IS NULL", auditID)
+	rows, err := r.pool.Query(ctx, "SELECT id, short_description, description, priority, date_raised FROM findings WHERE audit_id=$1 AND procedure_item_id IS NULL", auditID)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +264,7 @@ func (r *Repository) ListOrphanFindings(ctx context.Context, auditID uuid.UUID) 
 	var findings []OrphanFinding
 	for rows.Next() {
 		var f OrphanFinding
-		if err := rows.Scan(&f.ID, &f.ShortDescription, &f.Description, &f.Priority, &f.DateRaised, &f.NcrRef); err != nil {
+		if err := rows.Scan(&f.ID, &f.ShortDescription, &f.Description, &f.Priority, &f.DateRaised); err != nil {
 			return nil, err
 		}
 		findings = append(findings, f)
