@@ -23,7 +23,13 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	r.Use(chiMiddleware.Logger)
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   parseOrigins(cfg.CORSOrigins),
+		AllowedOrigins: parseOrigins(cfg.CORSOrigins),
+		AllowedOriginFunc: func(r *http.Request, origin string) bool {
+			if origin == "" {
+				return true
+			}
+			return strings.HasSuffix(origin, ".vercel.app")
+		},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
