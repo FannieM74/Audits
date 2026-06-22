@@ -10,4 +10,4 @@ JOIN procedure_items pi ON pi.id = f.procedure_item_id
 JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
 WHERE f.procedure_item_id IS NOT NULL
 ON CONFLICT (audit_id, evidence_item_id) DO UPDATE
-SET response = 'No', finding_id = EXCLUDED.finding_id, updated_at = NOW();
+SET response = 'no', finding_id = EXCLUDED.finding_id, updated_at = NOW();
