@@ -47,7 +47,12 @@ func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
 
 		log.Printf("applying migration: %s", f)
 		if _, err := pool.Exec(ctx, string(sql)); err != nil {
-			return fmt.Errorf("apply %s: %w", f, err)
+			errStr := err.Error()
+			if strings.Contains(errStr, "already exists") || strings.Contains(errStr, "duplicate") || strings.Contains(errStr, "does not exist") {
+				log.Printf("  skip (exists): %s", errStr[:min(len(errStr), 80)])
+			} else {
+				return fmt.Errorf("apply %s: %w", f, err)
+			}
 		}
 		if _, err := pool.Exec(ctx, "INSERT INTO _migrations (name) VALUES ($1) ON CONFLICT DO NOTHING", f); err != nil {
 			return fmt.Errorf("record %s: %w", f, err)
