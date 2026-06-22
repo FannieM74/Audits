@@ -189,8 +189,8 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 		SELECT
 			pi.section_number,
 			pi.section_name,
-			COUNT(DISTINCT pei.id) AS total_items,
-			COUNT(DISTINCT apr.response) FILTER (WHERE apr.response IS NOT NULL) AS answered,
+			COUNT(pei.id) AS total_items,
+			COUNT(apr.response) FILTER (WHERE apr.response IS NOT NULL) AS answered,
 			COUNT(DISTINCT fs.id) FILTER (WHERE fs.id IS NOT NULL AND (fs.procedure_item_id = pi.id OR fs.section_num = pi.section_number)) AS findings,
 			COUNT(DISTINCT fs.id) FILTER (WHERE fs.id IS NOT NULL AND (fs.procedure_item_id = pi.id OR fs.section_num = pi.section_number) AND (fs.completion IS NULL OR fs.completion < 100)) AS open_findings,
 			COUNT(DISTINCT pi.id) FILTER (WHERE apr.response = 'no' AND NOT EXISTS (SELECT 1 FROM finding_sections fs2 WHERE fs2.id IS NOT NULL AND (fs2.procedure_item_id = pi.id OR fs2.section_num = pi.section_number))) AS pending
