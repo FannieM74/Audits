@@ -69,7 +69,7 @@ def main():
     ws = wb["Working Paper"]
 
     # Apply Tahoma 11 black to all cells
-    tahoma = Font(name='Tahoma', size=11, color='000000')
+    tahoma = Font(name='Tahoma', size=11)
     for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
         for cell in row:
             if cell.value:
@@ -109,9 +109,8 @@ def _fill_row(ws, row_idx, section_num, control_counter,
     if not pi:
         return
 
-    has_finding = sort_order in findings_by_sort
-    m_val = "No" if has_finding else "Yes"
     n_val = findings_by_sort.get(sort_order, "")
+    m_val = "No" if n_val else "Yes"
 
     cell_m = ws.cell(row=row_idx, column=13)
     cell_m.value = m_val
