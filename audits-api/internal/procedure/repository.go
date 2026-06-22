@@ -56,9 +56,10 @@ type SectionSummary struct {
 
 type ControlWithEvidence struct {
 	ProcedureItem
-	Evidences []EvidenceWithResponse `json:"evidences"`
-	HasFinding bool                  `json:"has_finding"`
-	FindingID   *uuid.UUID           `json:"finding_id,omitempty"`
+	Evidences         []EvidenceWithResponse `json:"evidences"`
+	HasFinding        bool                   `json:"has_finding"`
+	FindingID         *uuid.UUID             `json:"finding_id,omitempty"`
+	FindingCompletion int                    `json:"finding_completion"`
 }
 
 type EvidenceWithResponse struct {
@@ -210,13 +211,14 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 	return summaries, nil
 }
 
-func (r *Repository) GetFindingForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (*uuid.UUID, error) {
+func (r *Repository) GetFindingForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (*uuid.UUID, int, error) {
 	var findingID uuid.UUID
-	err := r.pool.QueryRow(ctx, "SELECT id FROM findings WHERE audit_id=$1 AND procedure_item_id=$2 LIMIT 1", auditID, controlID).Scan(&findingID)
+	var completion int
+	err := r.pool.QueryRow(ctx, "SELECT id, completion FROM findings WHERE audit_id=$1 AND procedure_item_id=$2 LIMIT 1", auditID, controlID).Scan(&findingID, &completion)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return &findingID, nil
+	return &findingID, completion, nil
 }
 
 func (r *Repository) FindingExistsForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (bool, error) {

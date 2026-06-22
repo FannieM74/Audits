@@ -130,6 +130,7 @@ export interface ControlWithEvidence {
   evidences: EvidenceWithResponse[];
   has_finding: boolean;
   finding_id?: string | null;
+  finding_completion?: number;
 }
 
 export interface SectionDescription {

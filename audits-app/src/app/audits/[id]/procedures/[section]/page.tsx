@@ -217,7 +217,11 @@ export default function ProcedureSectionPage() {
                     <div className="flex items-center justify-between p-3 sm:p-4 pb-1 sm:pb-1">
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-gray-400 dark:text-gray-500 font-mono shrink-0">{ci + 1}</span>
-                        {control.has_finding && <span className="text-[10px] font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 px-1.5 py-0.5 rounded shrink-0">NCR</span>}
+                        {control.has_finding && <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded shrink-0 ${
+                          (control.finding_completion ?? 0) >= 100
+                            ? 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30'
+                            : 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30'
+                        }`}>NCR {control.finding_completion ?? 0}%</span>}
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         {hasNo && !control.has_finding && <span className="text-orange-500 text-[10px]">⚠️</span>}

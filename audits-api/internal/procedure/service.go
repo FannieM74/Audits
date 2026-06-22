@@ -99,10 +99,11 @@ func (s *Service) GetSectionDetail(ctx context.Context, auditID uuid.UUID, secti
 		}
 
 		// Check if a finding exists for this control
-		findingID, err := s.repo.GetFindingForControl(ctx, auditID, ctrl.ID)
+		findingID, completion, err := s.repo.GetFindingForControl(ctx, auditID, ctrl.ID)
 		if err == nil && findingID != nil {
 			cwe.HasFinding = true
 			cwe.FindingID = findingID
+			cwe.FindingCompletion = completion
 		}
 
 		result.Controls[i] = cwe
@@ -119,6 +120,6 @@ func (s *Service) SetEvidenceResponse(ctx context.Context, auditID uuid.UUID, ev
 	return s.repo.UpsertEvidenceResponse(ctx, auditID, evidenceItemID, response, notes)
 }
 
-func (s *Service) GetFindingForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (*uuid.UUID, error) {
+func (s *Service) GetFindingForControl(ctx context.Context, auditID uuid.UUID, controlID uuid.UUID) (*uuid.UUID, int, error) {
 	return s.repo.GetFindingForControl(ctx, auditID, controlID)
 }
