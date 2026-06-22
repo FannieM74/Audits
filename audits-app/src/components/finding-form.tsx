@@ -138,11 +138,9 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
     if (sectionNum > 0) {
       api.get(`/api/procedures?section=${sectionNum}`).then((res) => {
         setControls(res.data);
-        setForm((prev) => ({ ...prev, procedure_item_id: '' }));
       }).catch(() => setControls([]));
     } else {
       setControls([]);
-      setForm((prev) => ({ ...prev, procedure_item_id: '' }));
     }
   }, [form.procedure]);
 
