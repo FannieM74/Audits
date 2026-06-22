@@ -146,7 +146,7 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditor
 		args = append(args, procedure)
 		argIdx++
 	}
-	query += " ORDER BY f.created_at DESC"
+	query += " ORDER BY f.procedure ASC NULLS LAST, f.created_at DESC"
 	rows, err := r.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, err
