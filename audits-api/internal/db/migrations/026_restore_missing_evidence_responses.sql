@@ -5,7 +5,7 @@
 -- Controls without findings → "Yes" on all their evidence items.
 
 INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response, finding_id)
-SELECT f.audit_id, pei.id, 'No', f.id
+SELECT f.audit_id, pei.id, 'no', f.id
 FROM findings f
 JOIN procedure_items pi ON pi.id = f.procedure_item_id
 JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
@@ -13,7 +13,7 @@ WHERE f.procedure_item_id IS NOT NULL
 ON CONFLICT (audit_id, evidence_item_id) DO NOTHING;
 
 INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response)
-SELECT a.id, pei.id, 'Yes'
+SELECT a.id, pei.id, 'yes'
 FROM audits a
 JOIN procedure_evidence_items pei ON TRUE
 JOIN procedure_items pi ON pi.id = pei.procedure_item_id

@@ -4,7 +4,7 @@
 -- This mirrors the AutoCreateNoResponses logic in the Go handler.
 
 INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response, finding_id)
-SELECT f.audit_id, pei.id, 'No', f.id
+SELECT f.audit_id, pei.id, 'no', f.id
 FROM findings f
 JOIN procedure_items pi ON pi.id = f.procedure_item_id
 JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id

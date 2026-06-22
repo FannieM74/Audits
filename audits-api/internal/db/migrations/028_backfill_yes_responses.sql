@@ -3,7 +3,7 @@
 -- This ensures every control has a response so the XLSX export shows M=Yes/No for all.
 
 INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response)
-SELECT a.id, pei.id, 'Yes'
+SELECT a.id, pei.id, 'yes'
 FROM audits a
 CROSS JOIN procedure_evidence_items pei
 JOIN procedure_items pi ON pi.id = pei.procedure_item_id
