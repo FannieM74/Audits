@@ -16,6 +16,7 @@ export default function AuditDetailPage() {
   const [sections, setSections] = useState<SectionSummary[]>([]);
   const [filterAuditor, setFilterAuditor] = useState('');
   const [filterProcedure, setFilterProcedure] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
 
   const isLead = audit?.lead_auditor_id === user?.id;
 
@@ -23,13 +24,14 @@ export default function AuditDetailPage() {
     const params = new URLSearchParams();
     if (filterAuditor) params.set('auditor_id', filterAuditor);
     if (filterProcedure) params.set('procedure', filterProcedure);
+    if (filterStatus) params.set('status', filterStatus);
     const qs = params.toString();
     api.get(`/api/audits/${id}/findings${qs ? '?' + qs : ''}`).then((res) => {
       setFindings(res.data);
     }).catch((err) => {
       console.error('failed to load findings', err);
     });
-  }, [id, filterAuditor, filterProcedure]);
+  }, [id, filterAuditor, filterProcedure, filterStatus]);
 
   useEffect(() => {
     api.get(`/api/audits/${id}`).then((res) => setAudit(res.data));
@@ -178,8 +180,28 @@ export default function AuditDetailPage() {
             </div>
           )}
 
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <h2 className="text-base sm:text-lg font-semibold dark:text-white">Findings ({(findings || []).length})</h2>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1">
+              <button onClick={() => setFilterStatus('')}
+                className={`text-xs px-2.5 py-1 rounded-full font-medium transition ${
+                  filterStatus === ''
+                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 ring-1 ring-blue-400 dark:ring-blue-500'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}>All</button>
+              <button onClick={() => setFilterStatus('open')}
+                className={`text-xs px-2.5 py-1 rounded-full font-medium transition ${
+                  filterStatus === 'open'
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 ring-1 ring-red-400 dark:ring-red-500'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}>Open</button>
+              <button onClick={() => setFilterStatus('closed')}
+                className={`text-xs px-2.5 py-1 rounded-full font-medium transition ${
+                  filterStatus === 'closed'
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 ring-1 ring-green-400 dark:ring-green-500'
+                    : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                }`}>Closed</button>
+            </div>
+            <h2 className="text-base sm:text-lg font-semibold dark:text-white mr-auto">Findings ({(findings || []).length})</h2>
             <div className="flex gap-2">
               <select value={filterAuditor} onChange={(e) => setFilterAuditor(e.target.value)}
                 className="text-xs border dark:border-gray-600 rounded px-2 py-1.5 dark:bg-gray-700 dark:text-white">

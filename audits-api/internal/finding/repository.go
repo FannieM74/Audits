@@ -116,7 +116,7 @@ const findingColsPrefixed = `f.id, f.audit_id, f.auditor_id, f.date_raised,
     f.immediate_action_taken, f.action_agreed_approved, f.stop_certificate_issued, f.status, f.completion,
     f.created_at, f.updated_at`
 
-func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditorID *uuid.UUID, procedure string) ([]Finding, error) {
+func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditorID *uuid.UUID, procedure string, status string) ([]Finding, error) {
 	query := `SELECT ` + findingColsPrefixed + `,
 		COALESCE(u.name || ' ' || u.surname, '') AS auditor_name,
 		COALESCE(rb.name, '') AS raised_by_business_name,
@@ -145,6 +145,11 @@ func (r *Repository) ListByAudit(ctx context.Context, auditID uuid.UUID, auditor
 		query += fmt.Sprintf(" AND f.procedure = $%d", argIdx)
 		args = append(args, procedure)
 		argIdx++
+	}
+	if status == "open" {
+		query += fmt.Sprintf(" AND (f.completion IS NULL OR f.completion < 100)")
+	} else if status == "closed" {
+		query += fmt.Sprintf(" AND f.completion >= 100")
 	}
 	query += " ORDER BY f.procedure ASC NULLS LAST, f.created_at DESC"
 	rows, err := r.pool.Query(ctx, query, args...)

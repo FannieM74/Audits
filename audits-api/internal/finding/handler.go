@@ -60,8 +60,9 @@ func (h *Handler) ListByAudit(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	procedure := r.URL.Query().Get("procedure")
+	status := r.URL.Query().Get("status")
 
-	findings, err := h.svc.ListByAudit(r.Context(), auditID, auditorID, procedure)
+	findings, err := h.svc.ListByAudit(r.Context(), auditID, auditorID, procedure, status)
 	if err != nil {
 		log.Printf("list findings error: %v", err)
 		writeError(w, http.StatusInternalServerError, "failed to list findings")
@@ -113,14 +114,16 @@ func (h *Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	// Auto-create No responses for all evidence items under this control
 	if f.ProcedureItemID != nil {
-		h.svc.pool.Exec(r.Context(), `
+		if _, err := h.svc.pool.Exec(r.Context(), `
 			INSERT INTO audit_procedure_responses (audit_id, evidence_item_id, response, finding_id)
 			SELECT $1, pei.id, 'No', $3
 			FROM procedure_evidence_items pei
 			WHERE pei.procedure_item_id = $2
 			ON CONFLICT (audit_id, evidence_item_id)
 			DO UPDATE SET response = 'No', finding_id = $3, updated_at = NOW()
-		`, auditID, *f.ProcedureItemID, f.ID)
+		`, auditID, *f.ProcedureItemID, f.ID); err != nil {
+			log.Printf("auto-create No responses error: %v", err)
+		}
 	}
 	writeJSON(w, http.StatusCreated, f)
 }
