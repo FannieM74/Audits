@@ -153,9 +153,15 @@ export default function AuditDetailPage() {
                     <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
                       <span>{s.answered}/{s.total_items}</span>
                       {s.findings > 0 ? (
-                        <span className="text-red-500 font-medium">
-                          {(s.open_findings ?? 0)} open / {s.findings - (s.open_findings ?? 0)} closed
-                        </span>
+                        <>
+                          <span className="text-gray-500 dark:text-gray-400">{s.findings}</span>
+                          {(s.open_findings ?? 0) > 0 && (
+                            <span className="text-red-500 font-medium"> · {(s.open_findings ?? 0)} open</span>
+                          )}
+                          {(s.findings - (s.open_findings ?? 0)) > 0 && (
+                            <span className="text-green-600 dark:text-green-400"> · {s.findings - (s.open_findings ?? 0)} closed</span>
+                          )}
+                        </>
                       ) : (
                         <span>0 findings</span>
                       )}
