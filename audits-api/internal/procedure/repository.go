@@ -189,7 +189,7 @@ func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID)
 		FROM procedure_items pi
 		LEFT JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
 		LEFT JOIN audit_procedure_responses apr ON apr.evidence_item_id = pei.id AND apr.audit_id = $1
-		LEFT JOIN findings f ON f.audit_id = $1 AND f.procedure_item_id = pi.id
+		LEFT JOIN findings f ON f.audit_id = $1 AND (f.procedure_item_id = pi.id OR (f.procedure_item_id IS NULL AND f.procedure ~ '^[0-9]' AND CAST(NULLIF(SPLIT_PART(f.procedure, ' ', 1), '') AS int) = pi.section_number))
 		GROUP BY pi.section_number, pi.section_name
 		ORDER BY pi.section_number
 	`, auditID)
