@@ -247,19 +247,24 @@ func (r *Repository) AutoCreateNoResponses(ctx context.Context, auditID uuid.UUI
 	return err
 }
 
-func (r *Repository) ListOrphanFindings(ctx context.Context, auditID uuid.UUID) ([]uuid.UUID, error) {
-	rows, err := r.pool.Query(ctx, "SELECT id FROM findings WHERE audit_id=$1 AND procedure_item_id IS NULL", auditID)
+type OrphanFinding struct {
+	ID               uuid.UUID `json:"id"`
+	ShortDescription string    `json:"short_description"`
+}
+
+func (r *Repository) ListOrphanFindings(ctx context.Context, auditID uuid.UUID) ([]OrphanFinding, error) {
+	rows, err := r.pool.Query(ctx, "SELECT id, short_description FROM findings WHERE audit_id=$1 AND procedure_item_id IS NULL", auditID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var ids []uuid.UUID
+	var findings []OrphanFinding
 	for rows.Next() {
-		var id uuid.UUID
-		if err := rows.Scan(&id); err != nil {
+		var f OrphanFinding
+		if err := rows.Scan(&f.ID, &f.ShortDescription); err != nil {
 			return nil, err
 		}
-		ids = append(ids, id)
+		findings = append(findings, f)
 	}
-	return ids, nil
+	return findings, nil
 }

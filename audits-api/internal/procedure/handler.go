@@ -313,15 +313,15 @@ func (h *Handler) ListOrphanFindings(w http.ResponseWriter, r *http.Request) {
 		writeError(w, http.StatusBadRequest, "invalid audit id")
 		return
 	}
-	ids, err := h.svc.repo.ListOrphanFindings(r.Context(), auditID)
+	results, err := h.svc.repo.ListOrphanFindings(r.Context(), auditID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, "failed to list orphan findings")
 		return
 	}
-	if ids == nil {
-		ids = []uuid.UUID{}
+	if results == nil {
+		results = []procedure.OrphanFinding{}
 	}
-	writeJSON(w, http.StatusOK, ids)
+	writeJSON(w, http.StatusOK, results)
 }
 
 func (h *Handler) ExportXLSX(w http.ResponseWriter, r *http.Request) {
