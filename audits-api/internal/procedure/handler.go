@@ -319,7 +319,7 @@ func (h *Handler) ListOrphanFindings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if results == nil {
-		results = []procedure.OrphanFinding{}
+		results = []OrphanFinding{}
 	}
 	writeJSON(w, http.StatusOK, results)
 }
