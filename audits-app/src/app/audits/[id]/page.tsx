@@ -154,7 +154,7 @@ export default function AuditDetailPage() {
                       <span>{s.answered}/{s.total_items}</span>
                       {s.findings > 0 ? (
                         <span className="text-red-500 font-medium">
-                          {s.open_findings} open / {s.findings - s.open_findings} closed
+                          {(s.open_findings ?? 0)} open / {s.findings - (s.open_findings ?? 0)} closed
                         </span>
                       ) : (
                         <span>0 findings</span>

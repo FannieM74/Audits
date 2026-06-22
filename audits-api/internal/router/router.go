@@ -24,7 +24,7 @@ func New(pool *pgxpool.Pool, cfg *config.Config) *chi.Mux {
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins: parseOrigins(cfg.CORSOrigins),
-		AllowedOriginFunc: func(r *http.Request, origin string) bool {
+		AllowOriginFunc: func(r *http.Request, origin string) bool {
 			if origin == "" {
 				return true
 			}
