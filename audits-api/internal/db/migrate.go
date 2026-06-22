@@ -2,23 +2,25 @@ package db
 
 import (
 	"context"
+	"embed"
 	"fmt"
 	"log"
-	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RunMigrations(ctx context.Context, pool *pgxpool.Pool, migrationsDir string) error {
+//go:embed migrations/*.sql
+var migrationsFS embed.FS
+
+func RunMigrations(ctx context.Context, pool *pgxpool.Pool) error {
 	_, err := pool.Exec(ctx, `CREATE TABLE IF NOT EXISTS _migrations (name TEXT PRIMARY KEY, applied_at TIMESTAMPTZ DEFAULT NOW())`)
 	if err != nil {
 		return fmt.Errorf("create migrations table: %w", err)
 	}
 
-	entries, err := os.ReadDir(migrationsDir)
+	entries, err := migrationsFS.ReadDir("migrations")
 	if err != nil {
 		return fmt.Errorf("read migrations dir: %w", err)
 	}
@@ -38,7 +40,7 @@ func RunMigrations(ctx context.Context, pool *pgxpool.Pool, migrationsDir string
 			continue
 		}
 
-		sql, err := os.ReadFile(filepath.Join(migrationsDir, f))
+		sql, err := migrationsFS.ReadFile("migrations/" + f)
 		if err != nil {
 			return fmt.Errorf("read %s: %w", f, err)
 		}

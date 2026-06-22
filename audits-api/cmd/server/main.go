@@ -24,7 +24,7 @@ func main() {
 	}
 	defer pool.Close()
 
-	if err := db.RunMigrations(ctx, pool, "internal/db/migrations"); err != nil {
+	if err := db.RunMigrations(ctx, pool); err != nil {
 		log.Fatalf("migration error: %v", err)
 	}
 
