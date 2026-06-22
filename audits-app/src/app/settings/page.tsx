@@ -11,7 +11,7 @@ export default function SettingsPage() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<Business | null>(null);
-  const [form, setForm] = useState({ name: '', plant_no: '', site: '', responsible_person: '', sap_no: '' });
+  const [form, setForm] = useState({ name: '', plant_no: '', site: '', responsible_person: '', sap_no: '', responsible_person_tel: '' });
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -23,13 +23,13 @@ export default function SettingsPage() {
 
   function openCreate() {
     setEditing(null);
-    setForm({ name: '', plant_no: '', site: '', responsible_person: '', sap_no: '' });
+    setForm({ name: '', plant_no: '', site: '', responsible_person: '', sap_no: '', responsible_person_tel: '' });
     setShowModal(true);
   }
 
   function openEdit(b: Business) {
     setEditing(b);
-    setForm({ name: b.name, plant_no: b.plant_no, site: b.site, responsible_person: b.responsible_person, sap_no: b.sap_no });
+    setForm({ name: b.name, plant_no: b.plant_no, site: b.site, responsible_person: b.responsible_person, sap_no: b.sap_no, responsible_person_tel: b.responsible_person_tel });
     setShowModal(true);
   }
 
@@ -92,6 +92,7 @@ export default function SettingsPage() {
                     <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Site</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Responsible Person</th>
                     <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">SAP No</th>
+                    <th className="text-left px-4 py-3 font-medium text-gray-600 dark:text-gray-400">Telephone</th>
                     <th className="text-right px-4 py-3 font-medium text-gray-600 dark:text-gray-400"></th>
                   </tr>
                 </thead>
@@ -103,6 +104,7 @@ export default function SettingsPage() {
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{b.site}</td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{b.responsible_person}</td>
                       <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{b.sap_no}</td>
+                      <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{b.responsible_person_tel}</td>
                       <td className="px-4 py-3 text-right">
                         <button onClick={() => openEdit(b)} className="text-blue-600 dark:text-blue-400 hover:underline text-xs mr-3">Edit</button>
                         <button onClick={() => handleDelete(b.id)} className="text-red-600 dark:text-red-400 hover:underline text-xs">Delete</button>
@@ -139,6 +141,10 @@ export default function SettingsPage() {
 
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">SAP No</label>
             <input value={form.sap_no} onChange={(e) => setForm({ ...form, sap_no: e.target.value })}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-3 dark:bg-gray-700 dark:text-white text-sm" />
+
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Telephone</label>
+            <input value={form.responsible_person_tel} onChange={(e) => setForm({ ...form, responsible_person_tel: e.target.value })}
               className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 mb-4 dark:bg-gray-700 dark:text-white text-sm" />
 
             <div className="flex justify-end gap-2">

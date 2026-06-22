@@ -24,6 +24,10 @@ func main() {
 	}
 	defer pool.Close()
 
+	if err := db.RunMigrations(ctx, pool, "internal/db/migrations"); err != nil {
+		log.Fatalf("migration error: %v", err)
+	}
+
 	r := router.New(pool, cfg)
 
 	srv := &http.Server{Addr: ":" + cfg.Port, Handler: r}

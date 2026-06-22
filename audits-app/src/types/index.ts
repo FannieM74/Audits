@@ -163,6 +163,7 @@ export interface Business {
   site: string;
   responsible_person: string;
   sap_no: string;
+  responsible_person_tel: string;
 }
 
 export interface AuthResponse {
