@@ -8,12 +8,13 @@ import (
 )
 
 type Business struct {
-	ID                uuid.UUID `json:"id"`
-	Name              string    `json:"name"`
-	PlantNo           string    `json:"plant_no"`
-	Site              string    `json:"site"`
-	ResponsiblePerson string    `json:"responsible_person"`
-	SapNo             string    `json:"sap_no"`
+	ID                  uuid.UUID `json:"id"`
+	Name                string    `json:"name"`
+	PlantNo             string    `json:"plant_no"`
+	Site                string    `json:"site"`
+	ResponsiblePerson   string    `json:"responsible_person"`
+	SapNo               string    `json:"sap_no"`
+	ResponsiblePersonTel string   `json:"responsible_person_tel"`
 }
 
 type Repository struct {
@@ -25,7 +26,7 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 }
 
 func (r *Repository) List(ctx context.Context) ([]Business, error) {
-	rows, err := r.pool.Query(ctx, "SELECT id, name, plant_no, site, responsible_person, sap_no FROM businesses ORDER BY name")
+	rows, err := r.pool.Query(ctx, "SELECT id, name, plant_no, site, responsible_person, sap_no, responsible_person_tel FROM businesses ORDER BY name")
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +34,7 @@ func (r *Repository) List(ctx context.Context) ([]Business, error) {
 	var businesses []Business
 	for rows.Next() {
 		var b Business
-		if err := rows.Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo); err != nil {
+		if err := rows.Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo, &b.ResponsiblePersonTel); err != nil {
 			return nil, err
 		}
 		businesses = append(businesses, b)
@@ -41,24 +42,24 @@ func (r *Repository) List(ctx context.Context) ([]Business, error) {
 	return businesses, nil
 }
 
-func (r *Repository) Create(ctx context.Context, name, plantNo, site, responsiblePerson, sapNo string) (*Business, error) {
+func (r *Repository) Create(ctx context.Context, name, plantNo, site, responsiblePerson, sapNo, responsiblePersonTel string) (*Business, error) {
 	var b Business
 	err := r.pool.QueryRow(ctx,
-		"INSERT INTO businesses (name, plant_no, site, responsible_person, sap_no) VALUES ($1, $2, $3, $4, $5) RETURNING id, name, plant_no, site, responsible_person, sap_no",
-		name, plantNo, site, responsiblePerson, sapNo,
-	).Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo)
+		"INSERT INTO businesses (name, plant_no, site, responsible_person, sap_no, responsible_person_tel) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, name, plant_no, site, responsible_person, sap_no, responsible_person_tel",
+		name, plantNo, site, responsiblePerson, sapNo, responsiblePersonTel,
+	).Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo, &b.ResponsiblePersonTel)
 	if err != nil {
 		return nil, err
 	}
 	return &b, nil
 }
 
-func (r *Repository) Update(ctx context.Context, id uuid.UUID, name, plantNo, site, responsiblePerson, sapNo string) (*Business, error) {
+func (r *Repository) Update(ctx context.Context, id uuid.UUID, name, plantNo, site, responsiblePerson, sapNo, responsiblePersonTel string) (*Business, error) {
 	var b Business
 	err := r.pool.QueryRow(ctx,
-		"UPDATE businesses SET name=$1, plant_no=$2, site=$3, responsible_person=$4, sap_no=$5 WHERE id=$6 RETURNING id, name, plant_no, site, responsible_person, sap_no",
-		name, plantNo, site, responsiblePerson, sapNo, id,
-	).Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo)
+		"UPDATE businesses SET name=$1, plant_no=$2, site=$3, responsible_person=$4, sap_no=$5, responsible_person_tel=$6 WHERE id=$7 RETURNING id, name, plant_no, site, responsible_person, sap_no, responsible_person_tel",
+		name, plantNo, site, responsiblePerson, sapNo, responsiblePersonTel, id,
+	).Scan(&b.ID, &b.Name, &b.PlantNo, &b.Site, &b.ResponsiblePerson, &b.SapNo, &b.ResponsiblePersonTel)
 	if err != nil {
 		return nil, err
 	}

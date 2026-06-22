@@ -100,6 +100,11 @@ print("=== Running 021_audit_business_details.sql ===")
 run_sql(open(os.path.join(base, "021_audit_business_details.sql")).read())
 print("  Done")
 
+# Migration 022 - add responsible person telephone
+print("=== Running 022_business_resp_person_tel.sql ===")
+run_sql(open(os.path.join(base, "022_business_resp_person_tel.sql")).read())
+print("  Done")
+
 cur.close()
 conn.close()
 print("\nAll migrations completed.")
