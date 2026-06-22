@@ -150,21 +150,23 @@ export default function AuditDetailPage() {
                     className={`block bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm p-3 hover:shadow-md hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-gray-700 transition active:scale-[0.98] ${s.pending > 0 ? 'border-l-2 border-l-orange-400 dark:border-l-orange-500' : ''}`}>
                     <div className="text-xl font-bold text-gray-800 dark:text-gray-100 text-center leading-tight">{String(s.section_number).padStart(3, '0')}</div>
                     <div className="text-[10px] text-gray-500 dark:text-gray-400 text-center mb-2 leading-tight">{s.section_name}</div>
-                    <div className="flex items-center justify-between text-[10px] text-gray-500 dark:text-gray-400 mb-1">
+                    <div className="flex items-center justify-between gap-1 text-[10px] text-gray-500 dark:text-gray-400 mb-1">
                       <span>{s.answered}/{s.total_items}</span>
-                      {s.findings > 0 ? (
-                        <>
-                          <span className="text-gray-500 dark:text-gray-400">{s.findings}</span>
-                          {(s.open_findings ?? 0) > 0 && (
-                            <span className="text-red-500 font-medium"> · {(s.open_findings ?? 0)} open</span>
-                          )}
-                          {(s.findings - (s.open_findings ?? 0)) > 0 && (
-                            <span className="text-green-600 dark:text-green-400"> · {s.findings - (s.open_findings ?? 0)} closed</span>
-                          )}
-                        </>
-                      ) : (
-                        <span>0 findings</span>
-                      )}
+                      <div className="flex items-center gap-1 flex-wrap justify-end">
+                        {s.findings > 0 ? (
+                          <>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">{s.findings} finding{s.findings !== 1 ? 's' : ''}</span>
+                            {(s.open_findings ?? 0) > 0 && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">{(s.open_findings ?? 0)} open</span>
+                            )}
+                            {(s.findings - (s.open_findings ?? 0)) > 0 && (
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">{s.findings - (s.open_findings ?? 0)} closed</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">0 findings</span>
+                        )}
+                      </div>
                     </div>
                     {s.pending > 0 && <div className="text-[10px] text-orange-500 font-medium text-center mb-1">⚠️ {s.pending} pending</div>}
                     <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full">
