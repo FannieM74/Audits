@@ -26,6 +26,7 @@ export default function ProcedureSectionPage() {
   });
   const [creating, setCreating] = useState(false);
   const [orphanFindings, setOrphanFindings] = useState<{ id: string; short_description: string; description: string; priority: string; date_raised: string; ncr_ref: string }[]>([]);
+  const fmtDate = (d: string) => d?.slice(0, 10) || '';
   const [linkModal, setLinkModal] = useState<{ controlId: string; findingId: string } | null>(null);
   const [linking, setLinking] = useState(false);
 
@@ -337,7 +338,7 @@ export default function ProcedureSectionPage() {
                           'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
                         }`}>{of.priority}</span>
                         <span className="text-[10px] text-gray-400 dark:text-gray-500">{of.ncr_ref}</span>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500">{of.date_raised}</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">{fmtDate(of.date_raised)}</span>
                       </div>
                       <p className="text-xs font-medium dark:text-gray-200 line-clamp-1">{of.short_description}</p>
                       {of.description && (
