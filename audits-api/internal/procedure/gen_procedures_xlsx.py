@@ -9,7 +9,6 @@ from collections import OrderedDict
 
 import psycopg2
 import openpyxl
-from openpyxl.styles import Font
 
 
 def main():
@@ -38,6 +37,7 @@ def main():
     """)
 
     pi_by_sort = OrderedDict()
+    evidence_to_pi = {}
 
     for row in cur.fetchall():
         pi_id, section, sort_order, question, ev_id, ev_text = row
@@ -46,7 +46,24 @@ def main():
                 "id": pi_id,
                 "section": section,
                 "question": question or "",
+                "evidence_ids": [],
             }
+        if ev_id:
+            pi_by_sort[sort_order]["evidence_ids"].append(ev_id)
+            evidence_to_pi[ev_id] = sort_order
+
+    # Fetch audit responses
+    cur.execute("""
+        SELECT evidence_item_id, response
+        FROM audit_procedure_responses
+        WHERE audit_id = %s
+    """, (audit_id,))
+
+    responses_by_sort = {}
+    for ev_id, response in cur.fetchall():
+        sort_order_key = evidence_to_pi.get(ev_id)
+        if sort_order_key:
+            responses_by_sort.setdefault(sort_order_key, []).append(response)
 
     # Fetch findings linked to controls
     cur.execute("""
@@ -68,13 +85,6 @@ def main():
     wb = openpyxl.load_workbook(template_path)
     ws = wb["Working Paper"]
 
-    # Apply Tahoma 11 black to all cells
-    tahoma = Font(name='Tahoma', size=11)
-    for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
-        for cell in row:
-            if cell.value:
-                cell.font = tahoma
-
     current_section_num = None
     control_counter = 0
 
@@ -91,11 +101,11 @@ def main():
             control_counter = 0
             control_counter += 1
             _fill_row(ws, row_idx, current_section_num, control_counter,
-                      pi_by_sort, findings_by_sort)
+                      pi_by_sort, responses_by_sort, findings_by_sort)
         elif col_k and current_section_num:
             control_counter += 1
             _fill_row(ws, row_idx, current_section_num, control_counter,
-                      pi_by_sort, findings_by_sort)
+                      pi_by_sort, responses_by_sort, findings_by_sort)
 
     output = io.BytesIO()
     wb.save(output)
@@ -103,22 +113,25 @@ def main():
 
 
 def _fill_row(ws, row_idx, section_num, control_counter,
-              pi_by_sort, findings_by_sort):
+              pi_by_sort, responses_by_sort, findings_by_sort):
     sort_order = section_num * 100 + control_counter
     pi = pi_by_sort.get(sort_order)
     if not pi:
         return
 
+    resp_list = responses_by_sort.get(sort_order, [])
+
+    if not resp_list:
+        m_val = None
+    elif any(r.lower() == "no" for r in resp_list):
+        m_val = "No"
+    else:
+        m_val = "Yes"
+
     n_val = findings_by_sort.get(sort_order, "")
-    m_val = "No" if n_val else "Yes"
 
-    cell_m = ws.cell(row=row_idx, column=13)
-    cell_m.value = m_val
-    cell_m.font = Font(name='Tahoma', size=11, color='000000')
-
-    cell_n = ws.cell(row=row_idx, column=14)
-    cell_n.value = n_val if n_val else None
-    cell_n.font = Font(name='Tahoma', size=11, color='000000')
+    ws.cell(row=row_idx, column=13).value = m_val  # Column M
+    ws.cell(row=row_idx, column=14).value = n_val if n_val else None  # Column N
 
 
 if __name__ == "__main__":
