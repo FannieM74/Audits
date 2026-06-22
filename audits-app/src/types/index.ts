@@ -151,6 +151,7 @@ export interface SectionSummary {
   total_items: number;
   answered: number;
   findings: number;
+  open_findings: number;
   pending: number;
 }
 
