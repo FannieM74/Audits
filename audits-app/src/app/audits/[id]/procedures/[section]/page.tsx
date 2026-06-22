@@ -25,7 +25,7 @@ export default function ProcedureSectionPage() {
     contact_details: '',
   });
   const [creating, setCreating] = useState(false);
-  const [orphanFindings, setOrphanFindings] = useState<{ id: string; short_description: string }[]>([]);
+  const [orphanFindings, setOrphanFindings] = useState<{ id: string; short_description: string; description: string; priority: string; date_raised: string; ncr_ref: string }[]>([]);
   const [linkModal, setLinkModal] = useState<{ controlId: string; findingId: string } | null>(null);
   const [linking, setLinking] = useState(false);
 
@@ -329,9 +329,20 @@ export default function ProcedureSectionPage() {
                       onChange={() => setLinkModal({ ...linkModal, findingId: of.id })}
                       className="mt-0.5"
                     />
-                    <div className="min-w-0">
-                      <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{of.id.slice(0, 8)}</p>
-                      <p className="text-sm dark:text-gray-200 line-clamp-2">{of.short_description || '(no description)'}</p>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                          of.priority === 'Major' ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' :
+                          of.priority === 'Minor' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300' :
+                          'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
+                        }`}>{of.priority}</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">{of.ncr_ref}</span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">{of.date_raised}</span>
+                      </div>
+                      <p className="text-xs font-medium dark:text-gray-200 line-clamp-1">{of.short_description}</p>
+                      {of.description && (
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 line-clamp-2 mt-0.5">{of.description}</p>
+                      )}
                     </div>
                   </label>
                 ))}
