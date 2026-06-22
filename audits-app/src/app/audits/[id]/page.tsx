@@ -157,10 +157,10 @@ export default function AuditDetailPage() {
                           <>
                             <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">{s.findings}</span>
                             {(s.open_findings ?? 0) > 0 && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">{(s.open_findings ?? 0)} open</span>
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">{(s.open_findings ?? 0)}</span>
                             )}
                             {(s.findings - (s.open_findings ?? 0)) > 0 && (
-                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">{s.findings - (s.open_findings ?? 0)} closed</span>
+                              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">{s.findings - (s.open_findings ?? 0)}</span>
                             )}
                           </>
                         ) : (
