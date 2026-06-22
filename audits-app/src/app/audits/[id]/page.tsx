@@ -155,7 +155,7 @@ export default function AuditDetailPage() {
                       <div className="flex items-center gap-1 flex-wrap justify-end">
                         {s.findings > 0 ? (
                           <>
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">{s.findings}</span>
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">{s.findings} Findings</span>
                             {(s.open_findings ?? 0) > 0 && (
                               <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300">{(s.open_findings ?? 0)}</span>
                             )}
