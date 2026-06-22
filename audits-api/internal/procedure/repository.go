@@ -178,18 +178,26 @@ func (r *Repository) UpsertEvidenceResponse(ctx context.Context, auditID uuid.UU
 
 func (r *Repository) GetSectionSummaries(ctx context.Context, auditID uuid.UUID) ([]SectionSummary, error) {
 	rows, err := r.pool.Query(ctx, `
+		WITH finding_sections AS (
+			SELECT
+				f.id, f.audit_id, f.completion,
+				f.procedure_item_id,
+				CASE WHEN f.procedure ~ '^[0-9]' THEN NULLIF(SPLIT_PART(f.procedure, ' ', 1), '')::int END AS section_num
+			FROM findings f
+			WHERE f.audit_id = $1
+		)
 		SELECT
 			pi.section_number,
 			pi.section_name,
-			COUNT(pei.id) AS total_items,
-			COUNT(apr.response) FILTER (WHERE apr.response IS NOT NULL) AS answered,
-			COUNT(DISTINCT f.id) FILTER (WHERE f.id IS NOT NULL AND f.procedure_item_id = pi.id) AS findings,
-			COUNT(DISTINCT f.id) FILTER (WHERE f.id IS NOT NULL AND f.procedure_item_id = pi.id AND (f.completion IS NULL OR f.completion < 100)) AS open_findings,
-			COUNT(DISTINCT pi.id) FILTER (WHERE apr.response = 'no' AND f.id IS NULL) AS pending
+			COUNT(DISTINCT pei.id) AS total_items,
+			COUNT(DISTINCT apr.response) FILTER (WHERE apr.response IS NOT NULL) AS answered,
+			COUNT(DISTINCT fs.id) FILTER (WHERE fs.id IS NOT NULL AND (fs.procedure_item_id = pi.id OR fs.section_num = pi.section_number)) AS findings,
+			COUNT(DISTINCT fs.id) FILTER (WHERE fs.id IS NOT NULL AND (fs.procedure_item_id = pi.id OR fs.section_num = pi.section_number) AND (fs.completion IS NULL OR fs.completion < 100)) AS open_findings,
+			COUNT(DISTINCT pi.id) FILTER (WHERE apr.response = 'no' AND NOT EXISTS (SELECT 1 FROM finding_sections fs2 WHERE fs2.id IS NOT NULL AND (fs2.procedure_item_id = pi.id OR fs2.section_num = pi.section_number))) AS pending
 		FROM procedure_items pi
 		LEFT JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
 		LEFT JOIN audit_procedure_responses apr ON apr.evidence_item_id = pei.id AND apr.audit_id = $1
-		LEFT JOIN findings f ON f.audit_id = $1 AND (f.procedure_item_id = pi.id OR (f.procedure_item_id IS NULL AND f.procedure ~ '^[0-9]' AND CAST(NULLIF(SPLIT_PART(f.procedure, ' ', 1), '') AS int) = pi.section_number))
+		LEFT JOIN finding_sections fs ON fs.audit_id = $1 AND (fs.procedure_item_id = pi.id OR fs.section_num = pi.section_number)
 		GROUP BY pi.section_number, pi.section_name
 		ORDER BY pi.section_number
 	`, auditID)
