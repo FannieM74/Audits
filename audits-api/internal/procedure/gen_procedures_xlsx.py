@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 import psycopg2
 import openpyxl
+from openpyxl.styles import Font
 
 
 def main():
@@ -63,6 +64,13 @@ def main():
     wb = openpyxl.load_workbook(template_path)
     ws = wb["Working Paper"]
 
+    # Override all cells to Tahoma 11 black
+    tahoma11 = Font(name='Tahoma', size=11, color='000000')
+    for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
+        for cell in row:
+            if cell.value:
+                cell.font = tahoma11
+
     current_section_num = None
     control_counter = 0
 
@@ -100,8 +108,13 @@ def _fill_row(ws, row_idx, section_num, control_counter,
     m_val = "No" if has_finding else "Yes"
     n_val = findings_by_sort.get(sort_order, "")
 
-    ws.cell(row=row_idx, column=13).value = m_val
-    ws.cell(row=row_idx, column=14).value = n_val if n_val else None
+    cell_m = ws.cell(row=row_idx, column=13)
+    cell_m.value = m_val
+    cell_m.font = Font(name='Tahoma', size=11, color='000000')
+
+    cell_n = ws.cell(row=row_idx, column=14)
+    cell_n.value = n_val if n_val else None
+    cell_n.font = Font(name='Tahoma', size=11, color='000000')
 
 
 if __name__ == "__main__":
