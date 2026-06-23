@@ -29,41 +29,19 @@ def main():
     cur = conn.cursor()
 
     cur.execute("""
-        SELECT pi.id, pi.section_number, pi.sort_order, pi.control_question,
-               pei.id, pei.evidence_text
+        SELECT pi.id, pi.section_number, pi.sort_order, pi.control_question
         FROM procedure_items pi
-        LEFT JOIN procedure_evidence_items pei ON pei.procedure_item_id = pi.id
-        ORDER BY pi.sort_order, pei.sort_order
+        ORDER BY pi.sort_order
     """)
 
     pi_by_sort = OrderedDict()
-    evidence_to_pi = {}
-
     for row in cur.fetchall():
-        pi_id, section, sort_order, question, ev_id, ev_text = row
-        if sort_order not in pi_by_sort:
-            pi_by_sort[sort_order] = {
-                "id": pi_id,
-                "section": section,
-                "question": question or "",
-                "evidence_ids": [],
-            }
-        if ev_id:
-            pi_by_sort[sort_order]["evidence_ids"].append(ev_id)
-            evidence_to_pi[ev_id] = sort_order
-
-    # Fetch audit responses
-    cur.execute("""
-        SELECT evidence_item_id, response
-        FROM audit_procedure_responses
-        WHERE audit_id = %s
-    """, (audit_id,))
-
-    responses_by_sort = {}
-    for ev_id, response in cur.fetchall():
-        sort_order_key = evidence_to_pi.get(ev_id)
-        if sort_order_key:
-            responses_by_sort.setdefault(sort_order_key, []).append(response)
+        pi_id, section, sort_order, question = row
+        pi_by_sort[sort_order] = {
+            "id": pi_id,
+            "section": section,
+            "question": question or "",
+        }
 
     # Fetch findings linked to controls
     cur.execute("""
@@ -73,7 +51,7 @@ def main():
         WHERE f.audit_id = %s AND f.procedure_item_id IS NOT NULL
     """, (audit_id,))
 
-    findings_by_sort = {}
+    findings_by_sort = OrderedDict()
     for short_desc, sort_order in cur.fetchall():
         if sort_order not in findings_by_sort:
             findings_by_sort[sort_order] = short_desc or ""
@@ -101,11 +79,11 @@ def main():
             control_counter = 0
             control_counter += 1
             _fill_row(ws, row_idx, current_section_num, control_counter,
-                      pi_by_sort, responses_by_sort, findings_by_sort)
+                      pi_by_sort, findings_by_sort)
         elif col_k and current_section_num:
             control_counter += 1
             _fill_row(ws, row_idx, current_section_num, control_counter,
-                      pi_by_sort, responses_by_sort, findings_by_sort)
+                      pi_by_sort, findings_by_sort)
 
     output = io.BytesIO()
     wb.save(output)
@@ -113,25 +91,17 @@ def main():
 
 
 def _fill_row(ws, row_idx, section_num, control_counter,
-              pi_by_sort, responses_by_sort, findings_by_sort):
+              pi_by_sort, findings_by_sort):
     sort_order = section_num * 100 + control_counter
-    pi = pi_by_sort.get(sort_order)
-    if not pi:
+    if sort_order not in pi_by_sort:
         return
 
-    resp_list = responses_by_sort.get(sort_order, [])
-
-    if not resp_list:
-        m_val = None
-    elif any(r.lower() == "no" for r in resp_list):
-        m_val = "No"
-    else:
-        m_val = "Yes"
-
+    has_finding = sort_order in findings_by_sort
+    m_val = "No" if has_finding else "Yes"
     n_val = findings_by_sort.get(sort_order, "")
 
-    ws.cell(row=row_idx, column=13).value = m_val  # Column M
-    ws.cell(row=row_idx, column=14).value = n_val if n_val else None  # Column N
+    ws.cell(row=row_idx, column=13).value = m_val
+    ws.cell(row=row_idx, column=14).value = n_val if n_val else None
 
 
 if __name__ == "__main__":
