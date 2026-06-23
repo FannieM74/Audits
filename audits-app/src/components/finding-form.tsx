@@ -117,7 +117,6 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
       setAuditData(a);
       setForm((prev) => ({
         ...prev,
-        raised_by_business_id: a.raised_by_business_id || prev.raised_by_business_id,
         raised_against_business_id: prev.raised_against_business_id || a.business_id || '',
         resp_person_int_name: prev.resp_person_int_name || a.raised_against_business_responsible_person || '',
         resp_person_int_sap: prev.resp_person_int_sap || a.raised_against_business_sap_no || '',
@@ -125,6 +124,15 @@ export default function FindingForm({ auditId, initial, onSave, onCancel, loadin
     }).catch(() => {});
     api.get('/api/businesses').then((res) => {
       setBusinesses(res.data);
+      if (!initial) {
+        const fac = res.data.find((b: Business) => b.name === 'Facilities & infrastructure');
+        if (fac) {
+          setForm((prev) => ({
+            ...prev,
+            raised_by_business_id: prev.raised_by_business_id || fac.id,
+          }));
+        }
+      }
     });
   }, [auditId]);
 

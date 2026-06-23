@@ -175,6 +175,18 @@ export default function FindingDetailPage() {
                 <span className="hidden sm:inline">{finding.status === 'closed' ? 'Reopen' : 'Close'}</span>
               </button>
             )}
+            {canEdit && (
+              <button onClick={async () => {
+                if (!window.confirm('Delete this finding? This action cannot be undone.')) return;
+                try {
+                  await api.delete(`/api/findings/${id}`);
+                  router.push(`/audits/${finding.audit_id}`);
+                } catch { alert('Failed to delete finding'); }
+              }} className="flex-1 flex items-center justify-center gap-1.5 bg-red-600 text-white px-2 sm:px-4 py-2.5 rounded hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-xs sm:text-sm font-medium">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <span className="hidden sm:inline">Delete</span>
+              </button>
+            )}
             <button onClick={async () => {
               try {
                 const res = await api.get(`/api/findings/${id}/docx`, { responseType: 'blob' });
