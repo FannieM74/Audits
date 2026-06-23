@@ -3,6 +3,7 @@ services:
     name: audits-api
     runtime: docker
     rootDir: audits-api
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         sync: false
