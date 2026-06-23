@@ -20,8 +20,16 @@ def _tc_text(tc):
     return "".join(t.text or "" for t in tc.findall(f".//{{{NS}}}t"))
 
 
+def _set_font_rpr(rpr):
+    sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
+    sz.set(etree.QName(NS, "val"), "18")
+    rf = etree.SubElement(rpr, etree.QName(NS, "rFonts"))
+    rf.set(etree.QName(NS, "ascii"), "Tahoma")
+    rf.set(etree.QName(NS, "hAnsi"), "Tahoma")
+
+
 def _set_tc_text(tc, value):
-    """Replace content of first <w:t> in cell with 9pt font, or create one."""
+    """Replace content of first <w:t> in cell with Tahoma 9pt font, or create one."""
     t = tc.find(f".//{{{NS}}}t")
     if t is not None:
         t.text = value
@@ -30,27 +38,25 @@ def _set_tc_text(tc, value):
         if rpr is None:
             rpr = etree.Element(etree.QName(NS, "rPr"))
             r.insert(0, rpr)
-        sz = rpr.find(f"{{{NS}}}sz")
-        if sz is None:
-            sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
-        sz.set(etree.QName(NS, "val"), "18")
+        else:
+            for child in list(rpr):
+                rpr.remove(child)
+        _set_font_rpr(rpr)
         return
     p = etree.SubElement(tc, etree.QName(NS, "p"))
     r = etree.SubElement(p, etree.QName(NS, "r"))
     rpr = etree.SubElement(r, etree.QName(NS, "rPr"))
-    sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
-    sz.set(etree.QName(NS, "val"), "18")
+    _set_font_rpr(rpr)
     t = etree.SubElement(r, etree.QName(NS, "t"))
     t.text = value
 
 
 def _add_x_to_tc(tc):
-    """Append a <w:p><w:r><w:rPr><w:sz w:val="18"/></w:rPr><w:t>X</w:t></w:r></w:p> to the cell."""
+    """Append a <w:p> with Tahoma 9pt X to the cell."""
     p = etree.SubElement(tc, etree.QName(NS, "p"))
     r = etree.SubElement(p, etree.QName(NS, "r"))
     rpr = etree.SubElement(r, etree.QName(NS, "rPr"))
-    sz = etree.SubElement(rpr, etree.QName(NS, "sz"))
-    sz.set(etree.QName(NS, "val"), "18")
+    _set_font_rpr(rpr)
     t = etree.SubElement(r, etree.QName(NS, "t"))
     t.text = "X"
 
