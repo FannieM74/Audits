@@ -64,12 +64,18 @@ def main():
     wb = openpyxl.load_workbook(template_path)
     ws = wb["Working Paper"]
 
-    # Override all cells to Tahoma 11 black
+    # Override all cells to Tahoma 11 black except row 7 headers
     tahoma11 = Font(name='Tahoma', size=11, color='000000')
     for row in ws.iter_rows(min_row=1, max_row=ws.max_row, max_col=ws.max_column):
         for cell in row:
-            if cell.value:
+            if cell.value and cell.row != 7:
                 cell.font = tahoma11
+
+    # Row 7: white font, bold, columns A-I
+    white_bold = Font(name='Tahoma', size=11, color='FFFFFF', bold=True)
+    for col in range(1, 10):
+        cell = ws.cell(row=7, column=col)
+        cell.font = white_bold
 
     current_section_num = None
     control_counter = 0
