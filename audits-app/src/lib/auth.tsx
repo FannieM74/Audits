@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import api from './api';
 import { User } from '@/types';
@@ -22,11 +22,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const idleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const INACTIVITY_MS = 15 * 60 * 1000;
   const logout = useCallback(() => {
     document.cookie = 'token=; path=/; max-age=0';
     setToken(null);
     setUser(null);
-    router.push('/login');
+    router.push('/');
   }, [router]);
 
   useEffect(() => {
@@ -44,6 +47,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     }
   }, [logout]);
+
+  const resetIdleTimer = useCallback(() => {
+    if (idleRef.current) clearTimeout(idleRef.current);
+    idleRef.current = setTimeout(() => logout(), INACTIVITY_MS);
+  }, [logout, INACTIVITY_MS]);
+
+  useEffect(() => {
+    if (!token) return;
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click', 'wheel'];
+    resetIdleTimer();
+    for (const event of events) {
+      window.addEventListener(event, resetIdleTimer, { passive: true });
+    }
+    return () => {
+      if (idleRef.current) clearTimeout(idleRef.current);
+      for (const event of events) {
+        window.removeEventListener(event, resetIdleTimer);
+      }
+    };
+  }, [token, resetIdleTimer]);
 
   const login = async (email: string, password: string) => {
     const res = await api.post<{ token: string; user: User }>('/api/auth/login', { email, password });
